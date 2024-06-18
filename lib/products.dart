@@ -64,43 +64,58 @@ class ProductsContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          Column(
-            children: [
-              Row(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ProductsDetails(),
-                        ),
-                      );
-                    },
-                    child: Container(
-                      child: Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height * 0.25,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          border: Border.all(
-                            color: Colors.black,
-                            width: 1.0,
-                          ),
-                        ),
-                        child: Image.asset(
-                          'assets/images/pizza.jpeg',
-                        ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0), // Add padding here
+        child: Column(
+          children: [
+            SizedBox(height: 20),
+            Row(
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ProductsDetails(),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    width: MediaQuery.of(context).size.width - 32, // Adjust width for padding
+                    height: MediaQuery.of(context).size.height * 0.15,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: Colors.black,
+                        width: 1.0,
                       ),
                     ),
-                  )
-                ],
-              )
-            ],
-          )
-        ],
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 50, right: 50),
+                      child: Image.asset(
+                        'assets/images/pizza.jpeg',
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Pizza',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontFamily: 'Comfortaa',
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -139,6 +154,7 @@ class ProductsDetails extends StatelessWidget {
   }
 }
 
+
 class Product {
   final String name;
   final String image;
@@ -165,7 +181,6 @@ class _DetailsState extends State<Details> with TickerProviderStateMixin {
   late List<Animation<double>> _widthAnimations;
   List<Product> products = [
     Product(name: "Margarita Pizza", image: "assets/images/pizza.jpeg", price: 5.00),
-    // Product(name: "Margarita Pizza", image: "assets/images/pizza.jpeg", price: 5.00),
   ];
   List<int> _counters = [];
 
@@ -190,7 +205,7 @@ class _DetailsState extends State<Details> with TickerProviderStateMixin {
           vsync: this,
         ));
     _widthAnimations = _controllers.map((controller) =>
-        Tween<double>(begin: 0.0, end: 71.0).animate(controller)..addListener(() {
+        Tween<double>(begin: 40.0, end: 130.0).animate(controller)..addListener(() {
           setState(() {});
         })).toList();
   }
@@ -220,7 +235,7 @@ class _DetailsState extends State<Details> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
-    // final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -235,7 +250,7 @@ class _DetailsState extends State<Details> with TickerProviderStateMixin {
             ),
           ),
           SizedBox(
-            height: screenHeight - 222,
+            height: screenHeight - 230,
             child: GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
@@ -261,59 +276,83 @@ class _DetailsState extends State<Details> with TickerProviderStateMixin {
                           ],
                         ),
                       ),
+                      if (!_controllers[index].isCompleted && !_controllers[index].isAnimating)
+                        Positioned(
+                          right: 11,
+                          top: 15,
+                          child: Container(
+                            width: 45,
+                            height: 45,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(30),
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
                       Positioned(
-                        right: 11,
-                        top: 15,
+                        right: 13,
+                        top: 18,
                         child: AnimatedBuilder(
                           animation: animation,
                           builder: (context, child) {
-                            return Container(
-                              width: animation.value + 40,
-                              height: 38.0,
-                              decoration: BoxDecoration(
-                                color: (!_controllers[index].isAnimating && !_controllers[index].isCompleted && _counters[index] > 0) ? Colors.yellow : Colors.white,
-                                borderRadius: BorderRadius.circular(50),
+                            return ConstrainedBox(
+                              constraints: BoxConstraints(
+                                maxWidth: screenWidth / 2 - 30,
                               ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: <Widget>[
-                                  if (_controllers[index].isCompleted)
-                                    IconButton(
-                                      icon:  Icon(Icons.remove, color: Colors.yellow.shade700),
-                                      onPressed: () {
-                                        setState(() {
-                                          if (_counters[index] > 0) _counters[index]--;
-                                          if (_counters[index] == 0) {
-                                            _controllers[index].reverse();
-                                          }
-                                        });
-                                      },
-                                    ),
-                                  if (_controllers[index].isCompleted && _counters[index] > 0)
-                                    Text('${_counters[index]}', style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20)),
-                                  if (!_controllers[index].isCompleted && _counters[index] > 0)
-                                    Text('${_counters[index]}', style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20)),
-                                  if (!_controllers[index].isCompleted && _counters[index] == 0)
-                                     Icon(Icons.add, color: Colors.yellow.shade700),
-                                  if (_controllers[index].isCompleted && _counters[index] == 0)
-                                    IconButton(
-                                      icon: const Icon(Icons.add, color: Colors.black),
-                                      onPressed: () {
-                                        setState(() {
-                                          _counters[index]++;
-                                        });
-                                      },
-                                    ),
-                                  if (_controllers[index].isCompleted && _counters[index] > 0)
-                                    IconButton(
-                                      icon:  Icon(Icons.add, color: Colors.yellow.shade700),
-                                      onPressed: () {
-                                        setState(() {
-                                          _counters[index]++;
-                                        });
-                                      },
-                                    ),
-                                ],
+                              child: Container(
+                                width: animation.value,
+                                height: 38.0,
+                                decoration: BoxDecoration(
+                                  color: (!_controllers[index].isAnimating && !_controllers[index].isCompleted && _counters[index] > 0) ? Colors.yellow : Colors.white,
+                                  borderRadius: BorderRadius.circular(50),
+                                  border: Border.all(
+                                    color: Colors.grey.withOpacity(0.5),
+                                    width: 0.5,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  children: <Widget>[
+                                    if (_controllers[index].isCompleted)
+                                      IconButton(
+                                        icon: _counters[index] == 1
+                                            ? Icon(Icons.delete_outline, color: Colors.yellow.shade700)
+                                            : Icon(Icons.remove, color: Colors.yellow.shade700),
+                                        onPressed: () {
+                                          setState(() {
+                                            if (_counters[index] > 0) _counters[index]--;
+                                            if (_counters[index] == 0) {
+                                              _controllers[index].reverse();
+                                            }
+                                          });
+                                        },
+                                      ),
+                                    if (_controllers[index].isCompleted && _counters[index] > 0)
+                                      Text('${_counters[index]}', style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20)),
+                                    if (!_controllers[index].isCompleted && _counters[index] > 0)
+                                      Text('${_counters[index]}', style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20)),
+                                    if (!_controllers[index].isCompleted && _counters[index] == 0)
+                                      Icon(Icons.add, color: Colors.yellow.shade700),
+                                    if (_controllers[index].isCompleted && _counters[index] == 0)
+                                      IconButton(
+                                        icon: const Icon(Icons.add, color: Colors.black),
+                                        onPressed: () {
+                                          setState(() {
+                                            _counters[index]++;
+                                          });
+                                        },
+                                      ),
+                                    if (_controllers[index].isCompleted && _counters[index] > 0)
+                                      IconButton(
+                                        icon: Icon(Icons.add, color: Colors.yellow.shade700),
+                                        onPressed: () {
+                                          setState(() {
+                                            _counters[index]++;
+                                          });
+                                        },
+                                      ),
+                                  ],
+                                ),
                               ),
                             );
                           },
@@ -341,5 +380,3 @@ class _DetailsState extends State<Details> with TickerProviderStateMixin {
     );
   }
 }
-
-

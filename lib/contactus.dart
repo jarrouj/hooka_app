@@ -377,7 +377,7 @@ class ContactUsPage extends StatelessWidget {
                     height: 60,
                   ),
                   Container(
-                    width: 335,
+                    width: 328,
                     height: 50,
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(12),
@@ -393,7 +393,7 @@ class ContactUsPage extends StatelessWidget {
                     ),
                   ),
                   SizedBox(
-                    height: 35,
+                    height: 45,
                   ),
                 ],
               ))

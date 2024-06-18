@@ -83,7 +83,7 @@
 //                     color: Colors.grey.withOpacity(0.6),
 //                     spreadRadius: 3,
 //                     blurRadius: 14,
-//                     offset: const Offset(0, 15), 
+//                     offset: const Offset(0, 15),
 //                   ),
 //                 ],
 //               ),
@@ -182,7 +182,7 @@
 //                             borderSide: const BorderSide(color: Colors.black),
 //                             borderRadius: BorderRadius.circular(5),
 //                           ),
-                          
+
 //                           suffixIcon: GestureDetector(
 //                             onTap: () {
 //                               setState(() {
@@ -196,9 +196,9 @@
 //                               color: Colors.black,
 //                             ),
 //                           ),
-                          
+
 //                         ),
-                        
+
 //                         validator: (value) {
 //                           if (value == null || value.isEmpty) {
 //                             return 'Required *';
@@ -241,7 +241,7 @@
 //                           decoration: BoxDecoration(
 //                             color: Colors.yellow.shade600,
 //                             borderRadius: BorderRadius.circular(13),
-                           
+
 //                           ),
 //                           child: const Center(
 //                             child: Text(
@@ -275,14 +275,14 @@
 //                                   fontWeight: FontWeight.bold,
 //                                   fontSize: 15,
 //                                   decoration: TextDecoration.underline,
-                                
+
 //                                 ),
 //                               ),
 //                             ),
 //                           ),
 //                         ],
 //                       ),
-                     
+
 //                     ],
 //                   ),
 //                 ),
@@ -294,7 +294,6 @@
 //         ));
 //   }
 // }
-
 
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -334,8 +333,8 @@ class _LoginPageState extends State<LoginPage> {
               height: screenHeight * 0.27,
               width: double.infinity,
               color: Colors.black,
-              child: const Padding(
-                padding: EdgeInsets.only(left: 15, top: 0),
+              child:  Padding(
+                padding: const EdgeInsets.only(left: 15, top: 0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -343,14 +342,18 @@ class _LoginPageState extends State<LoginPage> {
                       children: [
                         Text(
                           'Welcome',
-                          style: TextStyle(
-                            color: Colors.white,
+                          style: GoogleFonts.nunito(
+                               color: Colors.white,
                             fontSize: 40,
                           ),
+                          // style: TextStyle(
+                          //   color: Colors.white,
+                          //   fontSize: 40,
+                          // ),
                         ),
                       ],
                     ),
-                    Row(
+                    const Row(
                       children: [
                         Text(
                           'Please enter your email and password to\nlogin to HookaApp.',
@@ -371,10 +374,10 @@ class _LoginPageState extends State<LoginPage> {
                 borderRadius: BorderRadius.circular(10),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.7),
+                    color: Colors.grey.withOpacity(0.5),
                     spreadRadius: 2,
-                    blurRadius: 5,
-                    offset: Offset(0, 8),
+                    blurRadius: 10,
+                    offset: Offset(0, 15),
                   ),
                 ],
               ),
@@ -395,13 +398,12 @@ class _LoginPageState extends State<LoginPage> {
                       ],
                     ),
                     const SizedBox(height: 10),
-                   const Padding(
+                    const Padding(
                       padding: EdgeInsets.only(left: 10),
                       child: Divider(
                         thickness: 5,
                         color: Colors.black,
                         endIndent: 260,
-                        
                       ),
                     ),
                     SizedBox(height: 20),
@@ -413,16 +415,22 @@ class _LoginPageState extends State<LoginPage> {
                         return null;
                       },
                       decoration: InputDecoration(
-                         errorBorder: OutlineInputBorder(
-                              borderSide:  BorderSide(color :Color.fromARGB(255, 172, 32, 22)),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            focusedErrorBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Color.fromARGB(255, 172, 32, 22) , width: 2),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 17.0, horizontal: 10.0),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                              color: Color.fromARGB(255, 172, 32, 22)),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                              color: Color.fromARGB(255, 172, 32, 22),
+                              width: 2),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                         labelText: 'Email',
-                        labelStyle: TextStyle(color: Colors.black, fontSize: 15),
+                        labelStyle:
+                            TextStyle(color: Colors.black, fontSize: 15),
                         hintText: 'Email',
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
@@ -436,59 +444,62 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 30),
-                        TextFormField(
-                          obscureText: _isObscure,
-                          decoration: InputDecoration(
-                              errorBorder: OutlineInputBorder(
-                              borderSide:  BorderSide(color :Color.fromARGB(255, 172, 32, 22)),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            focusedErrorBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Color.fromARGB(255, 172, 32, 22) , width: 2),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            labelText: 'Password',
-                            labelStyle: const TextStyle(color: Colors.black , fontSize: 15),
-                            hintText: 'Password',
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              borderSide: const BorderSide(
-                                color: Color.fromARGB(255, 244, 240, 240),
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(color: Colors.black),
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            
-                            suffixIcon: GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _isObscure = !_isObscure;
-                                });
-                              },
-                              child: Icon(
-                                !_isObscure
-                                    ? Icons.visibility_off
-                                    : Icons.visibility,
-                                color: Colors.black,
-                              ),
-                            ),
-                            
-                          ),
-                          
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Required *';
-                            }
-                            // Add more validation logic for password if needed
-                            return null;
-                          },
+                    const SizedBox(height: 15),
+                    TextFormField(
+                      obscureText: _isObscure,
+                      decoration: InputDecoration(
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 17.0, horizontal: 10.0),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                              color: Color.fromARGB(255, 172, 32, 22)),
+                          borderRadius: BorderRadius.circular(10),
                         ),
+                        focusedErrorBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(
+                              color: Color.fromARGB(255, 172, 32, 22),
+                              width: 2),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        labelText: 'Password',
+                        labelStyle:
+                            const TextStyle(color: Colors.black, fontSize: 15),
+                        hintText: 'Password',
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: const BorderSide(
+                            color: Color.fromARGB(255, 244, 240, 240),
+                          ),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: const BorderSide(color: Colors.black),
+                          borderRadius: BorderRadius.circular(5),
+                        ),
+                        suffixIcon: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _isObscure = !_isObscure;
+                            });
+                          },
+                          child: Icon(
+                            !_isObscure
+                                ? Icons.visibility_off
+                                : Icons.visibility,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Required *';
+                        }
+                        // Add more validation logic for password if needed
+                        return null;
+                      },
+                    ),
                     const SizedBox(height: 30),
                     const Padding(
-                      padding: EdgeInsets.only(right: 13),
+                      padding: EdgeInsets.only(right: 16),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
@@ -541,19 +552,20 @@ class _LoginPageState extends State<LoginPage> {
                             child: Text(
                               'SIGN UP ',
                               style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15,
-                                decoration: TextDecoration.underline,
-                                decorationThickness: 0.5
-                              ),
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                  decoration: TextDecoration.underline,
+                                  decorationThickness: 0.5),
                             ),
                           ),
                         ),
                       ],
                     ),
                     // SizedBox(height: 60,),
-                    SizedBox(height: screenHeight * 0.065,)
+                    SizedBox(
+                      height: screenHeight * 0.065,
+                    )
                   ],
                 ),
               ),

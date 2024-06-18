@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:hooka_app/allpages.dart';
 import 'package:hooka_app/contactus.dart';
@@ -19,7 +20,7 @@ Future<Box> openHiveBox(String boxname) async {
   return await Hive.openBox(boxname);
 }
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   mybox = await openHiveBox("Favorite");
   
@@ -86,7 +87,7 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ContentPage();
+    return const ContentPage();
   }
 }
 
@@ -102,7 +103,7 @@ class MenuScreen extends StatefulWidget {
   final Function(Widget, int) onPageChange;
   final int selectedIndex;
 
-  MenuScreen({Key? key, required this.onPageChange, required this.selectedIndex}) : super(key: key);
+  const MenuScreen({Key? key, required this.onPageChange, required this.selectedIndex}) : super(key: key);
 
   @override
   _MenuScreenState createState() => _MenuScreenState();
@@ -165,95 +166,106 @@ class _MenuScreenState extends State<MenuScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              padding: EdgeInsets.only(left: 6),
+              
+              padding: const EdgeInsets.only(left: 6),
               child: Row(
                 children: [
                   GestureDetector(
                     onTap: () {
-                       showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        height: 30,
-                      ),
-                      AlertDialog(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
+                     showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const SizedBox(
+                    height: 30,
+                  ),
+                  Container(
+                      decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black26,
+                          blurRadius: 10.0,
+                          spreadRadius: 5.0,
+                          offset: Offset(0, 3),
                         ),
+                      ],
+                    ),
+                    child: AlertDialog(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.0),
                         
-                           content: Container(
-                          height: 85,
-                          width: 850,
+                      ),
+                      content: Container(
                         
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              SizedBox(
-                                height: 20,
-                              ),
-                              const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                
+                        height: 85,
+                        width: 850,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const SizedBox(
+                              height: 20,
+                            ),
+                            const Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Please log in first',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 15),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const LoginPage()),
+                                );
+                              },
+                              child: const Row(
+                                mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
+                                  Icon(Icons.login),
+                                  SizedBox(width: 5),
                                   Text(
-                                    'Please log in first',
+                                    'Login',
                                     style: TextStyle(
-                                      fontSize: 18,
+                                      fontSize: 16,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 15),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const LoginPage()),
-                                  );
-                                },
-                                child: const Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Icon(Icons.login),
-                                    const SizedBox(width: 5),
-                                    const Text(
-                                      'Login',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  );
-                },
+                    ),
+                  ),
+                ],
               );
+            },
+          );
                     },
                     child: Container(
-                      padding: EdgeInsets.all(10.0),
+                      padding: const EdgeInsets.all(10.0),
                       decoration: BoxDecoration(
                         color: Colors.yellow.shade600,
                         shape: BoxShape.circle,
                       ),
-                      child: Icon(
+                      child: const Icon(
                         Icons.person,
                         color: Colors.black,
                       ),
                     ),
                   ),
-                  SizedBox(width: 16.0),
+                  const SizedBox(width: 16.0),
                   Text(
                     '',
                     style: TextStyle(color: Colors.yellow.shade600),
@@ -261,7 +273,7 @@ class _MenuScreenState extends State<MenuScreen> {
                 ],
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 25,
             ),
             ...drawerItems.asMap().entries.map((entry) {
@@ -290,8 +302,7 @@ class _MenuScreenState extends State<MenuScreen> {
                 ),
               );
             }).toList(),
-
-            SizedBox(
+            const SizedBox(
               height: 30,
             ),
             GestureDetector(
@@ -299,7 +310,7 @@ class _MenuScreenState extends State<MenuScreen> {
                 context,
                 MaterialPageRoute(builder: (context) => const LoginPage()),
               ),
-              child: ListTile(
+              child:  ListTile(
                 leading: Icon(
                   Icons.logout,
                   color: Colors.yellow.shade600,
@@ -336,10 +347,10 @@ class _ContentPageState extends State<ContentPage> {
       appBar: AppBar(
         surfaceTintColor: Colors.white,
         backgroundColor: Colors.white,
-        title:  Center(
+        title: Center(
           child: Text(
             'Hookapp',
-            style: GoogleFonts.comfortaa(), 
+            style: GoogleFonts.comfortaa(),
           ),
         ),
         actions: [
@@ -352,27 +363,25 @@ class _ContentPageState extends State<ContentPage> {
                   return Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(
+                      const SizedBox(
                         height: 30,
                       ),
                       AlertDialog(
+                        
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
-                        
-                           content: Container(
-                          height: 85,
+                        content: Container(
+                          height: 75,
                           width: 850,
-                        
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              SizedBox(
-                                height: 20,
+                              const SizedBox(
+                                height: 15,
                               ),
                               const Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                
                                 children: [
                                   Text(
                                     'Please log in first',
@@ -383,22 +392,21 @@ class _ContentPageState extends State<ContentPage> {
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 15),
+                              const SizedBox(height: 5),
                               GestureDetector(
                                 onTap: () {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) =>
-                                            const LoginPage()),
+                                        builder: (context) => const LoginPage()),
                                   );
                                 },
                                 child: const Row(
                                   mainAxisAlignment: MainAxisAlignment.end,
                                   children: [
                                     Icon(Icons.login),
-                                    const SizedBox(width: 5),
-                                    const Text(
+                                    SizedBox(width: 5),
+                                    Text(
                                       'Login',
                                       style: TextStyle(
                                         fontSize: 16,
@@ -421,8 +429,9 @@ class _ContentPageState extends State<ContentPage> {
           const SizedBox(width: 3),
         ],
         leading: IconButton(
-            icon: Icon(Icons.menu),
-            onPressed: () => ZoomDrawer.of(context)!.toggle()),
+          icon: Icon(Icons.menu),
+          onPressed: () => ZoomDrawer.of(context)!.toggle(),
+        ),
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -447,10 +456,7 @@ class _ContentPageState extends State<ContentPage> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [Colors.white, Colors.transparent],
-                  stops: [
-                    0.8,
-                    0.95
-                  ], // Adjust the stops to make the fade effect smaller
+                  stops: [0.8, 0.95],
                 ).createShader(bounds);
               },
               blendMode: BlendMode.dstIn,
@@ -464,14 +470,9 @@ class _ContentPageState extends State<ContentPage> {
             Center(
               child: Column(
                 children: [
-                  // const SizedBox(height: 20),
                   Image.asset(
                     'assets/images/hookatimeslogo.png',
-                    // height: screenHeight * 0.2,
-                    // width: screenWidth * 0.7,
-                    // fit: BoxFit.cover,
                   ),
-                  // const SizedBox(height: 40),
                   Column(
                     children: [
                       Row(
@@ -480,97 +481,149 @@ class _ContentPageState extends State<ContentPage> {
                           GestureDetector(
                             onTap: () {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => PlacesStartPage()));
+                                  builder: (context) => const  PlacesStartPage()));
                             },
-                            child: _buildCard1(
-                              context,
-                              'assets/images/location.png',
-                              'Places',
-                              screenWidth,
-                              screenHeight,
+                            child: Container(
+                              width: screenWidth * 0.4,
+                              height: screenWidth * 0.4,
+                              decoration: BoxDecoration(
+                                color: Colors.yellow.shade700,
+                                borderRadius: BorderRadius.circular(5),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.3),
+                                    spreadRadius: 5,
+                                    blurRadius: 7,
+                                    offset: const Offset(0, 5),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SvgPicture.asset(
+                                    'assets/images/places.svg',
+                                    width: screenWidth * 0.28,
+                                    height: screenHeight * 0.11,
+                                  ),
+                                  // const SizedBox(height: 10),
+                                  const Text(
+                                    'PLACES',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                           SizedBox(width: isLargeScreen ? 20 : 5),
                           GestureDetector(
                             onTap: () {
                               showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                     const SizedBox(
-                        height: 30,
-                      ),
-                      AlertDialog(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        
-                           content: Container(
-                          height: 85,
-                          width: 850,
-                        
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                             const SizedBox(
-                                height: 20,
+                                context: context,
+                                builder: (BuildContext context) {
+                                  return Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const SizedBox(
+                                        height: 30,
+                                      ),
+                                      AlertDialog(
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(10.0),
+                                        ),
+                                        content: Container(
+                                          height: 85,
+                                          width: 850,
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const SizedBox(
+                                                height: 20,
+                                              ),
+                                              const Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    'Please log in first',
+                                                    style: TextStyle(
+                                                      fontSize: 18,
+                                                      fontWeight: FontWeight.w500,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(height: 15),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            const LoginPage()),
+                                                  );
+                                                },
+                                                child: const Row(
+                                                  mainAxisAlignment: MainAxisAlignment.end,
+                                                  children: [
+                                                    Icon(Icons.login),
+                                                    SizedBox(width: 5),
+                                                    Text(
+                                                      'Login',
+                                                      style: TextStyle(
+                                                        fontSize: 16,
+                                                        fontWeight: FontWeight.w500,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                            child: Container(
+                              width: screenWidth * 0.4,
+                              height: screenWidth * 0.4,
+                              decoration: BoxDecoration(
+                                color: Colors.yellow.shade700,
+                                borderRadius: BorderRadius.circular(5),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.3),
+                                    spreadRadius: 5,
+                                    blurRadius: 7,
+                                    offset: const Offset(0, 5),
+                                  ),
+                                ],
                               ),
-                              const Row(
+                              child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                
                                 children: [
-                                  Text(
-                                    'Please log in first',
+                                  SvgPicture.asset(
+                                    'assets/images/buddies.svg',
+                                    width: screenWidth * 0.28,
+                                    height: screenHeight * 0.1,
+                                  ),
+                                  const SizedBox(height: 7),
+                                  const Text(
+                                    'BUDDIES',
                                     style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w500,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 20,
                                     ),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: 15),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const LoginPage()),
-                                  );
-                                },
-                                child: const Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Icon(Icons.login),
-                                    const SizedBox(width: 5),
-                                    const Text(
-                                      'Login',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              );
-                            },
-                            child: _buildCard1(
-                              context,
-                              'assets/images/friends.png',
-                              
-                              'BUDDIES',
-                              screenWidth,
-                              screenHeight,
                             ),
                           ),
                         ],
@@ -587,12 +640,40 @@ class _ContentPageState extends State<ContentPage> {
                                 ),
                               );
                             },
-                            child: _buildCard2(
-                              context,
-                              'assets/images/offers.png',
-                              'OFFERS',
-                              screenWidth,
-                              screenHeight,
+                            child: Container(
+                              width: screenWidth * 0.4,
+                              height: screenWidth * 0.4,
+                              decoration: BoxDecoration(
+                                color: Colors.yellow.shade700,
+                                borderRadius: BorderRadius.circular(5),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.3),
+                                    spreadRadius: 5,
+                                    blurRadius: 7,
+                                    offset: const Offset(0, 5),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SvgPicture.asset(
+                                    'assets/images/offers.svg',
+                                    // width: screenWidth * 0.28,
+                                    height: screenHeight* 0.1,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  const Text(
+                                    'OFFERS',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                           SizedBox(width: isLargeScreen ? 20 : 5),
@@ -604,12 +685,40 @@ class _ContentPageState extends State<ContentPage> {
                                 ),
                               );
                             },
-                            child: _buildCard2(
-                              context,
-                              'assets/images/products.png',
-                              'PRODUCTS',
-                              screenWidth,
-                              screenHeight,
+                            child: Container(
+                              width: screenWidth * 0.4,
+                              height: screenWidth * 0.4,
+                              decoration: BoxDecoration(
+                                color: Colors.yellow.shade700,
+                                borderRadius: BorderRadius.circular(5),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.3),
+                                    spreadRadius: 5,
+                                    blurRadius: 7,
+                                    offset: const Offset(0, 5),
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  SvgPicture.asset(
+                                    'assets/images/products.svg',
+                                    width: screenWidth * 0.28,
+                                    height: screenHeight * 0.115,
+                                  ),
+                                  // const SizedBox(height: 10),
+                                  const Text(
+                                    'PRODUCTS',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 20,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ],
@@ -625,87 +734,4 @@ class _ContentPageState extends State<ContentPage> {
       ),
     );
   }
-
-  Widget _buildCard1(BuildContext context, String imagePath, String label,
-      double screenWidth, double screenHeight) {
-    final cardSize = screenWidth * 0.4;
-    return Container(
-      width: cardSize,
-      height: cardSize,
-      decoration: BoxDecoration(
-        color: Colors.yellow.shade700,
-        borderRadius: BorderRadius.circular(5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            spreadRadius: 5,
-            blurRadius: 7,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // SizedBox(height: screenHeight * 0.05),
-          Image.asset(
-            imagePath,
-            width: cardSize * 0.6,
-            height: cardSize * 0.35,
-          ),
-          SizedBox(height: screenHeight * 0.02),
-          Text(
-            label,
-            style: const TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.w600,
-              fontSize: 20,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
 }
-
-
-Widget _buildCard2(BuildContext context, String imagePath, String label,
-      double screenWidth, double screenHeight) {
-    final cardSize = screenWidth * 0.4;
-    return Container(
-      width: cardSize,
-      height: cardSize,
-      decoration: BoxDecoration(
-        color: Colors.yellow.shade700,
-        borderRadius: BorderRadius.circular(5),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.3),
-            spreadRadius: 5,
-            blurRadius: 7,
-            offset: const Offset(0, 5),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // SizedBox(height: screenHeight * 0.05),
-          Image.asset(
-            imagePath,
-            width: cardSize * 0.6,
-            height: cardSize * 0.5,
-          ),
-          SizedBox(height: screenHeight * 0.002),
-          Text(
-            label,
-            style: const TextStyle(
-              color: Colors.black,
-              fontWeight: FontWeight.w600,
-              fontSize: 19,
-            ),
-          ),
-        ],
-      ),
-    );
-  }

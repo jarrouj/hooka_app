@@ -9,17 +9,25 @@ class BodyAllPages extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(child: GestureDetector(
+    return GestureDetector(
         onTap: () {
-          Navigator.of(context).push(MaterialPageRoute(builder: (context)=> LoginPage()));
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => const LoginPage()));
         },
-        child: Text('Please log in' , 
-        style: GoogleFonts.comfortaa(fontSize: 20),
-        
-             ),
-      ), 
+        onLongPress: () {
+          Navigator.of(context).push(MaterialPageRoute(builder: (context) => const LoginPage()));
+        },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: Center(child: GestureDetector(
+          onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(builder: (context)=> LoginPage()));
+          },
+          child: Text('Please log in' , 
+          style: GoogleFonts.comfortaa(fontSize: 20),
+          
+               ),
+        ), 
+        ),
       ),
     );
   }
@@ -223,18 +231,21 @@ class SettingMainPage extends StatelessWidget {
       backgroundColor: Colors.grey.shade50,
       body: Column(
         children: [
-          SizedBox(height: 30,),
-          Center(
-            child: Container(
-              width: 120,
-              height: 35,
-              decoration: BoxDecoration(
-                color: Colors.yellow.shade600,
-                borderRadius: BorderRadius.circular(10)
-              ),
-              child: Center(child: Text('Invite Friends')),
-          ),
-          ),
+          SizedBox(height: 35,),
+          // Center(
+          //   child: Container(
+          //     width: 110,
+          //     height: 37,
+          //     decoration: BoxDecoration(
+          //       color: Colors.yellow.shade600,
+          //       borderRadius: BorderRadius.circular(10)
+          //     ),
+          //     child: Center(child: Text('Invite friends' , style: TextStyle(
+          //       fontWeight: FontWeight.w500,
+          //       fontSize: 14,
+          //     ),)),
+          // ),
+          // ),
         ],
       ),
     );

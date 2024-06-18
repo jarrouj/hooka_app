@@ -72,7 +72,7 @@ class _SignUpState extends State<SignUp> {
               ),
               Container(
                 // width: 330,
-                width: screenWidth*0.85,
+                width: screenWidth*0.852,
                 transform: Matrix4.translationValues(0, -80, 0),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
@@ -196,7 +196,7 @@ class _SignUpState extends State<SignUp> {
                         },
                         decoration: InputDecoration(
                           errorBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
+                            borderSide: const BorderSide(
                                 color: Color.fromARGB(255, 172, 32, 22)),
                             borderRadius: BorderRadius.circular(5),
                           ),
@@ -306,7 +306,8 @@ class _SignUpState extends State<SignUp> {
                     ],
                   ),
                 ),
-              )
+              ),
+              
             ],
           ),
         ),

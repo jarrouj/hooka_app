@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hooka_app/login.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hooka_app/places.dart';
 
 class PlacesDetailPage extends StatefulWidget {
@@ -27,7 +27,7 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
       appBar: AppBar(
         surfaceTintColor: Colors.white,
         backgroundColor: Colors.white,
-        title: const Text('Details'),
+        title: Text('Details', style: GoogleFonts.comfortaa()),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -60,6 +60,7 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
                                     : Colors.red,
                           ),
                           child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               const SizedBox(width: 5),
                               Text(
@@ -67,9 +68,9 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
                                 style: const TextStyle(
                                     fontSize: 16, color: Colors.white),
                               ),
-                              const SizedBox(width: 5),
+                              // const SizedBox(width: 5),
                               const Icon(Icons.star,
-                                  color: Colors.white, size: 13),
+                                  color: Colors.white, size: 10),
                             ],
                           ),
                         ),
@@ -88,7 +89,6 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
                       ),
                     ],
                   ),
-                  
                   const SizedBox(height: 16),
                   Row(
                     children: [
@@ -120,7 +120,10 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      Text('${widget.place.description}'),
+                      Text(
+                        '${widget.place.description}',
+                        style: TextStyle(fontStyle: FontStyle.italic),
+                      ),
                       const Spacer(),
                       const Icon(
                         Icons.info_outline,
@@ -136,7 +139,9 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
                     children: [
                       Text(
                         '${widget.place.phoneNumber}',
-                        style: TextStyle(decoration: TextDecoration.underline),
+                        style: const TextStyle(
+                            decoration: TextDecoration.underline,
+                            fontStyle: FontStyle.italic),
                       ),
                       const Spacer(),
                       const Icon(
@@ -151,7 +156,7 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
                 ],
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 20,
             ),
             Row(
@@ -202,106 +207,106 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
                     thickness: 1,
                     color: Colors.grey,
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SizedBox(
-                                height: 30,
-                              ),
-                              AlertDialog(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                ),
-                                content: Container(
-                                  height: 85,
-                                  width: 850,
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      SizedBox(
-                                        height: 20,
-                                      ),
-                                      const Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            'Please log in first',
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 15),
-                                      GestureDetector(
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const LoginPage()),
-                                          );
-                                        },
-                                        child: const Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.end,
-                                          children: [
-                                            Icon(Icons.login),
-                                            SizedBox(width: 5),
-                                            Text(
-                                              'Login',
-                                              style: TextStyle(
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                    child: Row(
-                      children: [
-                        Icon(
-                          Icons.add_circle,
-                          color: Colors.yellow.shade600,
-                          size: 25,
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        const Text(
-                          'Invite buddy',
-                          style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                              decoration: TextDecoration.underline,
-                              decorationThickness: 0.5),
-                        )
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 24,
-                  ),
+                  // const SizedBox(
+                  //   height: 20,
+                  // ),
+                  // GestureDetector(
+                  //   onTap: () {
+                  //     showDialog(
+                  //       context: context,
+                  //       builder: (BuildContext context) {
+                  //         return Column(
+                  //           mainAxisAlignment: MainAxisAlignment.center,
+                  //           children: [
+                  //             SizedBox(
+                  //               height: 30,
+                  //             ),
+                  //             AlertDialog(
+                  //               shape: RoundedRectangleBorder(
+                  //                 borderRadius: BorderRadius.circular(10.0),
+                  //               ),
+                  //               content: Container(
+                  //                 height: 85,
+                  //                 width: 850,
+                  //                 child: Column(
+                  //                   mainAxisSize: MainAxisSize.min,
+                  //                   children: [
+                  //                     SizedBox(
+                  //                       height: 20,
+                  //                     ),
+                  //                     const Row(
+                  //                       mainAxisAlignment:
+                  //                           MainAxisAlignment.center,
+                  //                       children: [
+                  //                         Text(
+                  //                           'Please log in first',
+                  //                           style: TextStyle(
+                  //                             fontSize: 18,
+                  //                             fontWeight: FontWeight.w500,
+                  //                           ),
+                  //                         ),
+                  //                       ],
+                  //                     ),
+                  //                     const SizedBox(height: 15),
+                  //                     GestureDetector(
+                  //                       onTap: () {
+                  //                         Navigator.push(
+                  //                           context,
+                  //                           MaterialPageRoute(
+                  //                               builder: (context) =>
+                  //                                   const LoginPage()),
+                  //                         );
+                  //                       },
+                  //                       child: const Row(
+                  //                         mainAxisAlignment:
+                  //                             MainAxisAlignment.end,
+                  //                         children: [
+                  //                           Icon(Icons.login),
+                  //                           SizedBox(width: 5),
+                  //                           Text(
+                  //                             'Login',
+                  //                             style: TextStyle(
+                  //                               fontSize: 16,
+                  //                               fontWeight: FontWeight.w500,
+                  //                             ),
+                  //                           ),
+                  //                         ],
+                  //                       ),
+                  //                     ),
+                  //                   ],
+                  //                 ),
+                  //               ),
+                  //             ),
+                  //           ],
+                  //         );
+                  //       },
+                  //     );
+                  //   },
+                  //   child: Row(
+                  //     children: [
+                  //       Icon(
+                  //         Icons.add_circle,
+                  //         color: Colors.yellow.shade600,
+                  //         size: 25,
+                  //       ),
+                  //       const SizedBox(
+                  //         width: 5,
+                  //       ),
+                  //       const Text(
+                  //         'Invite buddy',
+                  //         style: TextStyle(
+                  //             fontSize: 13,
+                  //             fontWeight: FontWeight.bold,
+                  //             color: Colors.black,
+                  //             decoration: TextDecoration.underline,
+                  //             decorationThickness: 0.5),
+                  //       )
+                  //     ],
+                  //   ),
+                  // ),
+                  // const SizedBox(
+                  //   height: 24,
+                  // ),
                   const Divider(
                     thickness: 1,
                     color: Colors.grey,
@@ -322,34 +327,115 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
                   const SizedBox(
                     height: 200,
                   ),
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.only(left: 10),
                     child: Row(
                       children: [
-                        const Text('Reviews',
+                        Text('Reviews',
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold)),
-                        const Spacer(),
-                        Icon(
-                          Icons.add_circle,
-                          color: Colors.yellow.shade600,
-                          size: 25,
-                        ),
-                        const SizedBox(
-                          width: 5,
-                        ),
-                        const Text(
-                          'Add review',
-                          style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                              decoration: TextDecoration.underline,
-                              decorationThickness: 0.5),
-                        )
+                        // const Spacer(),
+                        // Icon(
+                        //   Icons.add_circle,
+                        //   color: Colors.yellow.shade600,
+                        //   size: 25,
+                        // ),
+                        // const SizedBox(
+                        //   width: 5,
+                        // ),
+                        // const Text(
+                        //   'Add review',
+                        //   style: TextStyle(
+                        //       fontSize: 13,
+                        //       fontWeight: FontWeight.bold,
+                        //       color: Colors.black,
+                        //       decoration: TextDecoration.underline,
+                        //       decorationThickness: 0.5),
+                        // )
                       ],
                     ),
                   ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Container(
+                      width: double.infinity,
+                      height: 65,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(5),
+                        border: const Border(
+                            left: BorderSide(color: Colors.grey, width: 0.6),
+                            bottom: BorderSide(color: Colors.grey, width: 0.6),
+                            right: BorderSide(color: Colors.grey, width: 0.2),
+                            top: BorderSide(color: Colors.grey, width: 0.2)),
+                      ),
+                      child: const Padding(
+                        padding: EdgeInsets.only(left: 10),
+                        child: Row(
+                          children: [
+                            Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Icon(
+                                  Icons.star,
+                                  color: Colors.yellow,
+                                  size: 50,
+                                ),
+                                Positioned(
+                                  top: 12,
+                                  child: Text(
+                                    '3',
+                                    style: TextStyle(
+                                      fontSize: 17,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Padding(
+                                  padding: EdgeInsets.only(top: 10, left: 10),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Maroun',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Love it !!',
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          color: Colors.grey,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Spacer(),
+                            Padding(
+                              padding: EdgeInsets.only(right: 10),
+                              child: Text('2024-05-22' , 
+                              style: TextStyle(
+                                color: Colors.grey,
+                              ),
+                              ),
+                            )
+                          ],
+                        ),
+                      )),
+
                   const SizedBox(
                     height: 200,
                   ),

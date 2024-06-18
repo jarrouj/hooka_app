@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hooka_app/allpages.dart';
 import 'package:hooka_app/main.dart';
 import 'package:hooka_app/map.dart';
@@ -135,15 +136,18 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
   }
 
   void _toggleFavorite(int placeId) {
-    setState(() {
-      if (favoriteIds.contains(placeId)) {
-        favoriteIds.remove(placeId);
-      } else {
-        favoriteIds.add(placeId);
-      }
-      mybox?.put('favoriteIds', favoriteIds);
-      _applyFilters();
-    });
+   
+
+      setState(() {
+        if (favoriteIds.contains(placeId)) {
+          favoriteIds.remove(placeId);
+        } else {
+          favoriteIds.add(placeId);
+        }
+        mybox?.put('favoriteIds', favoriteIds);
+        _applyFilters();
+      });
+    
   }
 
   void _sortPlacesByRating() {
@@ -198,12 +202,15 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
     setState(() {
       showFavoritesOnly = !showFavoritesOnly;
       _applyFilters();
+
     });
+
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Column(
         children: [
           Padding(
@@ -211,15 +218,15 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
             child: TextField(
               decoration: InputDecoration(
                 filled: true,
-                fillColor: Colors.grey.shade200,
+                fillColor: Colors.grey.shade100,
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(7),
                   borderSide: BorderSide(
                     color: Colors.grey.shade500,
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(5),
+                  borderRadius: BorderRadius.circular(7),
                   borderSide: BorderSide(
                     color: Colors.yellow.shade600,
                   ),
@@ -250,7 +257,7 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
                 const SizedBox(width: 10),
                 SizedBox(
                   width: 140,
-                  height: 40,
+                  height: 35,
                   child: DropdownButtonFormField<String>(
                     value: selectedCuisine,
                     onChanged: (String? newValue) {
@@ -260,28 +267,38 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
                     },
                     decoration: InputDecoration(
                       contentPadding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 10),
+                          vertical: 5,
+                          horizontal:
+                              10), // Adjusted padding to center vertically
                       border: OutlineInputBorder(
                         borderSide: BorderSide(
                           color: Colors.grey.shade500,
                         ),
+                        borderRadius: BorderRadius.circular(5),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.grey.shade500),
+                        borderRadius: BorderRadius.circular(5),
                       ),
                     ),
                     items: [
                       for (var cuisine in cuisines)
                         DropdownMenuItem<String>(
                           value: cuisine.name,
-                          child: Text(cuisine.name),
+                          child: Text(
+                            cuisine.name,
+                            style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black),
+                          ),
                         ),
                     ],
                   ),
                 ),
                 GestureDetector(
                   onTap: _resetFilters,
-                  child: Icon(Icons.cancel, color: Colors.yellow.shade600),
+                  child: Icon(Icons.close, color: Colors.yellow.shade600),
                 ),
                 const SizedBox(width: 10),
                 ElevatedButton(
@@ -296,42 +313,42 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
                     )),
-                    minimumSize: WidgetStateProperty.all(Size(80, 35)), 
-                    padding: WidgetStateProperty.all(
-                       const EdgeInsets.symmetric(horizontal: 10, vertical: 5)),
+                    minimumSize: WidgetStateProperty.all(Size(80, 35)),
+                    padding: WidgetStateProperty.all(const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 5)),
                   ),
                   onPressed: () {
                     // Add your onPressed functionality here
                   },
                   child: const Text(
-                    'Newest',
+                    'Nearest',
                     style: TextStyle(color: Colors.black),
                   ),
                 ),
                 const SizedBox(width: 10),
                 ElevatedButton(
                   style: ButtonStyle(
-                    // maximumSize:WidgetStateProperty.all(Size(120, 40)), 
-                    minimumSize: WidgetStateProperty.all(Size(80, 35)), 
-                      padding: WidgetStateProperty.all(
-                       const EdgeInsets.symmetric(horizontal: 10, vertical: 5)),
+                    minimumSize: WidgetStateProperty.all(Size(90, 35)),
+                    padding: WidgetStateProperty.all(const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 5)),
                     backgroundColor: WidgetStateProperty.all(Colors.white),
                     shape: WidgetStateProperty.all(RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5),
                       side: BorderSide(color: Colors.grey.shade500),
                     )),
                     textStyle: WidgetStateProperty.all(const TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 13)),
+                      color: Colors.black,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    )),
                   ),
                   onPressed: _showFavorites,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       if (showFavoritesOnly)
-                        const Icon(Icons.check, color: Colors.black, size: 15),
-                      const SizedBox(width: 5),
+                        const Icon(Icons.check, color: Colors.black, size: 10),
+                      if (showFavoritesOnly) const SizedBox(width: 5),
                       const Text(
                         'Favorites',
                         style: TextStyle(color: Colors.black),
@@ -342,25 +359,26 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
                 const SizedBox(width: 10),
                 ElevatedButton(
                   style: ButtonStyle(
-                        minimumSize: WidgetStateProperty.all(Size(80, 35)), 
-                      padding: WidgetStateProperty.all(
-                       const EdgeInsets.symmetric(horizontal: 10, vertical: 5)),
+                    minimumSize: WidgetStateProperty.all(Size(80, 35)),
+                    padding: WidgetStateProperty.all(const EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 5)),
                     backgroundColor: WidgetStateProperty.all(Colors.white),
                     shape: WidgetStateProperty.all(RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5),
                       side: BorderSide(color: Colors.grey.shade500),
                     )),
                     textStyle: WidgetStateProperty.all(const TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 13)),
+                      color: Colors.black,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 13,
+                    )),
                   ),
                   onPressed: _sortPlacesByRating,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       if (isRatingPressed)
-                        const Icon(Icons.check, color: Colors.black, size: 15),
+                        const Icon(Icons.check, color: Colors.black, size: 10),
                       const SizedBox(width: 5),
                       const Text(
                         'Rating',
@@ -387,147 +405,159 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
               ],
             ),
           ),
-          const SizedBox(height: 30),
+          const SizedBox(height: 15),
           Expanded(
-            child: isLoading
+            child: isLoading 
                 ? const Center(child: CircularProgressIndicator())
-                : ListView.builder(
-                    itemCount: filteredPlaces.length,
-                    itemBuilder: (context, index) {
-                      final place = filteredPlaces[index];
-                      return Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          color: Colors.white,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.3),
-                              spreadRadius: 5,
-                              blurRadius: 7,
-                              offset: const Offset(0, 3),
-                            ),
-                          ],
+                : filteredPlaces.isEmpty
+                    ? const Center(
+                        child: Text(
+                          'No data found',
+                          style: TextStyle(fontSize: 20),
                         ),
-                        margin: const EdgeInsets.all(10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        PlacesDetailPage(place: place),
-                                  ),
-                                );
-                              },
-                              child: ClipRRect(
-                                borderRadius: const BorderRadius.vertical(
-                                    top: Radius.circular(20)),
-                                child: Image.asset(
-                                  place.imageUrl,
-                                  height: 200,
-                                  width: double.infinity,
-                                  fit: BoxFit.cover,
+                      )
+                    : ListView.builder(
+                        itemCount: filteredPlaces.length,
+                        itemBuilder: (context, index) {
+                          final place = filteredPlaces[index];
+                          return Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.grey.withOpacity(0.1),
+                                  spreadRadius: 5,
+                                  blurRadius: 7,
+                                  offset: const Offset(0, 3),
                                 ),
-                              ),
+                              ],
                             ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 15, top: 15),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        place.title,
-                                        style: const TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold),
+                            margin: const EdgeInsets.all(10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            PlacesDetailPage(place: place),
                                       ),
-                                      const Spacer(),
-                                      Padding(
-                                        padding:
-                                            const EdgeInsets.only(right: 13),
-                                        child: Container(
-                                          width: 50,
-                                          height: 25,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(5),
-                                            color: place.rating > 4
-                                                ? Colors.green.shade700
-                                                : place.rating >= 3
-                                                    ? Colors.orange
-                                                    : Colors.red,
+                                    );
+                                  },
+                                  child: ClipRRect(
+                                    borderRadius: const BorderRadius.vertical(
+                                        top: Radius.circular(20)),
+                                    child: Image.asset(
+                                      place.imageUrl,
+                                      height: 200,
+                                      width: double.infinity,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 15, top: 15),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                            place.title,
+                                            style: const TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold),
                                           ),
-                                          child: Row(
-                                            children: [
-                                              const SizedBox(width: 5),
-                                              Text(
-                                                place.rating.toString(),
-                                                style: const TextStyle(
-                                                    fontSize: 16,
-                                                    color: Colors.white),
+                                          const Spacer(),
+                                          Padding(
+                                            padding:
+                                                const EdgeInsets.only(right: 13),
+                                            child: Container(
+                                              width: 50,
+                                              height: 25,
+                                              decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(5),
+                                                color: place.rating > 4
+                                                    ? Colors.green.shade700
+                                                    : place.rating >= 3
+                                                        ? Colors.orange
+                                                        : Colors.red,
                                               ),
-                                              const SizedBox(width: 5),
-                                              const Icon(Icons.star,
-                                                  color: Colors.white,
-                                                  size: 13),
-                                            ],
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                children: [
+                                                  const SizedBox(width: 5),
+                                                  Text(
+                                                    place.rating.toString(),
+                                                    style: const TextStyle(
+                                                        fontSize: 16,
+                                                        color: Colors.white),
+                                                  ),
+                                                  // const SizedBox(width: 5),
+                                                  const Icon(Icons.star,
+                                                      color: Colors.white,
+                                                      size: 10),
+                                                ],
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                      const SizedBox(height: 10),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            place.cuisine,
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.grey.shade800 , 
+                                                ),
                                           ),
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Row(
-                                    children: [
+                                          const Spacer(),
+                                          GestureDetector(
+                                            onTap: () => _toggleFavorite(place.id),
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.only(right: 22),
+                                              child: Icon(
+                                                favoriteIds.contains(place.id)
+                                                    ? Icons.favorite
+                                                    : Icons.favorite_outline,
+                                                color: Colors.yellow.shade700,
+                                                size: 27,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 3),
                                       Text(
-                                        place.cuisine,
-                                        style: TextStyle(
-                                            fontSize: 16,
-                                            color: Colors.grey.shade800),
+                                        place.location,
+                                        style: const TextStyle(
+                                            fontSize: 14, color: Colors.grey ,
+                                            fontStyle: FontStyle.italic
+                                            ),
                                       ),
-                                      const Spacer(),
-                                      GestureDetector(
-                                        onTap: () => _toggleFavorite(place.id),
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(right: 22),
-                                          child: Icon(
-                                            favoriteIds.contains(place.id)
-                                                ? Icons.favorite
-                                                : Icons.favorite_outline,
-                                            color: Colors.yellow.shade700,
-                                            size: 27,
-                                          ),
-                                        ),
-                                      ),
+                                      const SizedBox(height: 20),
                                     ],
                                   ),
-                                  const SizedBox(height: 3),
-                                  Text(
-                                    place.location,
-                                    style: const TextStyle(
-                                        fontSize: 14, color: Colors.grey),
-                                  ),
-                                  const SizedBox(height: 20),
-                                ],
-                              ),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
+                          );
+                        },
+                      ),
           ),
         ],
       ),
     );
   }
 }
+
 
 class PlacesStartPage extends StatefulWidget {
   const PlacesStartPage({super.key});
@@ -556,9 +586,11 @@ class _PlacesStartPageState extends State<PlacesStartPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        surfaceTintColor: Colors.white,
         backgroundColor: Colors.white,
-        title: const Center(child: Text('Places')),
+        title:  Center(child: Text('Places' , style: GoogleFonts.comfortaa(),)),
         actions: [
           GestureDetector(
               onTap: () {
@@ -569,7 +601,7 @@ class _PlacesStartPageState extends State<PlacesStartPage> {
                   ),
                 );
               },
-              child: Text('Map')),
+              child: Text('Map' , style: GoogleFonts.comfortaa(fontSize: 15))),
           SizedBox(
             width: 20,
           ),
