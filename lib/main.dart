@@ -6,6 +6,7 @@ import 'package:hooka_app/contactus.dart';
 import 'package:hooka_app/login.dart';
 import 'package:hooka_app/places.dart';
 import 'package:hooka_app/products.dart';
+import 'package:hooka_app/profile.dart';
 import 'package:hooka_app/splash.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
@@ -172,86 +173,97 @@ class _MenuScreenState extends State<MenuScreen> {
                 children: [
                   GestureDetector(
                     onTap: () {
-                     showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  Container(
-                      decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black26,
-                          blurRadius: 10.0,
-                          spreadRadius: 5.0,
-                          offset: Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: AlertDialog(
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10.0),
+          //            showDialog(
+          //   context: context,
+          //   builder: (BuildContext context) {
+          //     return Column(
+          //       mainAxisAlignment: MainAxisAlignment.center,
+          //       children: [
+          //         const SizedBox(
+          //           height: 30,
+          //         ),
+          //         Container(
+          //             decoration: BoxDecoration(
+          //             boxShadow: [
+          //               BoxShadow(
+          //                 color: Colors.black26,
+          //                 blurRadius: 10.0,
+          //                 spreadRadius: 5.0,
+          //                 offset: Offset(0, 3),
+          //               ),
+          //             ],
+          //           ),
+          //           child: AlertDialog(
+          //             shape: RoundedRectangleBorder(
+          //               borderRadius: BorderRadius.circular(10.0),
                         
-                      ),
-                      content: Container(
+          //             ),
+          //             content: Container(
                         
-                        height: 85,
-                        width: 850,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            const Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Please log in first',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 15),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const LoginPage()),
-                                );
-                              },
-                              child: const Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Icon(Icons.login),
-                                  SizedBox(width: 5),
-                                  Text(
-                                    'Login',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
+          //               height: 85,
+          //               width: 850,
+          //               child: Column(
+          //                 mainAxisSize: MainAxisSize.min,
+          //                 children: [
+          //                   const SizedBox(
+          //                     height: 20,
+          //                   ),
+          //                   const Row(
+          //                     mainAxisAlignment: MainAxisAlignment.center,
+          //                     children: [
+          //                       Text(
+          //                         'Please log in first',
+          //                         style: TextStyle(
+          //                           fontSize: 18,
+          //                           fontWeight: FontWeight.w500,
+          //                         ),
+          //                       ),
+          //                     ],
+          //                   ),
+          //                   const SizedBox(height: 15),
+          //                   GestureDetector(
+          //                     onTap: () {
+          //                       Navigator.push(
+          //                         context,
+          //                         MaterialPageRoute(
+          //                             builder: (context) => const LoginPage()),
+          //                       );
+          //                     },
+          //                     child: const Row(
+          //                       mainAxisAlignment: MainAxisAlignment.end,
+          //                       children: [
+          //                         Icon(Icons.login),
+          //                         SizedBox(width: 5),
+          //                         Text(
+          //                           'Login',
+          //                           style: TextStyle(
+          //                             fontSize: 16,
+          //                             fontWeight: FontWeight.w500,
+          //                           ),
+          //                         ),
+          //                       ],
+          //                     ),
+          //                   ),
+          //                 ],
+          //               ),
+          //             ),
+          //           ),
+          //         ),
+          //       ],
+          //     );
+          //   },
+          // );
+
+          
+            
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const ProfilePage(),
+                ),
               );
-            },
-          );
+            
+          
                     },
                     child: Container(
                       padding: const EdgeInsets.all(10.0),
@@ -452,7 +464,7 @@ class _ContentPageState extends State<ContentPage> {
           children: [
             ShaderMask(
               shaderCallback: (Rect bounds) {
-                return LinearGradient(
+                return const LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [Colors.white, Colors.transparent],
