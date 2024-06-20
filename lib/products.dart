@@ -180,7 +180,7 @@ class _DetailsState extends State<Details> with TickerProviderStateMixin {
   late List<AnimationController> _controllers;
   late List<Animation<double>> _widthAnimations;
   List<Product> products = [
-    Product(name: "Margarita Pizza", image: "assets/images/pizza.jpeg", price: 5.00),
+    Product(name: "Margerita Pizza", image: "assets/images/pizza.jpeg", price: 5.00),
   ];
   List<int> _counters = [];
 
@@ -201,7 +201,7 @@ class _DetailsState extends State<Details> with TickerProviderStateMixin {
     _counters = List.generate(products.length, (index) => 0);
     _controllers = List.generate(products.length, (index) =>
         AnimationController(
-          duration: const Duration(milliseconds: 300),
+          duration: const Duration(milliseconds: 100),
           vsync: this,
         ));
     _widthAnimations = _controllers.map((controller) =>

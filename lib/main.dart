@@ -15,7 +15,7 @@ import 'package:path_provider/path_provider.dart';
 Box? mybox;
 
 Future<Box> openHiveBox(String boxname) async {
-  if(!Hive.isBoxOpen(boxname)){
+  if (!Hive.isBoxOpen(boxname)) {
     Hive.init((await getApplicationDocumentsDirectory()).path);
   }
   return await Hive.openBox(boxname);
@@ -24,7 +24,7 @@ Future<Box> openHiveBox(String boxname) async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   mybox = await openHiveBox("Favorite");
-  
+
   runApp(MyApp());
 }
 
@@ -64,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 page = a;
                 selectedIndex = index;
               });
-              
+
               ZoomDrawer.of(context)!.close();
             },
             selectedIndex: selectedIndex,
@@ -104,7 +104,9 @@ class MenuScreen extends StatefulWidget {
   final Function(Widget, int) onPageChange;
   final int selectedIndex;
 
-  const MenuScreen({Key? key, required this.onPageChange, required this.selectedIndex}) : super(key: key);
+  const MenuScreen(
+      {Key? key, required this.onPageChange, required this.selectedIndex})
+      : super(key: key);
 
   @override
   _MenuScreenState createState() => _MenuScreenState();
@@ -151,9 +153,21 @@ class _MenuScreenState extends State<MenuScreen> {
     ),
   ];
 
+  String _firstName = 'Georges';
+  String _lastName = 'Jarrouj';
+
+  void _loadUserName() async {
+    var box = await Hive.openBox('userBox');
+    setState(() {
+      _firstName = box.get('firstName', defaultValue: 'Georges');
+      _lastName = box.get('lastName', defaultValue: 'Jarrouj');
+    });
+  }
+
   @override
   void initState() {
     super.initState();
+    _loadUserName();
     selectedIndex = widget.selectedIndex;
   }
 
@@ -167,121 +181,46 @@ class _MenuScreenState extends State<MenuScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              
               padding: const EdgeInsets.only(left: 6),
               child: Row(
                 children: [
                   GestureDetector(
                     onTap: () {
-          //            showDialog(
-          //   context: context,
-          //   builder: (BuildContext context) {
-          //     return Column(
-          //       mainAxisAlignment: MainAxisAlignment.center,
-          //       children: [
-          //         const SizedBox(
-          //           height: 30,
-          //         ),
-          //         Container(
-          //             decoration: BoxDecoration(
-          //             boxShadow: [
-          //               BoxShadow(
-          //                 color: Colors.black26,
-          //                 blurRadius: 10.0,
-          //                 spreadRadius: 5.0,
-          //                 offset: Offset(0, 3),
-          //               ),
-          //             ],
-          //           ),
-          //           child: AlertDialog(
-          //             shape: RoundedRectangleBorder(
-          //               borderRadius: BorderRadius.circular(10.0),
-                        
-          //             ),
-          //             content: Container(
-                        
-          //               height: 85,
-          //               width: 850,
-          //               child: Column(
-          //                 mainAxisSize: MainAxisSize.min,
-          //                 children: [
-          //                   const SizedBox(
-          //                     height: 20,
-          //                   ),
-          //                   const Row(
-          //                     mainAxisAlignment: MainAxisAlignment.center,
-          //                     children: [
-          //                       Text(
-          //                         'Please log in first',
-          //                         style: TextStyle(
-          //                           fontSize: 18,
-          //                           fontWeight: FontWeight.w500,
-          //                         ),
-          //                       ),
-          //                     ],
-          //                   ),
-          //                   const SizedBox(height: 15),
-          //                   GestureDetector(
-          //                     onTap: () {
-          //                       Navigator.push(
-          //                         context,
-          //                         MaterialPageRoute(
-          //                             builder: (context) => const LoginPage()),
-          //                       );
-          //                     },
-          //                     child: const Row(
-          //                       mainAxisAlignment: MainAxisAlignment.end,
-          //                       children: [
-          //                         Icon(Icons.login),
-          //                         SizedBox(width: 5),
-          //                         Text(
-          //                           'Login',
-          //                           style: TextStyle(
-          //                             fontSize: 16,
-          //                             fontWeight: FontWeight.w500,
-          //                           ),
-          //                         ),
-          //                       ],
-          //                     ),
-          //                   ),
-          //                 ],
-          //               ),
-          //             ),
-          //           ),
-          //         ),
-          //       ],
-          //     );
-          //   },
-          // );
-
-          
-            
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const ProfilePage(),
-                ),
-              );
-            
-          
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProfilePage(
+                            onProfileUpdate: _loadUserName,
+                          ),
+                        ),
+                      );
                     },
-                    child: Container(
-                      padding: const EdgeInsets.all(10.0),
-                      decoration: BoxDecoration(
-                        color: Colors.yellow.shade600,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.person,
-                        color: Colors.black,
-                      ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(10.0),
+                          decoration: BoxDecoration(
+                            color: Colors.yellow.shade600,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.person,
+                            color: Colors.black,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 10),
+                          child: Text(
+                            '$_firstName $_lastName',
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(width: 16.0),
-                  Text(
-                    '',
-                    style: TextStyle(color: Colors.yellow.shade600),
-                  ),
                 ],
               ),
             ),
@@ -322,7 +261,7 @@ class _MenuScreenState extends State<MenuScreen> {
                 context,
                 MaterialPageRoute(builder: (context) => const LoginPage()),
               ),
-              child:  ListTile(
+              child: ListTile(
                 leading: Icon(
                   Icons.logout,
                   color: Colors.yellow.shade600,
@@ -379,7 +318,6 @@ class _ContentPageState extends State<ContentPage> {
                         height: 30,
                       ),
                       AlertDialog(
-                        
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
@@ -410,7 +348,8 @@ class _ContentPageState extends State<ContentPage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => const LoginPage()),
+                                        builder: (context) =>
+                                            const LoginPage()),
                                   );
                                 },
                                 child: const Row(
@@ -493,7 +432,8 @@ class _ContentPageState extends State<ContentPage> {
                           GestureDetector(
                             onTap: () {
                               Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => const  PlacesStartPage()));
+                                  builder: (context) =>
+                                      const PlacesStartPage()));
                             },
                             child: Container(
                               width: screenWidth * 0.4,
@@ -545,7 +485,8 @@ class _ContentPageState extends State<ContentPage> {
                                       ),
                                       AlertDialog(
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(10.0),
+                                          borderRadius:
+                                              BorderRadius.circular(10.0),
                                         ),
                                         content: Container(
                                           height: 85,
@@ -557,13 +498,15 @@ class _ContentPageState extends State<ContentPage> {
                                                 height: 20,
                                               ),
                                               const Row(
-                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
                                                 children: [
                                                   Text(
                                                     'Please log in first',
                                                     style: TextStyle(
                                                       fontSize: 18,
-                                                      fontWeight: FontWeight.w500,
+                                                      fontWeight:
+                                                          FontWeight.w500,
                                                     ),
                                                   ),
                                                 ],
@@ -579,7 +522,8 @@ class _ContentPageState extends State<ContentPage> {
                                                   );
                                                 },
                                                 child: const Row(
-                                                  mainAxisAlignment: MainAxisAlignment.end,
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.end,
                                                   children: [
                                                     Icon(Icons.login),
                                                     SizedBox(width: 5),
@@ -587,7 +531,8 @@ class _ContentPageState extends State<ContentPage> {
                                                       'Login',
                                                       style: TextStyle(
                                                         fontSize: 16,
-                                                        fontWeight: FontWeight.w500,
+                                                        fontWeight:
+                                                            FontWeight.w500,
                                                       ),
                                                     ),
                                                   ],
@@ -673,7 +618,7 @@ class _ContentPageState extends State<ContentPage> {
                                   SvgPicture.asset(
                                     'assets/images/offers.svg',
                                     // width: screenWidth * 0.28,
-                                    height: screenHeight* 0.1,
+                                    height: screenHeight * 0.1,
                                   ),
                                   const SizedBox(height: 10),
                                   const Text(

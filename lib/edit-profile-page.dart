@@ -5,6 +5,7 @@ import 'package:hooka_app/education.dart';
 import 'package:hooka_app/experience.dart';
 import 'package:hooka_app/personal.dart';
 import 'package:hooka_app/tab-item.dart';
+import 'package:hive/hive.dart';
 
 class EditProfilePage extends StatefulWidget {
   final List<Map<String, dynamic>> basicInfo;
@@ -39,12 +40,44 @@ class _EditProfilePageState extends State<EditProfilePage> {
     addresses = List.from(widget.addresses);
   }
 
-  void _saveProfile() {
+  void _saveProfile() async {
+    var box = Hive.box('userBox');
+    for (var item in basicInfo) {
+      box.put(item['label'].toLowerCase().replaceAll(' ', ''), item['value']);
+    }
+
+    for (var i = 0; i < educations.length; i++) {
+      box.put('university$i', educations[i]['university']);
+      box.put('educationFrom$i', educations[i]['from']);
+      box.put('educationTo$i', educations[i]['to']);
+      box.put('degree$i', educations[i]['degree']);
+    }
+
+    for (var i = 0; i < experiences.length; i++) {
+      box.put('experienceTitle$i', experiences[i]['title']);
+      box.put('experiencePosition$i', experiences[i]['position']);
+      box.put('experienceFrom$i', experiences[i]['from']);
+      box.put('experienceTo$i', experiences[i]['to']);
+    }
+
+    for (var i = 0; i < addresses.length; i++) {
+      box.put('addressTitle$i', addresses[i]['title']);
+      box.put('addressCity$i', addresses[i]['city']);
+      box.put('addressStreet$i', addresses[i]['street']);
+      box.put('addressBuilding$i', addresses[i]['building']);
+    }
+
     Navigator.pop(context, {
       'basicInfo': basicInfo,
       'educations': educations,
       'experiences': experiences,
       'addresses': addresses,
+    });
+  }
+
+  void _updateBasicInfo(List<Map<String, dynamic>> updatedBasicInfo) {
+    setState(() {
+      basicInfo = updatedBasicInfo;
     });
   }
 
@@ -58,16 +91,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
           title: Center(
             child: Text('Edit Account', style: GoogleFonts.comfortaa(fontSize: 20)),
           ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.save),
-              onPressed: _saveProfile,
-            ),
-            const SizedBox(width: 20),
-          ],
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              _saveProfile();
+            },
           ),
         ),
         body: Stack(
@@ -134,7 +162,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 Expanded(
                   child: TabBarView(
                     children: [
-                      SingleChildScrollView(child: PersonalTab(data: basicInfo)),
+                      SingleChildScrollView(
+                        child: PersonalTab(
+                          data: basicInfo,
+                          onSave: _updateBasicInfo,
+                        ),
+                      ),
                       EducationTab(
                         items: educations,
                         onAdd: (item) {

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 class AddressTab extends StatefulWidget {
   final List<Map<String, dynamic>> items;
-  final Function(Map<String, String>) onAdd;
+  final Function(Map<String, dynamic>) onAdd;
   final Function(int) onRemove;
 
   const AddressTab({
@@ -17,6 +18,29 @@ class AddressTab extends StatefulWidget {
 }
 
 class _AddressTabState extends State<AddressTab> {
+  late List<Map<String, dynamic>> addresses;
+
+  @override
+  void initState() {
+    super.initState();
+    addresses = widget.items;
+  }
+
+void _addAddress(Map<String, dynamic> newAddress) async {
+  setState(() {
+    addresses.add(newAddress);
+  });
+  await widget.onAdd(newAddress);
+}
+
+void _removeAddress(int index) async {
+  setState(() {
+    addresses.removeAt(index);
+  });
+  await widget.onRemove(index);
+}
+
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -27,9 +51,9 @@ class _AddressTabState extends State<AddressTab> {
             children: [
               Expanded(
                 child: ListView.builder(
-                  itemCount: widget.items.length,
+                  itemCount: addresses.length,
                   itemBuilder: (context, index) {
-                    final item = widget.items[index];
+                    final item = addresses[index];
                     return Card(
                       child: Padding(
                         padding: const EdgeInsets.all(16.0),
@@ -51,7 +75,7 @@ class _AddressTabState extends State<AddressTab> {
                             SizedBox(height: 16),
                             ElevatedButton(
                               onPressed: () {
-                                widget.onRemove(index);
+                                _removeAddress(index);
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.black,
@@ -80,7 +104,7 @@ class _AddressTabState extends State<AddressTab> {
                 ),
               );
               if (result != null) {
-                widget.onAdd(result);
+                _addAddress(result);
               }
             },
             child: Icon(Icons.add),
