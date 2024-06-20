@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:hive/hive.dart';
 
 class AddressTab extends StatefulWidget {
   final List<Map<String, dynamic>> items;
@@ -23,23 +22,24 @@ class _AddressTabState extends State<AddressTab> {
   @override
   void initState() {
     super.initState();
-    addresses = widget.items;
+    addresses = List.from(widget.items); // Ensure a copy is made
   }
 
-void _addAddress(Map<String, dynamic> newAddress) async {
-  setState(() {
-    addresses.add(newAddress);
-  });
-  await widget.onAdd(newAddress);
-}
+  void _addAddress(Map<String, dynamic> newAddress) {
+    setState(() {
+      addresses.add(newAddress);
+    });
+    widget.onAdd(newAddress);
+  }
 
-void _removeAddress(int index) async {
-  setState(() {
-    addresses.removeAt(index);
-  });
-  await widget.onRemove(index);
-}
-
+  void _removeAddress(int index) {
+    if (index >= 0 && index < addresses.length) {
+      setState(() {
+        addresses.removeAt(index);
+      });
+      widget.onRemove(index);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

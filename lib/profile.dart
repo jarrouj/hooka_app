@@ -77,10 +77,10 @@ class _ProfilePageState extends State<ProfilePage> {
     for (int i = 0; ; i++) {
       if (box.containsKey('experienceTitle$i')) {
         experiences.add({
-          'title': box.get('experienceTitle$i', defaultValue: 'Professor'),
-          'position': box.get('experiencePosition$i', defaultValue: 'Zahle'),
-          'from': box.get('experienceFrom$i', defaultValue: '1972-01-01'),
-          'to': box.get('experienceTo$i', defaultValue: '2024-01-01'),
+          'title': box.get('experienceTitle$i'),
+          'position': box.get('experiencePosition$i'),
+          'from': box.get('experienceFrom$i'),
+          'to': box.get('experienceTo$i'),
         });
       } else {
         break;
@@ -89,12 +89,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
     addresses.clear();
     for (int i = 0; ; i++) {
-      if (box.containsKey('addressTitle$i')) {
+      if (box.containsKey('address1$i')) {
         addresses.add({
-          'title': box.get('addressTitle$i'),
-          'city': box.get('addressCity$i'),
-          'street': box.get('addressStreet$i'),
-          'building': box.get('addressBuilding$i'),
+          'title': box.get('address1$i'),
+          'city': box.get('address1$i'),
+          'street': box.get('address1$i'),
+          'building': box.get('address1$i'),
         });
       } else {
         break;
@@ -136,8 +136,8 @@ class _ProfilePageState extends State<ProfilePage> {
     if (result != null) {
       setState(() {
         basicInfo = result['basicInfo'];
-        educations = result['educations'];
-        experiences = result['experiences'];
+        // educations = result['educations'];
+        // experiences = result['experiences'];
         addresses = result['addresses'];
       });
 
@@ -161,14 +161,23 @@ class _ProfilePageState extends State<ProfilePage> {
       }
 
       for (var i = 0; i < addresses.length; i++) {
-        box.put('addressTitle$i', addresses[i]['title']);
-        box.put('addressCity$i', addresses[i]['city']);
-        box.put('addressStreet$i', addresses[i]['street']);
-        box.put('addressBuilding$i', addresses[i]['building']);
+        box.put('address1$i', addresses[i]['title']);
+        box.put('address1$i', addresses[i]['city']);
+        box.put('address1$i', addresses[i]['street']);
+        box.put('address1$i', addresses[i]['building']);
       }
 
       widget.onProfileUpdate();
     }
+  }
+
+  Future<void> _clearAllAddresses() async {
+    final addressBox = await Hive.openBox('addressBox');
+    await addressBox.clear();
+    setState(() {
+      addresses.clear();
+    });
+    widget.onProfileUpdate();
   }
 
   @override
@@ -203,6 +212,11 @@ class _ProfilePageState extends State<ProfilePage> {
               experiences: experiences,
               addresses: addresses,
             ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _clearAllAddresses,
+        child: Icon(Icons.clear),
+        backgroundColor: Colors.red,
+      ),
     );
   }
 }
@@ -253,6 +267,7 @@ class ProfileMainPage extends StatelessWidget {
           Padding(
             padding: EdgeInsets.only(left: 20, top: 10),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
@@ -292,7 +307,7 @@ class ProfileMainPage extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(
-                  height: 90,
+                  height: 20,
                 ),
                 const Row(
                   children: [
@@ -301,7 +316,8 @@ class ProfileMainPage extends StatelessWidget {
                       style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
-                        fontSize: 18),
+                        fontSize: 18,
+                      ),
                     ),
                   ],
                 ),
@@ -712,19 +728,6 @@ class ProfileMainPage extends StatelessWidget {
           ],
         ),
       );
-    }
-
-    // Make the last cell empty
-    if (rows.isNotEmpty) {
-      var lastRowCells = rows.last.children;
-      if (lastRowCells != null) {
-        for (var j = 0; j < lastRowCells.length; j++) {
-          if (lastRowCells[j] == Container()) {
-            lastRowCells[j] = Container();
-            break;
-          }
-        }
-      }
     }
 
     return rows;
