@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooka_app/allpages.dart';
@@ -14,11 +13,90 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   bool _showLoading = true;
+  late List<Map<String, dynamic>> basicInfo;
+  late List<Map<String, dynamic>> educations;
+  late List<Map<String, dynamic>> experiences;
+  late List<Map<String, dynamic>> addresses;
 
   @override
   void initState() {
     super.initState();
+    _initializeProfileData();
     _changeBodyContent();
+  }
+
+  void _initializeProfileData() {
+    basicInfo = [
+      {'label': 'First Name', 'value': 'Georges'},
+      {'label': 'Last Name', 'value': 'Jarrouj'},
+      {'label': 'Email', 'value': 'georgesjarrouj3@gmail.com'},
+      {'label': 'Mobile', 'value': '76974972'},
+      {'label': 'Date Of Birth', 'value': '2003-05-29'},
+      {'label': 'Gender', 'value': 'Male'},
+      {'label': 'Status', 'value': 'Married'},
+      {'label': 'Height', 'value': 'null'},
+      {'label': 'Weight', 'value': 'Can\'t say'},
+      {'label': 'Body Type', 'value': 'Super Skinny'},
+      {'label': 'Hair', 'value': 'No Hair'},
+      {'label': 'Eyes', 'value': 'Blue'},
+    ];
+
+    educations = [
+      {
+        'university': 'LAU',
+        'from': '1972-01-01',
+        'to': '2024-01-01',
+        'degree': 'Example Degree',
+      },
+      {
+        'university': 'LAU',
+        'from': '1972-01-01',
+        'to': '2024-01-01',
+        'degree': 'Example Degree',
+      },
+      {
+        'university': 'LAU',
+        'from': '1972-01-01',
+        'to': '2024-01-01',
+        'degree': 'Example Degree',
+      },
+    ];
+
+    experiences = [
+      {
+        'title': 'Professor',
+        'position': 'Zahle',
+        'from': '1972-01-01',
+        'to': '2024-01-01',
+      },
+      {
+        'title': 'Professor',
+        'position': 'Zahle',
+        'from': '1972-01-01',
+        'to': '2024-01-01',
+      },
+      {
+        'title': 'Professor',
+        'position': 'Zahle',
+        'from': '1972-01-01',
+        'to': '2024-01-01',
+      },
+    ];
+
+    addresses = [
+      {
+        'title': 'Home',
+        'city': 'Zahle',
+        'street': 'ff',
+        'building': 'bb',
+      },
+      {
+        'title': 'Office',
+        'city': 'Beirut',
+        'street': 'dd',
+        'building': 'cc',
+      },
+    ];
   }
 
   void _changeBodyContent() {
@@ -27,6 +105,28 @@ class _ProfilePageState extends State<ProfilePage> {
         _showLoading = false;
       });
     });
+  }
+
+  void _editProfile() async {
+    final result = await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => EditProfilePage(
+          basicInfo: basicInfo,
+          educations: educations,
+          experiences: experiences,
+          addresses: addresses,
+        ),
+      ),
+    );
+
+    if (result != null) {
+    setState(() {
+      if (result['basicInfo'] != null) basicInfo = result['basicInfo'];
+      if (result['educations'] != null) educations = result['educations'];
+      if (result['experiences'] != null) experiences = result['experiences'];
+      if (result['addresses'] != null) addresses = result['addresses'];
+    });
+  }
   }
 
   @override
@@ -40,11 +140,7 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         actions: [
           GestureDetector(
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(builder: (context) => const EditProfilePage())
-              );
-            },
+            onTap: _editProfile,
             child: Text(
               'Edit',
               style: GoogleFonts.comfortaa(),
@@ -57,13 +153,37 @@ class _ProfilePageState extends State<ProfilePage> {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: _showLoading ? const LoadingAllpages() : const ProfileMainPage(),
+      body: _showLoading
+          ? const LoadingAllpages()
+          : ProfileMainPage(
+              basicInfo: basicInfo,
+              educations: educations,
+              experiences: experiences,
+              addresses: addresses,
+            ),
     );
   }
 }
 
 class ProfileMainPage extends StatelessWidget {
-  const ProfileMainPage({super.key});
+  final List<Map<String, dynamic>> basicInfo;
+  final List<Map<String, dynamic>> educations;
+  final List<Map<String, dynamic>> experiences;
+  final List<Map<String, dynamic>> addresses;
+
+  const ProfileMainPage({
+    required this.basicInfo,
+    required this.educations,
+    required this.experiences,
+    required this.addresses,
+    super.key,
+  });
+
+  final List<Map<String, dynamic>> socialLinks = const [
+    {'icon': Icons.facebook, 'label': 'Facebook'},
+    {'icon': FontAwesomeIcons.instagram, 'label': 'Instagram'},
+    {'icon': Icons.tiktok, 'label': 'TikTok'},
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -74,10 +194,12 @@ class ProfileMainPage extends StatelessWidget {
             width: double.infinity,
             height: 300,
             decoration: BoxDecoration(
-                color: Colors.grey.shade300,
-                borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(40),
-                    bottomRight: Radius.circular(40))),
+              color: Colors.grey.shade300,
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(40),
+                bottomRight: Radius.circular(40),
+              ),
+            ),
             child: Image.asset(
               'assets/images/profile-img.png',
             ),
@@ -86,22 +208,29 @@ class ProfileMainPage extends StatelessWidget {
             padding: EdgeInsets.only(left: 20, top: 10),
             child: Column(
               children: [
-                const Row(
+                Row(
                   children: [
                     Text(
-                      'Georges Jarrouj',
+                      basicInfo.firstWhere((item) => item['label'] == 'First Name')['value'] +
+                          " " +
+                          basicInfo.firstWhere((item) => item['label'] == 'Last Name')['value'],
                       style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20),
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
                     ),
                   ],
                 ),
-                const Row(
-                  children: [Text('georgesjarrouj3@gmail.com')],
+                Row(
+                  children: [
+                    Text(basicInfo.firstWhere((item) => item['label'] == 'Email')['value']),
+                  ],
                 ),
-                const Row(
-                  children: [Text('233293439483')],
+                Row(
+                  children: [
+                    Text(basicInfo.firstWhere((item) => item['label'] == 'Mobile')['value']),
+                  ],
                 ),
                 const SizedBox(
                   height: 20,
@@ -111,9 +240,10 @@ class ProfileMainPage extends StatelessWidget {
                     Text(
                       'About',
                       style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18),
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                     ),
                   ],
                 ),
@@ -123,349 +253,22 @@ class ProfileMainPage extends StatelessWidget {
                 const Row(
                   children: [
                     Text(
-                      'Basic Informtion',
+                      'Basic Information',
                       style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18),
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                     ),
                   ],
                 ),
                 SizedBox(
                   height: 20,
                 ),
-                Row(
-                  children: [
-                    Table(
-                      border: TableBorder.all(color: Colors.grey.shade400),
-                      defaultColumnWidth: const IntrinsicColumnWidth(),
-                      children: const [
-                        TableRow(
-                          children: [
-                            TableCell(
-                              verticalAlignment:
-                                  TableCellVerticalAlignment.middle,
-                              child: Center(
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 15, vertical: 15),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      // SizedBox(height: 20,),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            'Date Of Birth',
-                                            style:
-                                                TextStyle(color: Colors.black),
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            '2003-05-29',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
-                                      ),
-                                      // SizedBox(height: 50),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            TableCell(
-                              verticalAlignment:
-                                  TableCellVerticalAlignment.middle,
-                              child: Center(
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 15, vertical: 15),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      // SizedBox(height: 20,),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            'Gender',
-                                            style:
-                                                TextStyle(color: Colors.black),
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            'Male',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            TableCell(
-                              verticalAlignment:
-                                  TableCellVerticalAlignment.middle,
-                              child: Center(
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 15, vertical: 15),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      // SizedBox(height: 20,),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            'Status',
-                                            style:
-                                                TextStyle(color: Colors.black),
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            'Married',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
-                                      ),
-                                      // SizedBox(height: 50),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        TableRow(
-                          children: [
-                            TableCell(
-                              verticalAlignment:
-                                  TableCellVerticalAlignment.middle,
-                              child: Center(
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 15, vertical: 15),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      // SizedBox(height: 20,),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            'Height',
-                                            style:
-                                                TextStyle(color: Colors.black),
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            'null',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
-                                      ),
-                                      // SizedBox(height: 50),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            TableCell(
-                              verticalAlignment:
-                                  TableCellVerticalAlignment.middle,
-                              child: Center(
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 15, vertical: 15),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      // SizedBox(height: 20,),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            'Weight',
-                                            style:
-                                                TextStyle(color: Colors.black),
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            'Can\'t say',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
-                                      ),
-                                      // SizedBox(height: 50),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            TableCell(
-                              verticalAlignment:
-                                  TableCellVerticalAlignment.middle,
-                              child: Center(
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 15, vertical: 15),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      // SizedBox(height: 20,),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            'Body Type',
-                                            style:
-                                                TextStyle(color: Colors.black),
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            'Super Skinny',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
-                                      ),
-                                      // SizedBox(height: 50),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        TableRow(
-                          children: [
-                            TableCell(
-                              verticalAlignment:
-                                  TableCellVerticalAlignment.middle,
-                              child: Center(
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 15, vertical: 15),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      // SizedBox(height: 20,),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            'Hair',
-                                            style:
-                                                TextStyle(color: Colors.black),
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            'No Hair',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
-                                      ),
-                                      // SizedBox(height: 50),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            TableCell(
-                              verticalAlignment:
-                                  TableCellVerticalAlignment.middle,
-                              child: Center(
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 15, vertical: 15),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      // SizedBox(height: 20,),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            'Eyes',
-                                            style:
-                                                TextStyle(color: Colors.black),
-                                          ),
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text(
-                                            'Blue',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
-                                      ),
-                                      // SizedBox(height: 50),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                            TableCell(
-                              verticalAlignment:
-                                  TableCellVerticalAlignment.middle,
-                              child: Center(
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 15, vertical: 15),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ],
+                Table(
+                  border: TableBorder.all(color: Colors.grey.shade400),
+                  defaultColumnWidth: const IntrinsicColumnWidth(),
+                  children: _buildTableRows(basicInfo),
                 ),
                 SizedBox(
                   height: 15,
@@ -474,57 +277,23 @@ class ProfileMainPage extends StatelessWidget {
                   children: [
                     Table(
                       defaultColumnWidth: const IntrinsicColumnWidth(),
-                      children: const [
+                      children: [
                         TableRow(
-                          children: [
-                            TableCell(
-                              verticalAlignment:
-                                  TableCellVerticalAlignment.middle,
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 45),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.facebook),
-                                  ],
-                                ),
-                              ),
-                            ),
-                            TableCell(
-                              verticalAlignment:
-                                  TableCellVerticalAlignment.middle,
-                              child: Center(
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 45),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      FaIcon(FontAwesomeIcons.instagram),
-                                    ],
+                          children: socialLinks
+                              .map(
+                                (link) => TableCell(
+                                  verticalAlignment: TableCellVerticalAlignment.middle,
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(horizontal: 45),
+                                    child: Column(
+                                      children: [
+                                        Icon(link['icon']),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                            ),
-                            TableCell(
-                              verticalAlignment:
-                                  TableCellVerticalAlignment.middle,
-                              child: Center(
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 45),
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Icon(Icons.tiktok),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                              )
+                              .toList(),
                         ),
                       ],
                     ),
@@ -538,9 +307,10 @@ class ProfileMainPage extends StatelessWidget {
                     Text(
                       'Interest',
                       style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18),
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                     ),
                   ],
                 ),
@@ -553,12 +323,13 @@ class ProfileMainPage extends StatelessWidget {
                       width: 130,
                       height: 25,
                       decoration: BoxDecoration(
-                          color: Colors.blue.shade200,
-                          borderRadius: BorderRadius.circular(20)),
+                        color: Colors.blue.shade200,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
                       child: const Center(
                         child: Text('No Interest yet...'),
                       ),
-                    )
+                    ),
                   ],
                 ),
                 SizedBox(
@@ -569,9 +340,10 @@ class ProfileMainPage extends StatelessWidget {
                     Text(
                       'Educations',
                       style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18),
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                     ),
                   ],
                 ),
@@ -579,91 +351,53 @@ class ProfileMainPage extends StatelessWidget {
                   height: 30,
                 ),
                 SizedBox(
-                    height: 150,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: [
-// Fist Table in List View
-                        Table(
+                  height: 150,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: educations.map((edu) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 20),
+                        child: Table(
                           border: TableBorder.all(color: Colors.grey.shade400),
                           defaultColumnWidth: const IntrinsicColumnWidth(),
-                          children: const [
+                          children: [
                             TableRow(
                               children: [
                                 TableCell(
-                                  verticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 15),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          // SizedBox(height: 20,),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'University',
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'LAU',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                          // SizedBox(height: 50),
-                                        ],
-                                      ),
+                                  verticalAlignment: TableCellVerticalAlignment.middle,
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 15,
+                                      vertical: 15,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('University'),
+                                        Text(
+                                          edu['university'],
+                                          style: TextStyle(fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
                                 TableCell(
-                                  verticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 15),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          // SizedBox(height: 20,),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'From',
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                '1972-01-01',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
+                                  verticalAlignment: TableCellVerticalAlignment.middle,
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 15,
+                                      vertical: 15,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('From'),
+                                        Text(
+                                          edu['from'],
+                                          style: TextStyle(fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -672,80 +406,40 @@ class ProfileMainPage extends StatelessWidget {
                             TableRow(
                               children: [
                                 TableCell(
-                                  verticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 15),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          // SizedBox(height: 20,),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'Degree',
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'Example Degree',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                          // SizedBox(height: 50),
-                                        ],
-                                      ),
+                                  verticalAlignment: TableCellVerticalAlignment.middle,
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 15,
+                                      vertical: 15,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('Degree'),
+                                        Text(
+                                          edu['degree'],
+                                          style: TextStyle(fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
                                 TableCell(
-                                  verticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 15),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          // SizedBox(height: 20,),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'To',
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                '2024-01-01',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                          // SizedBox(height: 50),
-                                        ],
-                                      ),
+                                  verticalAlignment: TableCellVerticalAlignment.middle,
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 15,
+                                      vertical: 15,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('To'),
+                                        Text(
+                                          edu['to'],
+                                          style: TextStyle(fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -753,360 +447,11 @@ class ProfileMainPage extends StatelessWidget {
                             ),
                           ],
                         ),
-
-                       const SizedBox(
-                          width: 60,
-                        ),
-
-//Second Table in list View
-
-                        Table(
-                          border: TableBorder.all(color: Colors.grey.shade400),
-                          defaultColumnWidth: const IntrinsicColumnWidth(),
-                          children: const [
-                            TableRow(
-                              children: [
-                                TableCell(
-                                  verticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 15),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          // SizedBox(height: 20,),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'University',
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'LAU',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                          // SizedBox(height: 50),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                TableCell(
-                                  verticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 15),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          // SizedBox(height: 20,),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'From',
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                '1972-01-01',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            TableRow(
-                              children: [
-                                TableCell(
-                                  verticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 15),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          // SizedBox(height: 20,),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'Degree',
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'Example Degree',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                          // SizedBox(height: 50),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                TableCell(
-                                  verticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 15),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          // SizedBox(height: 20,),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'To',
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                '2024-01-01',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                          // SizedBox(height: 50),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(
-                          width: 60,
-                        ),
-// Third table in list view
-                        Table(
-                          border: TableBorder.all(color: Colors.grey.shade400),
-                          defaultColumnWidth: const IntrinsicColumnWidth(),
-                          children: const [
-                            TableRow(
-                              children: [
-                                TableCell(
-                                  verticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 15),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          // SizedBox(height: 20,),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'University',
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'LAU',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                          // SizedBox(height: 50),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                TableCell(
-                                  verticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 15),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          // SizedBox(height: 20,),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'From',
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                '1972-01-01',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            TableRow(
-                              children: [
-                                TableCell(
-                                  verticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 15),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          // SizedBox(height: 20,),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'Degree',
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'Example Degree',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                          // SizedBox(height: 50),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                TableCell(
-                                  verticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 15),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          // SizedBox(height: 20,),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'To',
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                '2024-01-01',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                          // SizedBox(height: 50),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    )),
-
-                      SizedBox(
+                      );
+                    }).toList(),
+                  ),
+                ),
+                SizedBox(
                   height: 40,
                 ),
                 const Row(
@@ -1114,9 +459,10 @@ class ProfileMainPage extends StatelessWidget {
                     Text(
                       'Experiences',
                       style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18),
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                     ),
                   ],
                 ),
@@ -1124,91 +470,53 @@ class ProfileMainPage extends StatelessWidget {
                   height: 30,
                 ),
                 SizedBox(
-                    height: 150,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: [
-// Fist Table in List View
-                        Table(
+                  height: 150,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: experiences.map((exp) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 20),
+                        child: Table(
                           border: TableBorder.all(color: Colors.grey.shade400),
                           defaultColumnWidth: const IntrinsicColumnWidth(),
-                          children: const [
+                          children: [
                             TableRow(
                               children: [
                                 TableCell(
-                                  verticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 15),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          // SizedBox(height: 20,),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'Title',
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'Professor',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                          // SizedBox(height: 50),
-                                        ],
-                                      ),
+                                  verticalAlignment: TableCellVerticalAlignment.middle,
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 15,
+                                      vertical: 15,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('Title'),
+                                        Text(
+                                          exp['title'],
+                                          style: TextStyle(fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
                                 TableCell(
-                                  verticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 15),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          // SizedBox(height: 20,),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'From',
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                '1972-01-01',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
+                                  verticalAlignment: TableCellVerticalAlignment.middle,
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 15,
+                                      vertical: 15,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('From'),
+                                        Text(
+                                          exp['from'],
+                                          style: TextStyle(fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -1217,80 +525,40 @@ class ProfileMainPage extends StatelessWidget {
                             TableRow(
                               children: [
                                 TableCell(
-                                  verticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 15),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          // SizedBox(height: 20,),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'Position',
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'Zahle',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                          // SizedBox(height: 50),
-                                        ],
-                                      ),
+                                  verticalAlignment: TableCellVerticalAlignment.middle,
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 15,
+                                      vertical: 15,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('Position'),
+                                        Text(
+                                          exp['position'],
+                                          style: TextStyle(fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
                                 TableCell(
-                                  verticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 15),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          // SizedBox(height: 20,),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'To',
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                '2024-01-01',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                          // SizedBox(height: 50),
-                                        ],
-                                      ),
+                                  verticalAlignment: TableCellVerticalAlignment.middle,
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 15,
+                                      vertical: 15,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('To'),
+                                        Text(
+                                          exp['to'],
+                                          style: TextStyle(fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -1298,457 +566,71 @@ class ProfileMainPage extends StatelessWidget {
                             ),
                           ],
                         ),
-
-                       const SizedBox(
-                          width: 60,
-                        ),
-
-//Second Table in list View
-
-                         Table(
-                          border: TableBorder.all(color: Colors.grey.shade400),
-                          defaultColumnWidth: const IntrinsicColumnWidth(),
-                          children: const [
-                            TableRow(
-                              children: [
-                                TableCell(
-                                  verticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 15),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          // SizedBox(height: 20,),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'Title',
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'Professor',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                          // SizedBox(height: 50),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                TableCell(
-                                  verticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 15),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          // SizedBox(height: 20,),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'From',
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                '1972-01-01',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            TableRow(
-                              children: [
-                                TableCell(
-                                  verticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 15),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          // SizedBox(height: 20,),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'Position',
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'Zahle',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                          // SizedBox(height: 50),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                TableCell(
-                                  verticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 15),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          // SizedBox(height: 20,),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'To',
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                '2024-01-01',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                          // SizedBox(height: 50),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-
-                        const SizedBox(
-                          width: 60,
-                        ),
-// Third table in list view
-                         Table(
-                          border: TableBorder.all(color: Colors.grey.shade400),
-                          defaultColumnWidth: const IntrinsicColumnWidth(),
-                          children: const [
-                            TableRow(
-                              children: [
-                                TableCell(
-                                  verticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 15),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          // SizedBox(height: 20,),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'Title',
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'Professor',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                          // SizedBox(height: 50),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                TableCell(
-                                  verticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 15),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          // SizedBox(height: 20,),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'From',
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                '1972-01-01',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            TableRow(
-                              children: [
-                                TableCell(
-                                  verticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 15),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          // SizedBox(height: 20,),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'Position',
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'Zahle',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                          // SizedBox(height: 50),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                TableCell(
-                                  verticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 15),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          // SizedBox(height: 20,),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'To',
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                '2024-01-01',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                          // SizedBox(height: 50),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                ),
-
-                SizedBox(height: 30,),
-
-               const Row(children: [
-                  Text(
-                    'Addresses',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 20),
+                      );
+                    }).toList(),
                   ),
-                ],),
-
-       const SizedBox(height: 20,),
-                 SizedBox(
-                    height: 150,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: [
-// Fist Table in List View
-                         Table(
+                ),
+                SizedBox(height: 30),
+                const Row(
+                  children: [
+                    Text(
+                      'Addresses',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  height: 150,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: addresses.map((addr) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 20),
+                        child: Table(
                           border: TableBorder.all(color: Colors.grey.shade400),
                           defaultColumnWidth: const IntrinsicColumnWidth(),
-                          children: const [
+                          children: [
                             TableRow(
                               children: [
                                 TableCell(
-                                  verticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 15),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          // SizedBox(height: 20,),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'Title',
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'wdfefe',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                          // SizedBox(height: 50),
-                                        ],
-                                      ),
+                                  verticalAlignment: TableCellVerticalAlignment.middle,
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 15,
+                                      vertical: 15,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('Title'),
+                                        Text(
+                                          addr['title'],
+                                          style: TextStyle(fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
                                 TableCell(
-                                  verticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 15),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          // SizedBox(height: 20,),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'City',
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'Zahle',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                        ],
-                                      ),
+                                  verticalAlignment: TableCellVerticalAlignment.middle,
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 15,
+                                      vertical: 15,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('City'),
+                                        Text(
+                                          addr['city'],
+                                          style: TextStyle(fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -1757,80 +639,40 @@ class ProfileMainPage extends StatelessWidget {
                             TableRow(
                               children: [
                                 TableCell(
-                                  verticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 15),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          // SizedBox(height: 20,),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'Street',
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'ff',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                          // SizedBox(height: 50),
-                                        ],
-                                      ),
+                                  verticalAlignment: TableCellVerticalAlignment.middle,
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 15,
+                                      vertical: 15,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('Street'),
+                                        Text(
+                                          addr['street'],
+                                          style: TextStyle(fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
                                 TableCell(
-                                  verticalAlignment:
-                                      TableCellVerticalAlignment.middle,
-                                  child: Center(
-                                    child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                          horizontal: 15, vertical: 15),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.center,
-                                        children: [
-                                          // SizedBox(height: 20,),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'Building',
-                                                style: TextStyle(
-                                                    color: Colors.black),
-                                              ),
-                                            ],
-                                          ),
-                                          Row(
-                                            children: [
-                                              Text(
-                                                'bb',
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold),
-                                              ),
-                                            ],
-                                          ),
-                                          // SizedBox(height: 50),
-                                        ],
-                                      ),
+                                  verticalAlignment: TableCellVerticalAlignment.middle,
+                                  child: Padding(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 15,
+                                      vertical: 15,
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('Building'),
+                                        Text(
+                                          addr['building'],
+                                          style: TextStyle(fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
                                     ),
                                   ),
                                 ),
@@ -1838,46 +680,70 @@ class ProfileMainPage extends StatelessWidget {
                             ),
                           ],
                         ),
-
-                       const SizedBox(
-                          width: 60,
+                      );
+                    }).toList(),
+                  ),
+                ),
+                SizedBox(height: 40),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 130,
+                      height: 38,
+                      decoration: BoxDecoration(
+                        color: Colors.yellow.shade600,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Delete account',
+                          style: TextStyle(fontWeight: FontWeight.w500),
                         ),
-
-
-                     
-                      ],
-                    )),
-
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 40),
               ],
             ),
           ),
-          SizedBox(
-            height: 200,
-          ),
-
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                width: 130,
-                height: 38,
-                decoration: BoxDecoration(
-                  color: Colors.yellow.shade600,
-                  borderRadius: BorderRadius.circular(10)
-                ),
-                child: Center(
-                  child: Text(
-                    'Delete account',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w500
-                    ),
-                  ),
-                ),
-              )
-            ],
-          ),
-          SizedBox(height: 40,)
         ],
+      ),
+    );
+  }
+
+  List<TableRow> _buildTableRows(List<Map<String, dynamic>> items) {
+    List<TableRow> rows = [];
+    for (var i = 0; i < items.length; i += 3) {
+      rows.add(
+        TableRow(
+          children: [
+            _buildTableCell(items[i]),
+            if (i + 1 < items.length) _buildTableCell(items[i + 1]) else Container(),
+            if (i + 2 < items.length) _buildTableCell(items[i + 2]) else Container(),
+          ],
+        ),
+      );
+    }
+    return rows;
+  }
+
+  Widget _buildTableCell(Map<String, dynamic> item) {
+    return TableCell(
+      verticalAlignment: TableCellVerticalAlignment.middle,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(item['label']),
+            Text(
+              item['value'],
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
       ),
     );
   }
