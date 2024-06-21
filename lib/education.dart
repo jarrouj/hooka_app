@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 class EducationTab extends StatefulWidget {
   final List<Map<String, dynamic>> items;
-  final Function(Map<String, String>) onAdd;
+  final Function(Map<String, dynamic>) onAdd;
   final Function(int) onRemove;
 
   const EducationTab({
@@ -18,48 +19,193 @@ class EducationTab extends StatefulWidget {
 }
 
 class _EducationTabState extends State<EducationTab> {
+  late List<Map<String, dynamic>> educations;
+
+  @override
+  void initState() {
+    super.initState();
+    educations = List.from(widget.items); // Ensure a copy is made
+  }
+
+  void _addEducation(Map<String, dynamic> newEducation) async {
+    setState(() {
+      educations.add(newEducation);
+    });
+    var box = await Hive.openBox('userBox');
+    int index = educations.length - 1;
+    await box.put('university$index', newEducation['university']);
+    await box.put('degree$index', newEducation['degree']);
+    await box.put('educationFrom$index', newEducation['from']);
+    await box.put('educationTo$index', newEducation['to']);
+    widget.onAdd(newEducation);
+  }
+
+  void _removeEducation(int index) async {
+    if (index >= 0 && index < educations.length) {
+      setState(() {
+        educations.removeAt(index);
+      });
+      var box = await Hive.openBox('userBox');
+      await box.delete('university$index');
+      await box.delete('degree$index');
+      await box.delete('educationFrom$index');
+      await box.delete('educationTo$index');
+      widget.onRemove(index);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
             children: [
               Expanded(
                 child: ListView.builder(
-                  itemCount: widget.items.length,
+                  itemCount: educations.length,
                   itemBuilder: (context, index) {
-                    final item = widget.items[index];
-                    return Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(Icons.school, color: Colors.yellow, size: 40),
-                                SizedBox(width: 10),
-                                Text('Education', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                              ],
-                            ),
-                            SizedBox(height: 16),
-                            Text('University: ${item['university']}'),
-                            Text('Degree: ${item['degree']}'),
-                            Text('From: ${item['from']}'),
-                            Text('To: ${item['to']}'),
-                            SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: () {
-                                widget.onRemove(index);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.black,
+                    final item = educations[index];
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 30),
+                      child: Card(
+                        child: Container(
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                            color: Colors.black,
+                            width: 1,
+                          )),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                height: 70,
+                                width: double.infinity,
+                                color: Colors.yellow.shade600,
+                                child: const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.school,
+                                        color: Colors.black, size: 60),
+                                  ],
+                                ),
                               ),
-                              child: Text('Remove item', style: TextStyle(color: Colors.white)),
-                            ),
-                          ],
+                              const SizedBox(height: 16),
+                              Container(
+                                  width: double.infinity,
+                                  height: 25,
+                                  color: Colors.grey.shade300,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 0),
+                                    child: Center(
+                                      child: Text(
+                                        'University:            ${item['university']}',
+                                        style: TextStyle(fontSize: 17),
+                                      ),
+                                    ),
+                                  )),
+                              SizedBox(height: 16),
+                              Container(
+                                  width: double.infinity,
+                                  height: 25,
+                                  color: Colors.grey.shade300,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(left: 0),
+                                    child: Center(
+                                      child: Text(
+                                        'Degree:            ${item['degree']}',
+                                        style: const TextStyle(fontSize: 17),
+                                      ),
+                                    ),
+                                  )),
+                              SizedBox(height: 16),
+                              Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10),
+                                    child: Container(
+                                        width: 150,
+                                        height: 25,
+                                        color: Colors.grey.shade300,
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 10),
+                                          child: Center(
+                                            child: Text(
+                                              'From : ${item['from']}',
+                                              style: TextStyle(fontSize: 13),
+                                            ),
+                                          ),
+                                        )),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 10),
+                                    child: Container(
+                                        width: 150,
+                                        height: 25,
+                                        color: Colors.grey.shade300,
+                                        child: Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 0),
+                                          child: Center(
+                                            child: Text(
+                                              'To : ${item['to']}',
+                                              style: TextStyle(fontSize: 13),
+                                            ),
+                                          ),
+                                        )),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(height: 16),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    height: 40,
+                                    width: 140,
+                                    decoration: BoxDecoration(
+                                      color: Colors.black,
+                                      border: Border.all(),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        _removeEducation(index);
+                                      },
+                                      child: const Center(
+                                        child: Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.delete,
+                                                color: Colors.white,
+                                              ),
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                              Text('Remove item',
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.w600)),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                              const SizedBox(
+                                height: 30,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     );
@@ -70,10 +216,10 @@ class _EducationTabState extends State<EducationTab> {
           ),
         ),
         Positioned(
-          bottom: 16,
-          right: 16,
-          child: FloatingActionButton(
-            onPressed: () async {
+          bottom: 40,
+          right: 30,
+          child: GestureDetector(
+            onTap: () async {
               final result = await Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -81,11 +227,22 @@ class _EducationTabState extends State<EducationTab> {
                 ),
               );
               if (result != null) {
-                widget.onAdd(result);
+                _addEducation(result);
               }
             },
-            child: Icon(Icons.add),
-            backgroundColor: Colors.yellow,
+            child: Container(
+              height: 55,
+              width: 55,
+              decoration: BoxDecoration(
+                color: Colors.black,
+                border: Border.all(),
+                borderRadius: BorderRadius.circular(50),
+              ),
+              child: Icon(
+                Icons.add,
+                color: Colors.yellow,
+              ),
+            ),
           ),
         ),
       ],
@@ -105,45 +262,48 @@ class _AddEducationPageState extends State<AddEducationPage> {
   final TextEditingController _fromDateController = TextEditingController();
   final TextEditingController _toDateController = TextEditingController();
 
-  Future<void> _selectDate(BuildContext context, TextEditingController controller) async {
+  Future<void> _selectDate(
+      BuildContext context, TextEditingController controller) async {
     DateTime initialDate = DateTime.now();
     DateTime firstDate = DateTime(1900);
     DateTime lastDate = DateTime(2100);
 
-    DateTime pickedDate = initialDate;
-    await showModalBottomSheet<void>(
+    DateTime? pickedDate = await showModalBottomSheet<DateTime>(
       context: context,
       builder: (BuildContext context) {
-        return GestureDetector(
-          onTap: () {
-            Navigator.pop(context);
-          },
-          child: Container(
-            height: 250,
-            color: Colors.transparent,
-            child: Column(
-              children: [
-                Expanded(
-                  child: CupertinoDatePicker(
-                    mode: CupertinoDatePickerMode.date,
-                    initialDateTime: initialDate,
-                    minimumDate: firstDate,
-                    maximumDate: lastDate,
-                    onDateTimeChanged: (DateTime date) {
-                      pickedDate = date;
-                    },
-                  ),
+        DateTime selectedDate = initialDate;
+        return Container(
+          height: 250,
+          color: Colors.transparent,
+          child: Column(
+            children: [
+              Expanded(
+                child: CupertinoDatePicker(
+                  mode: CupertinoDatePickerMode.date,
+                  initialDateTime: initialDate,
+                  minimumDate: firstDate,
+                  maximumDate: lastDate,
+                  onDateTimeChanged: (DateTime date) {
+                    selectedDate = date;
+                  },
                 ),
-              ],
-            ),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context, selectedDate);
+                },
+                child: Text('Done'),
+              ),
+            ],
           ),
         );
       },
     );
 
-    if (pickedDate != initialDate) {
+    if (pickedDate != null && pickedDate != initialDate) {
       setState(() {
-        controller.text = "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
+        controller.text =
+            "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
       });
     }
   }

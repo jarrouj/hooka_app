@@ -211,7 +211,7 @@ class _MenuScreenState extends State<MenuScreen> {
                         Padding(
                           padding: const EdgeInsets.only(left: 10),
                           child: Text(
-                            '$_firstName $_lastName',
+                            '$_firstName',
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold),
@@ -433,7 +433,8 @@ class _ContentPageState extends State<ContentPage> {
                             onTap: () {
                               Navigator.of(context).push(MaterialPageRoute(
                                   builder: (context) =>
-                                      const PlacesStartPage()));
+                                      const PlacesStartPage())
+                                      );
                             },
                             child: Container(
                               width: screenWidth * 0.4,

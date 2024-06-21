@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooka_app/places.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PlacesDetailPage extends StatefulWidget {
   final Place place;
@@ -18,6 +19,18 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
     setState(() {
       isFavorite = !isFavorite;
     });
+  }
+
+  void _openPhoneDialer(String phoneNumber) async {
+    final Uri phoneUri = Uri(
+      scheme: 'tel',
+      path: phoneNumber,
+    );
+    if (await canLaunch(phoneUri.toString())) {
+      await launch(phoneUri.toString());
+    } else {
+      print('Could not launch $phoneUri');
+    }
   }
 
   @override
@@ -68,7 +81,6 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
                                 style: const TextStyle(
                                     fontSize: 16, color: Colors.white),
                               ),
-                              // const SizedBox(width: 5),
                               const Icon(Icons.star,
                                   color: Colors.white, size: 10),
                             ],
@@ -137,16 +149,22 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      Text(
-                        '${widget.place.phoneNumber}',
-                        style: const TextStyle(
-                            decoration: TextDecoration.underline,
-                            fontStyle: FontStyle.italic),
+                      GestureDetector(
+                        onTap: () => _openPhoneDialer(widget.place.phoneNumber),
+                        child: Text(
+                          '${widget.place.phoneNumber}',
+                          style: const TextStyle(
+                              decoration: TextDecoration.underline,
+                              fontStyle: FontStyle.italic),
+                        ),
                       ),
                       const Spacer(),
-                      const Icon(
-                        Icons.phone,
-                        size: 15,
+                      GestureDetector(
+                        onTap: () => _openPhoneDialer(widget.place.phoneNumber),
+                        child: const Icon(
+                          Icons.phone,
+                          size: 15,
+                        ),
                       ),
                       const SizedBox(
                         width: 5,
@@ -207,6 +225,7 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
                     thickness: 1,
                     color: Colors.grey,
                   ),
+                  // Uncomment and modify the following lines as needed
                   // const SizedBox(
                   //   height: 20,
                   // ),
@@ -334,24 +353,6 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
                         Text('Reviews',
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold)),
-                        // const Spacer(),
-                        // Icon(
-                        //   Icons.add_circle,
-                        //   color: Colors.yellow.shade600,
-                        //   size: 25,
-                        // ),
-                        // const SizedBox(
-                        //   width: 5,
-                        // ),
-                        // const Text(
-                        //   'Add review',
-                        //   style: TextStyle(
-                        //       fontSize: 13,
-                        //       fontWeight: FontWeight.bold,
-                        //       color: Colors.black,
-                        //       decoration: TextDecoration.underline,
-                        //       decorationThickness: 0.5),
-                        // )
                       ],
                     ),
                   ),
@@ -359,83 +360,84 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
                     height: 20,
                   ),
                   Container(
-                      width: double.infinity,
-                      height: 65,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(5),
-                        border: const Border(
-                            left: BorderSide(color: Colors.grey, width: 0.6),
-                            bottom: BorderSide(color: Colors.grey, width: 0.6),
-                            right: BorderSide(color: Colors.grey, width: 0.2),
-                            top: BorderSide(color: Colors.grey, width: 0.2)),
-                      ),
-                      child: const Padding(
-                        padding: EdgeInsets.only(left: 10),
-                        child: Row(
-                          children: [
-                            Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                Icon(
-                                  Icons.star,
-                                  color: Colors.yellow,
-                                  size: 50,
-                                ),
-                                Positioned(
-                                  top: 12,
-                                  child: Text(
-                                    '3',
-                                    style: TextStyle(
-                                      fontSize: 17,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                    ),
+                    width: double.infinity,
+                    height: 65,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(5),
+                      border: const Border(
+                          left: BorderSide(color: Colors.grey, width: 0.6),
+                          bottom: BorderSide(color: Colors.grey, width: 0.6),
+                          right: BorderSide(color: Colors.grey, width: 0.2),
+                          top: BorderSide(color: Colors.grey, width: 0.2)),
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.only(left: 10),
+                      child: Row(
+                        children: [
+                          Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              Icon(
+                                Icons.star,
+                                color: Colors.yellow,
+                                size: 50,
+                              ),
+                              Positioned(
+                                top: 12,
+                                child: Text(
+                                  '3',
+                                  style: TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
                                   ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Padding(
+                            padding: EdgeInsets.only(top: 10, left: 10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  'Maroun',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Love it !!',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
-                            Padding(
-                                  padding: EdgeInsets.only(top: 10, left: 10),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Maroun',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Love it !!',
-                                        style: TextStyle(
-                                          fontSize: 11,
-                                          color: Colors.grey,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Spacer(),
-                            Padding(
-                              padding: EdgeInsets.only(right: 10),
-                              child: Text('2024-05-22' , 
+                          ),
+                          Spacer(),
+                          Padding(
+                            padding: EdgeInsets.only(right: 10),
+                            child: Text(
+                              '2024-05-22',
                               style: TextStyle(
                                 color: Colors.grey,
                               ),
-                              ),
-                            )
-                          ],
-                        ),
-                      )),
-
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
                   const SizedBox(
                     height: 200,
                   ),

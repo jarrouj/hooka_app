@@ -14,20 +14,20 @@ class PersonalTab extends StatefulWidget {
 
 class _PersonalTabState extends State<PersonalTab> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController _dateController = TextEditingController();
-  TextEditingController _firstNameController = TextEditingController();
-  TextEditingController _lastNameController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _mobileController = TextEditingController();
-  TextEditingController _bioController = TextEditingController();
-  TextEditingController _weightController = TextEditingController();
-  TextEditingController _heightController = TextEditingController();
-  TextEditingController _interestController = TextEditingController();
-  TextEditingController _professionController = TextEditingController();
-  TextEditingController _hobbiesController = TextEditingController();
-  TextEditingController _facebookController = TextEditingController();
-  TextEditingController _instagramController = TextEditingController();
-  TextEditingController _tiktokController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _mobileController = TextEditingController();
+  final TextEditingController _bioController = TextEditingController();
+  final TextEditingController _weightController = TextEditingController();
+  final TextEditingController _heightController = TextEditingController();
+  final TextEditingController _interestController = TextEditingController();
+  final TextEditingController _professionController = TextEditingController();
+  final TextEditingController _hobbiesController = TextEditingController();
+  final TextEditingController _facebookController = TextEditingController();
+  final TextEditingController _instagramController = TextEditingController();
+  final TextEditingController _tiktokController = TextEditingController();
   String? _hairType;
   String? _eyeColor;
   String? _gender;
@@ -155,7 +155,7 @@ class _PersonalTabState extends State<PersonalTab> {
     );
   }
 
-  void _saveAndReturn() {
+  void _saveData() {
     if (_formKey.currentState!.validate()) {
       // Save data to Hive
       var box = Hive.box('userBox');
@@ -215,7 +215,9 @@ class _PersonalTabState extends State<PersonalTab> {
         return item;
       }).toList());
 
-      Navigator.pop(context, {'basicInfo': widget.data}); // Return to profile page with updated data
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Data saved successfully')),
+      );
     }
   }
 
@@ -469,7 +471,7 @@ class _PersonalTabState extends State<PersonalTab> {
             ),
             const SizedBox(height: 16),
             ElevatedButton(
-              onPressed: _saveAndReturn,
+              onPressed: _saveData,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.yellow,
               ),

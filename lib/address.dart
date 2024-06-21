@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive/hive.dart';
 
 class AddressTab extends StatefulWidget {
   final List<Map<String, dynamic>> items;
@@ -22,21 +23,32 @@ class _AddressTabState extends State<AddressTab> {
   @override
   void initState() {
     super.initState();
-    addresses = List.from(widget.items); // Ensure a copy is made
+    addresses = List.from(widget.items); 
   }
 
-  void _addAddress(Map<String, dynamic> newAddress) {
+  void _addAddress(Map<String, dynamic> newAddress) async {
     setState(() {
       addresses.add(newAddress);
     });
+    var box = await Hive.openBox('userBox');
+    int index = addresses.length - 1;
+    await box.put('addressTi$index', newAddress['title']);
+    await box.put('addressCi$index', newAddress['city']);
+    await box.put('addressSt$index', newAddress['street']);
+    await box.put('addressBu$index', newAddress['building']);
     widget.onAdd(newAddress);
   }
 
-  void _removeAddress(int index) {
+  void _removeAddress(int index) async {
     if (index >= 0 && index < addresses.length) {
       setState(() {
         addresses.removeAt(index);
       });
+      var box = await Hive.openBox('userBox');
+      await box.delete('addressTi$index');
+      await box.delete('addressCi$index');
+      await box.delete('addressSt$index');
+      await box.delete('addressBu$index');
       widget.onRemove(index);
     }
   }
@@ -54,35 +66,110 @@ class _AddressTabState extends State<AddressTab> {
                   itemCount: addresses.length,
                   itemBuilder: (context, index) {
                     final item = addresses[index];
-                    return Card(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Icon(Icons.home, color: Colors.yellow, size: 40),
-                                SizedBox(width: 10),
-                                Text('Address', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                              ],
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      child: Card(
+                        surfaceTintColor: Colors.white,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Colors.black,
+                              width: 1.0,
                             ),
-                            SizedBox(height: 16),
-                            Text('Title: ${item['title']}'),
-                            Text('City: ${item['city']}'),
-                            Text('Street: ${item['street']}'),
-                            Text('Building: ${item['building']}'),
-                            SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: () {
-                                _removeAddress(index);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.black,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Container(
+                                width: double.infinity,
+                                height: 60,
+                                color: Colors.yellow.shade600,
+                                child: const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.home, color: Colors.black, size: 40),
+                                    SizedBox(width: 10),
+                                  ],
+                                ),
                               ),
-                              child: Text('Remove item', style: TextStyle(color: Colors.white)),
-                            ),
-                          ],
+                              SizedBox(height: 16),
+                              Container(
+                                width: double.infinity,
+                                height: 25,
+                                color: Colors.grey.shade300,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 30),
+                                  child: Text('Title: ${item['title']}'),
+                                ),
+                              ),
+                              SizedBox(height: 16),
+                              Container(
+                                width: double.infinity,
+                                height: 25,
+                                color: Colors.grey.shade300,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 30),
+                                  child: Text('City: ${item['city']}'),
+                                ),
+                              ),
+                              SizedBox(height: 16),
+                              Container(
+                                width: double.infinity,
+                                height: 25,
+                                color: Colors.grey.shade300,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 30),
+                                  child: Text('Street: ${item['street']}'),
+                                ),
+                              ),
+                              SizedBox(height: 16),
+                              Container(
+                                width: double.infinity,
+                                height: 25,
+                                color: Colors.grey.shade300,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 30),
+                                  child: Text('Building: ${item['building']}'),
+                                ),
+                              ),
+                              const SizedBox(height: 30),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Container(
+                                    height: 40,
+                                    width: 140,
+                                    decoration: BoxDecoration(
+                                      color: Colors.black,
+                                      border: Border.all(),
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        _removeAddress(index);
+                                      },
+                                      child: const Center(
+                                        child: Padding(
+                                          padding: EdgeInsets.all(8.0),
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.delete, color: Colors.white),
+                                              SizedBox(width: 5),
+                                              Text('Remove item',
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight: FontWeight.w600)),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
+                              SizedBox(height: 20),
+                            ],
+                          ),
                         ),
                       ),
                     );
@@ -93,10 +180,10 @@ class _AddressTabState extends State<AddressTab> {
           ),
         ),
         Positioned(
-          bottom: 16,
-          right: 16,
-          child: FloatingActionButton(
-            onPressed: () async {
+          bottom: 40,
+          right: 30,
+          child: GestureDetector(
+            onTap: () async {
               final result = await Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -107,8 +194,19 @@ class _AddressTabState extends State<AddressTab> {
                 _addAddress(result);
               }
             },
-            child: Icon(Icons.add),
-            backgroundColor: Colors.yellow,
+            child: Container(
+              height: 55,
+              width: 55,
+              decoration: BoxDecoration(
+                color: Colors.black,
+                border: Border.all(),
+                borderRadius: BorderRadius.circular(50),
+              ),
+              child: Icon(
+                Icons.add,
+                color: Colors.yellow,
+              ),
+            ),
           ),
         ),
       ],

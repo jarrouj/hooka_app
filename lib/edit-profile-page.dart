@@ -102,7 +102,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           children: [
             Column(
               children: [
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Row(
@@ -171,7 +171,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       EducationTab(
                         items: educations,
                         onAdd: (item) {
-                          setState(() {
+                          setState(() { 
                             educations.add(item);
                           });
                         },

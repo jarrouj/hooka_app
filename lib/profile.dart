@@ -5,6 +5,7 @@ import 'package:hive/hive.dart';
 import 'package:hooka_app/allpages.dart';
 import 'package:hooka_app/edit-profile-page.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ProfilePage extends StatefulWidget {
   final VoidCallback onProfileUpdate;
@@ -45,22 +46,37 @@ class _ProfilePageState extends State<ProfilePage> {
     final box = Hive.box('userBox');
 
     basicInfo = [
-      {'label': 'Date Of Birth', 'value': box.get('dateOfBirth', defaultValue: '2003-05-29')},
+      {
+        'label': 'Date Of Birth',
+        'value': box.get('dateOfBirth', defaultValue: '2003-05-29')
+      },
       {'label': 'Gender', 'value': box.get('gender', defaultValue: 'Male')},
       {'label': 'Status', 'value': box.get('status', defaultValue: 'Married')},
       {'label': 'Height', 'value': box.get('height', defaultValue: 'null')},
-      {'label': 'Weight', 'value': box.get('weight', defaultValue: 'Can\'t say')},
-      {'label': 'Body Type', 'value': box.get('bodyType', defaultValue: 'Super Skinny')},
+      {
+        'label': 'Weight',
+        'value': box.get('weight', defaultValue: 'Can\'t say')
+      },
+      {
+        'label': 'Body Type',
+        'value': box.get('bodyType', defaultValue: 'Super Skinny')
+      },
       {'label': 'Hair', 'value': box.get('hair', defaultValue: 'No Hair')},
       {'label': 'Eyes', 'value': box.get('eyes', defaultValue: 'Blue')},
       {'label': 'First Name', 'value': _firstName},
       {'label': 'Last Name', 'value': _lastName},
       {'label': 'Email', 'value': _email},
       {'label': 'Mobile', 'value': _mobile},
+      {'label': 'Facebook Url', 'value': box.get('facebook', defaultValue: '')},
+      {
+        'label': 'Instagram Url',
+        'value': box.get('instagram', defaultValue: '')
+      },
+      {'label': 'Tiktok Url', 'value': box.get('tiktok', defaultValue: '')},
     ];
 
     educations.clear();
-    for (int i = 0; ; i++) {
+    for (int i = 0;; i++) {
       if (box.containsKey('university$i')) {
         educations.add({
           'university': box.get('university$i', defaultValue: 'LAU'),
@@ -74,7 +90,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
 
     experiences.clear();
-    for (int i = 0; ; i++) {
+    for (int i = 0;; i++) {
       if (box.containsKey('experienceTitle$i')) {
         experiences.add({
           'title': box.get('experienceTitle$i'),
@@ -88,13 +104,13 @@ class _ProfilePageState extends State<ProfilePage> {
     }
 
     addresses.clear();
-    for (int i = 0; ; i++) {
-      if (box.containsKey('address1$i')) {
+    for (int i = 0;; i++) {
+      if (box.containsKey('addressTi$i')) {
         addresses.add({
-          'title': box.get('address1$i'),
-          'city': box.get('address1$i'),
-          'street': box.get('address1$i'),
-          'building': box.get('address1$i'),
+          'title': box.get('addressTi$i'),
+          'city': box.get('addressCi$i'),
+          'street': box.get('addressSt$i'),
+          'building': box.get('addressBu$i'),
         });
       } else {
         break;
@@ -109,7 +125,7 @@ class _ProfilePageState extends State<ProfilePage> {
       _lastName = box.get('lastName', defaultValue: 'Jarrouj');
       _email = box.get('email', defaultValue: 'georgesjarrouj3@gmail.com');
       _mobile = box.get('mobile', defaultValue: '76974972');
-      _initializeProfileData();  
+      _initializeProfileData();
     });
   }
 
@@ -136,8 +152,8 @@ class _ProfilePageState extends State<ProfilePage> {
     if (result != null) {
       setState(() {
         basicInfo = result['basicInfo'];
-        // educations = result['educations'];
-        // experiences = result['experiences'];
+        educations = result['educations'];
+        experiences = result['experiences'];
         addresses = result['addresses'];
       });
 
@@ -161,10 +177,10 @@ class _ProfilePageState extends State<ProfilePage> {
       }
 
       for (var i = 0; i < addresses.length; i++) {
-        box.put('address1$i', addresses[i]['title']);
-        box.put('address1$i', addresses[i]['city']);
-        box.put('address1$i', addresses[i]['street']);
-        box.put('address1$i', addresses[i]['building']);
+        box.put('addressTi$i', addresses[i]['title']);
+        box.put('addressCi$i', addresses[i]['city']);
+        box.put('addressSt$i', addresses[i]['street']);
+        box.put('addressBu$i', addresses[i]['building']);
       }
 
       widget.onProfileUpdate();
@@ -192,7 +208,7 @@ class _ProfilePageState extends State<ProfilePage> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () async {
-            _initializeProfileData(); 
+            _initializeProfileData();
             Navigator.of(context).pop();
           },
         ),
@@ -212,11 +228,11 @@ class _ProfilePageState extends State<ProfilePage> {
               experiences: experiences,
               addresses: addresses,
             ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _clearAllAddresses,
-        child: Icon(Icons.clear),
-        backgroundColor: Colors.red,
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: _clearAllAddresses,
+      //   child: Icon(Icons.clear),
+      //   backgroundColor: Colors.red,
+      // ),
     );
   }
 }
@@ -235,14 +251,16 @@ class ProfileMainPage extends StatelessWidget {
     super.key,
   });
 
-  final List<Map<String, dynamic>> socialLinks = const [
-    {'icon': Icons.facebook, 'label': 'Facebook'},
-    {'icon': FontAwesomeIcons.instagram, 'label': 'Instagram'},
-    {'icon': Icons.tiktok, 'label': 'TikTok'},
-  ];
-
   String getValue(String label) {
     return basicInfo.firstWhere((item) => item['label'] == label)['value'];
+  }
+
+  void _launchUrl(String url) async {
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 
   @override
@@ -271,19 +289,27 @@ class ProfileMainPage extends StatelessWidget {
               children: [
                 Row(
                   children: [
-                    Text(
-                      '${getValue('First Name')} ${getValue('Last Name')}',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
+                    Flexible(
+                      child: Text(
+                        '${getValue('First Name')} ${getValue('Last Name')}',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                        ),
+                        overflow: TextOverflow.visible,
                       ),
                     ),
                   ],
                 ),
                 Row(
                   children: [
-                    Text(getValue('Email')),
+                    Text(
+                      getValue(
+                        'Email',
+                      ),
+                      overflow: TextOverflow.visible,
+                    ),
                   ],
                 ),
                 Row(
@@ -329,6 +355,56 @@ class ProfileMainPage extends StatelessWidget {
                   defaultColumnWidth: const IntrinsicColumnWidth(),
                   children: _buildTableRows(basicInfo),
                 ),
+                const SizedBox(height: 10),
+                Table(
+                  columnWidths: const {
+                    0: IntrinsicColumnWidth(),
+                    1: IntrinsicColumnWidth(),
+                    2: IntrinsicColumnWidth(),
+                  },
+                  children: [
+                    TableRow(
+                      children: [
+                        GestureDetector(
+                          onTap: () => _launchUrl(getValue('Facebook Url')),
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 45),
+                            child: Icon(
+                              FontAwesomeIcons.facebook,
+                              size: 20,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () => _launchUrl(getValue('Instagram Url')),
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 53),
+                            child: Icon(
+                              FontAwesomeIcons.instagram,
+                              size: 20,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        GestureDetector(
+                          onTap: () => _launchUrl(getValue('Tiktok Url')),
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 55),
+                            child: Icon(
+                              FontAwesomeIcons.tiktok,
+                              size: 20,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
                 if (educations.isNotEmpty) ...[
                   SizedBox(
                     height: 40,
@@ -362,38 +438,46 @@ class ProfileMainPage extends StatelessWidget {
                               TableRow(
                                 children: [
                                   TableCell(
-                                    verticalAlignment: TableCellVerticalAlignment.middle,
+                                    verticalAlignment:
+                                        TableCellVerticalAlignment.middle,
                                     child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 15,
-                                        vertical: 15,
-                                      ),
+                                      padding: EdgeInsets.only(
+                                          left: 20,
+                                          right: 60,
+                                          top: 15,
+                                          bottom: 15),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text('University'),
                                           Text(
                                             edu['university'],
-                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
                                           ),
                                         ],
                                       ),
                                     ),
                                   ),
                                   TableCell(
-                                    verticalAlignment: TableCellVerticalAlignment.middle,
+                                    verticalAlignment:
+                                        TableCellVerticalAlignment.middle,
                                     child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 15,
-                                        vertical: 15,
-                                      ),
+                                      padding: EdgeInsets.only(
+                                          left: 20,
+                                          right: 60,
+                                          top: 15,
+                                          bottom: 15),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text('From'),
                                           Text(
                                             edu['from'],
-                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
                                           ),
                                         ],
                                       ),
@@ -404,38 +488,46 @@ class ProfileMainPage extends StatelessWidget {
                               TableRow(
                                 children: [
                                   TableCell(
-                                    verticalAlignment: TableCellVerticalAlignment.middle,
+                                    verticalAlignment:
+                                        TableCellVerticalAlignment.middle,
                                     child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 15,
-                                        vertical: 15,
-                                      ),
+                                      padding: EdgeInsets.only(
+                                          left: 20,
+                                          right: 60,
+                                          top: 15,
+                                          bottom: 15),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text('Degree'),
                                           Text(
                                             edu['degree'],
-                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
                                           ),
                                         ],
                                       ),
                                     ),
                                   ),
                                   TableCell(
-                                    verticalAlignment: TableCellVerticalAlignment.middle,
+                                    verticalAlignment:
+                                        TableCellVerticalAlignment.middle,
                                     child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 15,
-                                        vertical: 15,
-                                      ),
+                                      padding: EdgeInsets.only(
+                                          left: 20,
+                                          right: 60,
+                                          top: 15,
+                                          bottom: 15),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text('To'),
                                           Text(
                                             edu['to'],
-                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
                                           ),
                                         ],
                                       ),
@@ -483,38 +575,46 @@ class ProfileMainPage extends StatelessWidget {
                               TableRow(
                                 children: [
                                   TableCell(
-                                    verticalAlignment: TableCellVerticalAlignment.middle,
+                                    verticalAlignment:
+                                        TableCellVerticalAlignment.middle,
                                     child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 15,
-                                        vertical: 15,
-                                      ),
+                                      padding: EdgeInsets.only(
+                                          left: 20,
+                                          right: 60,
+                                          top: 15,
+                                          bottom: 15),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text('Title'),
                                           Text(
                                             exp['title'],
-                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
                                           ),
                                         ],
                                       ),
                                     ),
                                   ),
                                   TableCell(
-                                    verticalAlignment: TableCellVerticalAlignment.middle,
+                                    verticalAlignment:
+                                        TableCellVerticalAlignment.middle,
                                     child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 15,
-                                        vertical: 15,
-                                      ),
+                                      padding: EdgeInsets.only(
+                                          left: 20,
+                                          right: 60,
+                                          top: 15,
+                                          bottom: 15),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text('From'),
                                           Text(
                                             exp['from'],
-                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
                                           ),
                                         ],
                                       ),
@@ -525,38 +625,46 @@ class ProfileMainPage extends StatelessWidget {
                               TableRow(
                                 children: [
                                   TableCell(
-                                    verticalAlignment: TableCellVerticalAlignment.middle,
+                                    verticalAlignment:
+                                        TableCellVerticalAlignment.middle,
                                     child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 15,
-                                        vertical: 15,
-                                      ),
+                                      padding: EdgeInsets.only(
+                                          left: 20,
+                                          right: 60,
+                                          top: 15,
+                                          bottom: 15),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text('Position'),
                                           Text(
                                             exp['position'],
-                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
                                           ),
                                         ],
                                       ),
                                     ),
                                   ),
                                   TableCell(
-                                    verticalAlignment: TableCellVerticalAlignment.middle,
+                                    verticalAlignment:
+                                        TableCellVerticalAlignment.middle,
                                     child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 15,
-                                        vertical: 15,
-                                      ),
+                                      padding: EdgeInsets.only(
+                                          left: 20,
+                                          right: 60,
+                                          top: 15,
+                                          bottom: 15),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text('To'),
                                           Text(
                                             exp['to'],
-                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
                                           ),
                                         ],
                                       ),
@@ -599,38 +707,46 @@ class ProfileMainPage extends StatelessWidget {
                               TableRow(
                                 children: [
                                   TableCell(
-                                    verticalAlignment: TableCellVerticalAlignment.middle,
+                                    verticalAlignment:
+                                        TableCellVerticalAlignment.middle,
                                     child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 15,
-                                        vertical: 15,
-                                      ),
+                                      padding: EdgeInsets.only(
+                                          left: 20,
+                                          right: 60,
+                                          top: 15,
+                                          bottom: 15),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text('Title'),
                                           Text(
                                             addr['title'],
-                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
                                           ),
                                         ],
                                       ),
                                     ),
                                   ),
                                   TableCell(
-                                    verticalAlignment: TableCellVerticalAlignment.middle,
+                                    verticalAlignment:
+                                        TableCellVerticalAlignment.middle,
                                     child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 15,
-                                        vertical: 15,
-                                      ),
+                                      padding: EdgeInsets.only(
+                                          left: 20,
+                                          right: 60,
+                                          top: 15,
+                                          bottom: 15),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text('City'),
                                           Text(
                                             addr['city'],
-                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
                                           ),
                                         ],
                                       ),
@@ -641,38 +757,46 @@ class ProfileMainPage extends StatelessWidget {
                               TableRow(
                                 children: [
                                   TableCell(
-                                    verticalAlignment: TableCellVerticalAlignment.middle,
+                                    verticalAlignment:
+                                        TableCellVerticalAlignment.middle,
                                     child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 15,
-                                        vertical: 15,
-                                      ),
+                                      padding: EdgeInsets.only(
+                                          left: 20,
+                                          right: 60,
+                                          top: 15,
+                                          bottom: 15),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text('Street'),
                                           Text(
                                             addr['street'],
-                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
                                           ),
                                         ],
                                       ),
                                     ),
                                   ),
                                   TableCell(
-                                    verticalAlignment: TableCellVerticalAlignment.middle,
+                                    verticalAlignment:
+                                        TableCellVerticalAlignment.middle,
                                     child: Padding(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 15,
-                                        vertical: 15,
-                                      ),
+                                      padding: EdgeInsets.only(
+                                          left: 20,
+                                          right: 60,
+                                          top: 15,
+                                          bottom: 15),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text('Building'),
                                           Text(
                                             addr['building'],
-                                            style: TextStyle(fontWeight: FontWeight.bold),
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
                                           ),
                                         ],
                                       ),
@@ -687,7 +811,7 @@ class ProfileMainPage extends StatelessWidget {
                     ),
                   ),
                 ],
-                SizedBox(height: 40),
+                SizedBox(height: 100),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -723,8 +847,14 @@ class ProfileMainPage extends StatelessWidget {
         TableRow(
           children: [
             if (i < items.length) _buildTableCell(items[i]) else Container(),
-            if (i + 1 < items.length) _buildTableCell(items[i + 1]) else Container(),
-            if (i + 2 < items.length) _buildTableCell(items[i + 2]) else Container(),
+            if (i + 1 < items.length)
+              _buildTableCell(items[i + 1])
+            else
+              Container(),
+            if (i + 2 < items.length)
+              _buildTableCell(items[i + 2])
+            else
+              Container(),
           ],
         ),
       );
@@ -737,21 +867,27 @@ class ProfileMainPage extends StatelessWidget {
     if (item['label'] == 'First Name' ||
         item['label'] == 'Last Name' ||
         item['label'] == 'Email' ||
-        item['label'] == 'Mobile') {
+        item['label'] == 'Mobile' ||
+        item['label'] == 'Facebook Url' ||
+        item['label'] == 'Instagram Url' ||
+        item['label'] == 'Tiktok Url') {
       return Container();
     }
 
     return TableCell(
       verticalAlignment: TableCellVerticalAlignment.middle,
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+        padding: EdgeInsets.symmetric(horizontal: 7, vertical: 17),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(item['label']),
+            Text(
+              item['label'],
+              style: TextStyle(fontSize: 11),
+            ),
             Text(
               item['value'],
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
           ],
         ),
