@@ -12,6 +12,12 @@ class ProductsPage extends StatefulWidget {
 
 class _ProductsPageState extends State<ProductsPage> {
   bool isLoading = true;
+  List<Product> products = [
+    Product(
+        name: "Margerita Pizza",
+        image: "assets/images/pizza.jpg",
+        price: 5.00),
+  ];
 
   @override
   void initState() {
@@ -20,6 +26,12 @@ class _ProductsPageState extends State<ProductsPage> {
       setState(() {
         isLoading = false;
       });
+    });
+  }
+
+  void _updateProducts(List<Product> updatedProducts) {
+    setState(() {
+      products = updatedProducts;
     });
   }
 
@@ -52,7 +64,10 @@ class _ProductsPageState extends State<ProductsPage> {
       ),
       body: Stack(
         children: [
-          ProductsContent(),
+          ProductsContent(
+            products: products,
+            updateProducts: _updateProducts,
+          ),
           if (isLoading) LoadingAllpages(),
         ],
       ),
@@ -61,27 +76,41 @@ class _ProductsPageState extends State<ProductsPage> {
 }
 
 class ProductsContent extends StatelessWidget {
+  final List<Product> products;
+  final Function(List<Product>) updateProducts;
+
+  const ProductsContent({
+    Key? key,
+    required this.products,
+    required this.updateProducts,
+  }) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0), // Add padding here
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           children: [
             SizedBox(height: 20),
             Row(
               children: [
                 GestureDetector(
-                  onTap: () {
-                    Navigator.push(
+                  onTap: () async {
+                    final result = await Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const ProductsDetails(),
+                        builder: (context) =>
+                            ProductsDetails(products: products),
                       ),
                     );
+                    if (result != null) {
+                      updateProducts(result);
+                    }
                   },
                   child: Container(
-                    width: MediaQuery.of(context).size.width - 32, // Adjust width for padding
+                    width: MediaQuery.of(context).size.width -
+                        32, // Adjust width for padding
                     height: MediaQuery.of(context).size.height * 0.15,
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -93,7 +122,8 @@ class ProductsContent extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.only(left: 50, right: 50),
                       child: Image.asset(
-                        'assets/images/pizza.jpeg',
+                        'assets/images/pizza.jpg',
+                        
                       ),
                     ),
                   ),
@@ -121,8 +151,24 @@ class ProductsContent extends StatelessWidget {
   }
 }
 
+class Product {
+  final String name;
+  final String image;
+  final double price;
+  int quantity;
+
+  Product({
+    required this.name,
+    required this.image,
+    required this.price,
+    this.quantity = 0,
+  });
+}
+
 class ProductsDetails extends StatelessWidget {
-  const ProductsDetails({super.key});
+  final List<Product> products;
+
+  const ProductsDetails({Key? key, required this.products}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -145,32 +191,19 @@ class ProductsDetails extends StatelessWidget {
             color: Colors.black,
           ),
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.of(context).pop(products);
           },
         ),
       ),
-      body: const Details(),
+      body: Details(products: products),
     );
   }
 }
 
-
-class Product {
-  final String name;
-  final String image;
-  final double price;
-  int quantity;
-
-  Product({
-    required this.name,
-    required this.image,
-    required this.price,
-    this.quantity = 0,
-  });
-}
-
 class Details extends StatefulWidget {
-  const Details({Key? key}) : super(key: key);
+  final List<Product> products;
+
+  const Details({Key? key, required this.products}) : super(key: key);
 
   @override
   _DetailsState createState() => _DetailsState();
@@ -179,27 +212,37 @@ class Details extends StatefulWidget {
 class _DetailsState extends State<Details> with TickerProviderStateMixin {
   late List<AnimationController> _controllers;
   late List<Animation<double>> _widthAnimations;
-  List<Product> products = [
-    Product(name: "Margerita Pizza", image: "assets/images/pizza.jpeg", price: 5.00),
-  ];
   List<int> _counters = [];
 
-  void _goToCart() {
+  void _goToCart() async {
     List<Product> cartItems = [];
-    for (int i = 0; i < products.length; i++) {
+    for (int i = 0; i < widget.products.length; i++) {
       if (_counters[i] > 0) {
-        products[i].quantity = _counters[i];
-        cartItems.add(products[i]);
+        widget.products[i].quantity = _counters[i];
+        cartItems.add(widget.products[i]);
       }
     }
-    Navigator.push(context, MaterialPageRoute(builder: (context) => CartPage(cartItems: cartItems)));
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => CartPage(cartItems: cartItems)),
+    );
+    if (result != null) {
+      setState(() {
+        for (int i = 0; i < widget.products.length; i++) {
+          _counters[i] = widget.products[i].quantity;
+          if (_counters[i] == 0 && _controllers[i].isCompleted) {
+            _controllers[i].reverse();
+          }
+        }
+      });
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    _counters = List.generate(products.length, (index) => 0);
-    _controllers = List.generate(products.length, (index) =>
+    _counters = List.generate(widget.products.length, (index) => widget.products[index].quantity);
+    _controllers = List.generate(widget.products.length, (index) =>
         AnimationController(
           duration: const Duration(milliseconds: 100),
           vsync: this,
@@ -208,6 +251,11 @@ class _DetailsState extends State<Details> with TickerProviderStateMixin {
         Tween<double>(begin: 40.0, end: 130.0).animate(controller)..addListener(() {
           setState(() {});
         })).toList();
+    for (int i = 0; i < widget.products.length; i++) {
+      if (_counters[i] > 0) {
+        _controllers[i].forward();
+      }
+    }
   }
 
   @override
@@ -256,9 +304,9 @@ class _DetailsState extends State<Details> with TickerProviderStateMixin {
                 crossAxisCount: 2,
                 childAspectRatio: 0.8,
               ),
-              itemCount: products.length,
+              itemCount: widget.products.length,
               itemBuilder: (context, index) {
-                final product = products[index];
+                final product = widget.products[index];
                 final animation = _widthAnimations[index];
                 return GestureDetector(
                   onTap: () => _toggle(index),
@@ -269,7 +317,12 @@ class _DetailsState extends State<Details> with TickerProviderStateMixin {
                         padding: const EdgeInsets.all(15.0),
                         child: Column(
                           children: [
-                            Image.asset(product.image),
+                            ClipRRect(
+                              borderRadius: BorderRadius.only(
+                                bottomRight: Radius.circular(20),
+                              ),
+                              child: Image.asset(product.image),
+                            ),
                             const SizedBox(height: 10),
                             Text('USD ${product.price.toStringAsFixed(2)}', textAlign: TextAlign.center, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15)),
                             Text(product.name, textAlign: TextAlign.center, style: GoogleFonts.comfortaa(color: Colors.black, fontSize: 15, fontWeight: FontWeight.w500)),

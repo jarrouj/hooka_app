@@ -79,10 +79,10 @@ class _ProfilePageState extends State<ProfilePage> {
     for (int i = 0;; i++) {
       if (box.containsKey('university$i')) {
         educations.add({
-          'university': box.get('university$i', defaultValue: 'LAU'),
-          'from': box.get('educationFrom$i', defaultValue: '1972-01-01'),
-          'to': box.get('educationTo$i', defaultValue: '2024-01-01'),
-          'degree': box.get('degree$i', defaultValue: 'Example Degree'),
+          'university': box.get('university$i'),
+          'from': box.get('educationFrom$i'),
+          'to': box.get('educationTo$i'),
+          'degree': box.get('degree$i'),
         });
       } else {
         break;
@@ -840,28 +840,27 @@ class ProfileMainPage extends StatelessWidget {
     );
   }
 
-  List<TableRow> _buildTableRows(List<Map<String, dynamic>> items) {
-    List<TableRow> rows = [];
-    for (var i = 0; i < items.length; i += 3) {
-      rows.add(
-        TableRow(
-          children: [
-            if (i < items.length) _buildTableCell(items[i]) else Container(),
-            if (i + 1 < items.length)
-              _buildTableCell(items[i + 1])
-            else
-              Container(),
-            if (i + 2 < items.length)
-              _buildTableCell(items[i + 2])
-            else
-              Container(),
-          ],
-        ),
-      );
-    }
+ List<TableRow> _buildTableRows(List<Map<String, dynamic>> items) {
+  List<TableRow> rows = [];
+  List<Map<String, dynamic>> nonEmptyItems = items.where((item) => item['value'] != null && item['value'].toString().isNotEmpty).toList();
 
-    return rows;
+  for (var i = 0; i < nonEmptyItems.length; i += 3) {
+    rows.add(
+      TableRow(
+        children: [
+          if (i < nonEmptyItems.length) _buildTableCell(nonEmptyItems[i]) else Container(),
+          if (i + 1 < nonEmptyItems.length) _buildTableCell(nonEmptyItems[i + 1]) else Container(),
+          if (i + 2 < nonEmptyItems.length) _buildTableCell(nonEmptyItems[i + 2]) else Container(),
+        ],
+      ),
+    );
   }
+
+  return rows;
+}
+
+
+
 
   Widget _buildTableCell(Map<String, dynamic> item) {
     if (item['label'] == 'First Name' ||

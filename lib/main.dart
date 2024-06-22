@@ -11,6 +11,9 @@ import 'package:hooka_app/splash.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
+import 'products.dart';
+import 'cart.dart';
+
 
 Box? mybox;
 
@@ -24,6 +27,8 @@ Future<Box> openHiveBox(String boxname) async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   mybox = await openHiveBox("Favorite");
+    await Hive.openBox('cartBox');
+
 
   runApp(MyApp());
 }
@@ -124,7 +129,7 @@ class _MenuScreenState extends State<MenuScreen> {
     ListItems(
       Icon(Icons.check, color: Colors.yellow.shade600),
       const Text('Checkout'),
-      const CheckoutPage(),
+      const CheckoutPageNoLogin(),
     ),
     ListItems(
       Icon(Icons.star_border_outlined, color: Colors.yellow.shade600),

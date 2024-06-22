@@ -73,8 +73,8 @@ class InvitationsPage extends StatelessWidget {
   }
 }
 
-class CheckoutPage extends StatelessWidget {
-  const CheckoutPage({super.key});
+class CheckoutPageNoLogin extends StatelessWidget {
+  const CheckoutPageNoLogin({super.key});
 
   @override
   Widget build(BuildContext context) {

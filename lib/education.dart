@@ -100,7 +100,7 @@ class _EducationTabState extends State<EducationTab> {
                                     padding: const EdgeInsets.only(left: 0),
                                     child: Center(
                                       child: Text(
-                                        'University:            ${item['university']}',
+                                        'University:      ${item['university']}',
                                         style: TextStyle(fontSize: 17),
                                       ),
                                     ),
@@ -114,7 +114,7 @@ class _EducationTabState extends State<EducationTab> {
                                     padding: const EdgeInsets.only(left: 0),
                                     child: Center(
                                       child: Text(
-                                        'Degree:            ${item['degree']}',
+                                        'Degree:           ${item['degree']}',
                                         style: const TextStyle(fontSize: 17),
                                       ),
                                     ),
