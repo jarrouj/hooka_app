@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:hooka_app/allpages.dart';
+import 'package:hooka_app/checkout.dart';
 import 'package:hooka_app/contactus.dart';
 import 'package:hooka_app/login.dart';
 import 'package:hooka_app/places.dart';
@@ -17,18 +18,23 @@ import 'cart.dart';
 
 Box? mybox;
 
-Future<Box> openHiveBox(String boxname) async {
-  if (!Hive.isBoxOpen(boxname)) {
+Future<Box> openHiveBox(String boxName) async {
+  if (!Hive.isBoxOpen(boxName)) {
     Hive.init((await getApplicationDocumentsDirectory()).path);
   }
-  return await Hive.openBox(boxname);
+  return await Hive.openBox(boxName);
 }
 
-void main() async {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  mybox = await openHiveBox("Favorite");
-    await Hive.openBox('cartBox');
 
+  final appDocumentDir = await getApplicationDocumentsDirectory();
+  Hive.init(appDocumentDir.path);
+  Hive.registerAdapter(ProductAdapter());
+  await Hive.openBox<Product>('productsBox');
+
+  await Hive.openBox<Product>('cartBox2');
+  mybox = await openHiveBox('Favorite');
 
   runApp(MyApp());
 }
@@ -129,7 +135,7 @@ class _MenuScreenState extends State<MenuScreen> {
     ListItems(
       Icon(Icons.check, color: Colors.yellow.shade600),
       const Text('Checkout'),
-      const CheckoutPageNoLogin(),
+       CheckoutPage(),
     ),
     ListItems(
       Icon(Icons.star_border_outlined, color: Colors.yellow.shade600),

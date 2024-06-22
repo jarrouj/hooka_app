@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive/hive.dart';
 import 'package:hooka_app/allpages.dart';
 import 'package:hooka_app/cart.dart';
 
@@ -17,6 +18,10 @@ class _ProductsPageState extends State<ProductsPage> {
         name: "Margerita Pizza",
         image: "assets/images/pizza.jpg",
         price: 5.00),
+    Product(
+        name: "Margerita Pizza 2",
+        image: "assets/images/pizza.jpeg",
+        price: 20.00),
   ];
 
   @override
@@ -109,8 +114,7 @@ class ProductsContent extends StatelessWidget {
                     }
                   },
                   child: Container(
-                    width: MediaQuery.of(context).size.width -
-                        32, // Adjust width for padding
+                    width: MediaQuery.of(context).size.width - 32, // Adjust width for padding
                     height: MediaQuery.of(context).size.height * 0.15,
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -123,7 +127,6 @@ class ProductsContent extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 50, right: 50),
                       child: Image.asset(
                         'assets/images/pizza.jpg',
-                        
                       ),
                     ),
                   ),
@@ -163,6 +166,29 @@ class Product {
     required this.price,
     this.quantity = 0,
   });
+}
+
+class ProductAdapter extends TypeAdapter<Product> {
+  @override
+  final typeId = 0;
+
+  @override
+  Product read(BinaryReader reader) {
+    return Product(
+      name: reader.readString(),
+      image: reader.readString(),
+      price: reader.readDouble(),
+      quantity: reader.readInt(),
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, Product obj) {
+    writer.writeString(obj.name);
+    writer.writeString(obj.image);
+    writer.writeDouble(obj.price);
+    writer.writeInt(obj.quantity);
+  }
 }
 
 class ProductsDetails extends StatelessWidget {
@@ -222,6 +248,13 @@ class _DetailsState extends State<Details> with TickerProviderStateMixin {
         cartItems.add(widget.products[i]);
       }
     }
+    // Save to Hive
+    var box = Hive.box<Product>('cartBox2');
+    await box.clear();
+    for (var item in cartItems) {
+      box.put(item.name, item);
+    }
+
     final result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => CartPage(cartItems: cartItems)),

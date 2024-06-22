@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hooka_app/checkout.dart';
+import 'package:hive/hive.dart';
 import 'package:hooka_app/products.dart';
 
 class CartPage extends StatefulWidget {
@@ -12,6 +14,21 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
+  late Box<Product> cartBox;
+
+  @override
+  void initState() {
+    super.initState();
+    cartBox = Hive.box<Product>('cartBox2');
+    _initializeCartItems();
+  }
+
+  void _initializeCartItems() {
+    for (var item in widget.cartItems) {
+      cartBox.put(item.name, item);
+    }
+  }
+
   double get totalAmount {
     return widget.cartItems.fold(0, (sum, item) => sum + (item.price * item.quantity));
   }
@@ -20,15 +37,18 @@ class _CartPageState extends State<CartPage> {
     setState(() {
       product.quantity = quantity;
       if (quantity == 0) {
-        widget.cartItems.remove(product);
+        _removeCartItem(product);
+      } else {
+        cartBox.put(product.name, product); // Update the item in Hive
       }
     });
   }
 
   void _removeCartItem(Product product) {
     setState(() {
-      product.quantity = 0; // Ensure the quantity is set to 0 before removing
+      product.quantity = 0;
       widget.cartItems.remove(product);
+      cartBox.delete(product.name); // Remove the item from Hive
     });
   }
 
@@ -116,7 +136,7 @@ class _CartPageState extends State<CartPage> {
                                         onPressed: () {
                                           setState(() {
                                             if (item.quantity > 1) {
-                                              item.quantity--;
+                                              _updateCartItemQuantity(item, item.quantity - 1);
                                             } else {
                                               _removeCartItem(item);
                                             }
@@ -151,7 +171,7 @@ class _CartPageState extends State<CartPage> {
                                         ),
                                         onPressed: () {
                                           setState(() {
-                                            item.quantity++;
+                                            _updateCartItemQuantity(item, item.quantity + 1);
                                           });
                                         },
                                       ),
@@ -184,16 +204,26 @@ class _CartPageState extends State<CartPage> {
                   ],
                 ),
                 const SizedBox(height: 25),
-                Container(
-                  width: double.infinity,
-                  height: 60,
-                  color: Colors.yellow.shade600,
-                  child: const Center(
-                    child: Text(
-                      'Proceed to checkout',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => CheckoutPage(),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    width: double.infinity,
+                    height: 60,
+                    color: Colors.yellow.shade600,
+                    child: const Center(
+                      child: Text(
+                        'Proceed to checkout',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
