@@ -135,7 +135,7 @@ class _MenuScreenState extends State<MenuScreen> {
     ListItems(
       Icon(Icons.check, color: Colors.yellow.shade600),
       const Text('Checkout'),
-       CheckoutPage(),
+       CheckoutDrawer(),
     ),
     ListItems(
       Icon(Icons.star_border_outlined, color: Colors.yellow.shade600),
@@ -299,6 +299,20 @@ class ContentPage extends StatefulWidget {
 }
 
 class _ContentPageState extends State<ContentPage> {
+
+  Future<void> _goToCart(BuildContext context) async {
+    final box = await Hive.openBox<Product>('cartBox2');
+    List<Product> cartItems = box.values.toList();
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CartPage(cartItems: cartItems),
+      ),
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -319,74 +333,76 @@ class _ContentPageState extends State<ContentPage> {
           IconButton(
             icon: const Icon(Icons.shopping_cart),
             onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const SizedBox(
-                        height: 30,
-                      ),
-                      AlertDialog(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                        ),
-                        content: Container(
-                          height: 75,
-                          width: 850,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const SizedBox(
-                                height: 15,
-                              ),
-                              const Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    'Please log in first',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 5),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            const LoginPage()),
-                                  );
-                                },
-                                child: const Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Icon(Icons.login),
-                                    SizedBox(width: 5),
-                                    Text(
-                                      'Login',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
+              // showDialog(
+              //   context: context,
+              //   builder: (BuildContext context) {
+              //     return Column(
+              //       mainAxisAlignment: MainAxisAlignment.center,
+              //       children: [
+              //         const SizedBox(
+              //           height: 30,
+              //         ),
+              //         AlertDialog(
+              //           shape: RoundedRectangleBorder(
+              //             borderRadius: BorderRadius.circular(10.0),
+              //           ),
+              //           content: Container(
+              //             height: 75,
+              //             width: 850,
+              //             child: Column(
+              //               mainAxisSize: MainAxisSize.min,
+              //               children: [
+              //                 const SizedBox(
+              //                   height: 15,
+              //                 ),
+              //                 const Row(
+              //                   mainAxisAlignment: MainAxisAlignment.center,
+              //                   children: [
+              //                     Text(
+              //                       'Please log in first',
+              //                       style: TextStyle(
+              //                         fontSize: 18,
+              //                         fontWeight: FontWeight.w500,
+              //                       ),
+              //                     ),
+              //                   ],
+              //                 ),
+              //                 const SizedBox(height: 5),
+              //                 GestureDetector(
+              //                   onTap: () {
+              //                     Navigator.push(
+              //                       context,
+              //                       MaterialPageRoute(
+              //                           builder: (context) =>
+              //                               const LoginPage()),
+              //                     );
+              //                   },
+              //                   child: const Row(
+              //                     mainAxisAlignment: MainAxisAlignment.end,
+              //                     children: [
+              //                       Icon(Icons.login),
+              //                       SizedBox(width: 5),
+              //                       Text(
+              //                         'Login',
+              //                         style: TextStyle(
+              //                           fontSize: 16,
+              //                           fontWeight: FontWeight.w500,
+              //                         ),
+              //                       ),
+              //                     ],
+              //                   ),
+              //                 ),
+              //               ],
+              //             ),
+              //           ),
+              //         ),
+              //       ],
+              //     );
+              //   },
+              // );
+
+             _goToCart(context);
+            }
           ),
           const SizedBox(width: 3),
         ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hooka_app/checkout.dart';
 import 'package:hooka_app/login.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
@@ -92,6 +93,28 @@ class CheckoutPageNoLogin extends StatelessWidget {
             onPressed: () => ZoomDrawer.of(context)!.toggle()),
       ),
       body: BodyAllPages(),
+    );
+  }
+}
+class CheckoutDrawer extends StatelessWidget {
+  const CheckoutDrawer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+          appBar: AppBar(
+        backgroundColor: Colors.white,
+        title:  Center(child: Text('Checkout' ,  style: GoogleFonts.comfortaa(fontSize: 20),)),
+        actions: const [
+          SizedBox(
+            width: 55,
+          ),
+        ],
+        leading: IconButton(
+            icon: Icon(Icons.menu),
+            onPressed: () => ZoomDrawer.of(context)!.toggle()),
+      ),
+      body: CheckoutBody(),
     );
   }
 }
