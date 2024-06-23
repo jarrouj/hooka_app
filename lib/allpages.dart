@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooka_app/checkout.dart';
+import 'package:hooka_app/complete-order.dart';
 import 'package:hooka_app/login.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
@@ -50,29 +51,29 @@ class LoadingAllpages extends StatelessWidget {
     );
   }
 }
-class InvitationsPage extends StatelessWidget {
-  const InvitationsPage({super.key});
+// class InvitationsPage extends StatelessWidget {
+//   const InvitationsPage({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-       appBar: AppBar(
-        backgroundColor: Colors.white,
-        title:  Center(child: Text('Invitations' ,
-         style: GoogleFonts.comfortaa(fontSize: 20), )),
-        actions: const [
-          SizedBox(
-            width: 55,
-          ),
-        ],
-        leading: IconButton(
-            icon: Icon(Icons.menu),
-            onPressed: () => ZoomDrawer.of(context)!.toggle()),
-      ),
-      body: BodyAllPages(),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//        appBar: AppBar(
+//         backgroundColor: Colors.white,
+//         title:  Center(child: Text('Invitations' ,
+//          style: GoogleFonts.comfortaa(fontSize: 20), )),
+//         actions: const [
+//           SizedBox(
+//             width: 55,
+//           ),
+//         ],
+//         leading: IconButton(
+//             icon: Icon(Icons.menu),
+//             onPressed: () => ZoomDrawer.of(context)!.toggle()),
+//       ),
+//       body: BodyAllPages(),
+//     );
+//   }
+// }
 
 class CheckoutPageNoLogin extends StatelessWidget {
   const CheckoutPageNoLogin({super.key});
@@ -121,53 +122,29 @@ class CheckoutDrawer extends StatelessWidget {
   }
 }
 
-class OrderPage extends StatelessWidget {
-  const OrderPage({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-       appBar: AppBar(
-        backgroundColor: Colors.white,
-        title:  Center(child: Text('My Order' ,  style: GoogleFonts.comfortaa(fontSize: 20),)),
-        actions: const [
-          SizedBox(
-            width: 55,
-          ),
-        ],
-        leading: IconButton(
-            icon: Icon(Icons.menu),
-            onPressed: () => ZoomDrawer.of(context)!.toggle()
-      ),
-       ),
-      body: BodyAllPages(),
-       );
-    
-  }
-}
+// class NotificationsPage extends StatelessWidget {
+//   const NotificationsPage ({super.key});
 
-class NotificationsPage extends StatelessWidget {
-  const NotificationsPage ({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-       appBar: AppBar(
-        backgroundColor: Colors.white,
-        title:  Center(child: Text('Notifications' ,  style: GoogleFonts.comfortaa(fontSize: 20),)),
-        actions: const [
-          SizedBox(
-            width: 55,
-          ),
-        ],
-        leading: IconButton(
-            icon: Icon(Icons.menu),
-            onPressed: () => ZoomDrawer.of(context)!.toggle()),
-      ),
-      body: BodyAllPages(),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//        appBar: AppBar(
+//         backgroundColor: Colors.white,
+//         title:  Center(child: Text('Notifications' ,  style: GoogleFonts.comfortaa(fontSize: 20),)),
+//         actions: const [
+//           SizedBox(
+//             width: 55,
+//           ),
+//         ],
+//         leading: IconButton(
+//             icon: Icon(Icons.menu),
+//             onPressed: () => ZoomDrawer.of(context)!.toggle()),
+//       ),
+//       body: BodyAllPages(),
+//     );
+//   }
+// }
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});

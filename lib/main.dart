@@ -3,8 +3,12 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:hooka_app/allpages.dart';
 import 'package:hooka_app/checkout.dart';
+import 'package:hooka_app/complete-order.dart';
 import 'package:hooka_app/contactus.dart';
+import 'package:hooka_app/invitation.dart';
 import 'package:hooka_app/login.dart';
+import 'package:hooka_app/notification.dart';
+import 'package:hooka_app/order-page-drawer.dart';
 import 'package:hooka_app/places.dart';
 import 'package:hooka_app/products.dart';
 import 'package:hooka_app/profile.dart';
@@ -140,7 +144,7 @@ class _MenuScreenState extends State<MenuScreen> {
     ListItems(
       Icon(Icons.star_border_outlined, color: Colors.yellow.shade600),
       const Text('My Orders'),
-      const OrderPage(),
+       OrderPageDrawer(),
     ),
     ListItems(
       Icon(Icons.calendar_month_outlined, color: Colors.yellow.shade600),

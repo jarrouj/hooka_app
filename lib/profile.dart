@@ -283,6 +283,7 @@ class ProfileMainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -894,7 +895,7 @@ class ProfileMainPage extends StatelessWidget {
     return TableCell(
       verticalAlignment: TableCellVerticalAlignment.middle,
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 7, vertical: 17),
+        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 17),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooka_app/login.dart';
@@ -31,7 +30,7 @@ class ContactMainScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title:  Text('ContactUs' ,  style: GoogleFonts.comfortaa(fontSize: 20),),
+        title: Text('ContactUs', style: GoogleFonts.comfortaa(fontSize: 20)),
         leading: IconButton(
           icon: const Icon(Icons.menu),
           onPressed: () {
@@ -232,13 +231,15 @@ class ContactUsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double baseFontSize = 17;
+    double smallFontSize = 12;
+    double largeFontSize = 18;
+
     return Scaffold(
         backgroundColor: Color.fromARGB(255, 249, 247, 247),
         body: SingleChildScrollView(
             child: Column(children: [
-          // SizedBox(
-          //   height: 20,
-          // ),
           Container(
             width: double.infinity,
             color: Colors.white,
@@ -251,12 +252,12 @@ class ContactUsPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Text(
+                  Text(
                     'We are committed to your experience',
                     style: TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
-                      fontSize: 18,
+                      fontSize: largeFontSize * (width / 400),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -264,7 +265,7 @@ class ContactUsPage extends StatelessWidget {
                     'Recognizing   the   value   of   memorable experiences, we are deeply committed to delivering consistent and reliable service across   our   business  to   guarantee the highest level of satisfaction. ',
                     style: TextStyle(
                       color: Colors.grey.shade600,
-                      fontSize: 17,
+                      fontSize: baseFontSize * (width / 400),
                     ),
                   ),
                   const SizedBox(height: 25),
@@ -272,7 +273,7 @@ class ContactUsPage extends StatelessWidget {
                     'Our talented team understands the needs and      expectations      of     hosts     and customers, and we take immense pride in the quality of the products we use.',
                     style: TextStyle(
                       color: Colors.grey.shade600,
-                      fontSize: 17,
+                      fontSize: baseFontSize * (width / 400),
                     ),
                   ),
                   const SizedBox(height: 25),
@@ -280,7 +281,7 @@ class ContactUsPage extends StatelessWidget {
                     'Whether you are interested in becoming\na host\nor learning more about the experience, we\'d love to hear from you.',
                     style: TextStyle(
                       color: Colors.grey.shade600,
-                      fontSize: 17,
+                      fontSize: baseFontSize * (width / 400),
                     ),
                   ),
                   const SizedBox(height: 25),
@@ -288,13 +289,13 @@ class ContactUsPage extends StatelessWidget {
                     'Please         send        an        email        to info@hookatimes.com\nfor further information about our brand.',
                     style: TextStyle(
                       color: Colors.grey.shade600,
-                      fontSize: 17,
+                      fontSize: baseFontSize * (width / 400),
                     ),
                   ),
                   SizedBox(
                     height: 50,
                   ),
-                  TextField(
+                     TextField(
                     decoration: InputDecoration(
                       labelText: 'Name',
                       labelStyle: TextStyle(color: Colors.black, fontSize: 12),

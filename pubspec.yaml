@@ -51,6 +51,8 @@ dependencies:
   url_launcher_windows: ^3.1.1
   dotted_line: ^3.2.2
   dotted_line_flutter: ^0.1.6
+  intrinsic_size_overflow_box: ^0.1.1
+  intl: ^0.19.0
 
 dev_dependencies:
   flutter_test:
