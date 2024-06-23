@@ -1,6 +1,9 @@
+import 'package:dotted_line_flutter/dotted_line_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
+import 'package:hooka_app/allpages.dart';
+import 'package:hooka_app/complete-order.dart';
 import 'package:hooka_app/products.dart';
 
 class CheckoutPage extends StatelessWidget {
@@ -12,7 +15,7 @@ class CheckoutPage extends StatelessWidget {
         title: Center(
           child: Text(
             'Checkout',
-            style: GoogleFonts.comfortaa(fontSize: 20),
+            style: TextStyle(fontSize: 20),
           ),
         ),
         leading: IconButton(
@@ -25,7 +28,7 @@ class CheckoutPage extends StatelessWidget {
           },
         ),
       ),
-      body: CheckoutBody(),
+      body: const CheckoutBody(),
       bottomNavigationBar: GestureDetector(
         onTap: () {
           // Handle proceed to payment
@@ -63,7 +66,8 @@ class _CheckoutBodyState extends State<CheckoutBody> {
 
   double getTotalAmount(Box<Product> cartBox) {
     if (cartBox.isEmpty) return 0;
-    return cartBox.values.fold(0, (sum, item) => sum + (item.price * item.quantity));
+    return cartBox.values
+        .fold(0, (sum, item) => sum + (item.price * item.quantity));
   }
 
   @override
@@ -79,7 +83,7 @@ class _CheckoutBodyState extends State<CheckoutBody> {
           } else {
             var cartBox = snapshot.data;
             if (cartBox!.isEmpty) {
-              return Center(
+              return const Center(
                 child: Text('No items in the cart.'),
               );
             } else {
@@ -89,7 +93,7 @@ class _CheckoutBodyState extends State<CheckoutBody> {
                 children: [
                   Text(
                     'Your Basket',
-                    style: GoogleFonts.comfortaa(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 10),
                   ...cartBox.values.map((product) {
@@ -100,73 +104,143 @@ class _CheckoutBodyState extends State<CheckoutBody> {
                         children: [
                           Text(
                             '${product.name} x ${product.quantity}',
-                            style: GoogleFonts.comfortaa(fontSize: 16),
+                            style: TextStyle(fontSize: 16),
                           ),
                           Text(
                             '${(product.price * product.quantity).toStringAsFixed(2)} \$',
-                            style: GoogleFonts.comfortaa(fontSize: 16),
+                            style: TextStyle(fontSize: 16),
                           ),
                         ],
                       ),
                     );
                   }).toList(),
-                  Divider(thickness: 2, height: 40),
-                  Text(
+                  // Divider(thickness: 2, height: 40),
+                  const SizedBox(
+                    height: 40,
+                  ),
+                  const Text(
                     'Order Summary',
-                    style: GoogleFonts.comfortaa(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 30),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Order amount', style: GoogleFonts.comfortaa(fontSize: 16)),
-                      Text('${totalAmount.toStringAsFixed(2)} \$', style: GoogleFonts.comfortaa(fontSize: 16)),
+                      Text('Order amount', style: TextStyle(fontSize: 16)),
+                      Text('${totalAmount.toStringAsFixed(2)} \$',
+                          style: TextStyle(fontSize: 16)),
                     ],
                   ),
-                  SizedBox(height: 10),
-                  Row(
+                  SizedBox(height: 30),
+                  const Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Delivery fees', style: GoogleFonts.comfortaa(fontSize: 16)),
-                      Text('0.00 \$', style: GoogleFonts.comfortaa(fontSize: 16)),
+                      Text('Delivery fees', style: TextStyle(fontSize: 16)),
+                      Text('0.00 \$', style: TextStyle(fontSize: 16)),
                     ],
                   ),
-                  Divider(thickness: 2, height: 40),
+                  SizedBox(
+                    height: 50,
+                  ),
+                  Divider(
+                    thickness: 0.5,
+                    height: 40,
+                    color: Colors.black,
+                  ),
+                  SizedBox(
+                    height: 40,
+                  ),
                   Text(
                     'Payment Method',
-                    style: GoogleFonts.comfortaa(fontSize: 20, fontWeight: FontWeight.bold),
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 30),
                   Row(
                     children: [
                       Checkbox(
                         value: true,
                         onChanged: (value) {},
                       ),
-                      Text('Cash On Delivery', style: GoogleFonts.comfortaa(fontSize: 16)),
+                      Text('Cash On Delivery', style: TextStyle(fontSize: 16)),
                     ],
                   ),
-                  Divider(thickness: 2, height: 40),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  CustomPaint(
+                    size: Size(200, 1),
+                    painter: DottedLinePainter(
+                      dashWidth: 4,
+                      dashGap: 10,
+                      color: Colors.grey.shade600,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 60,
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
                         'Total amount',
-                        style: GoogleFonts.comfortaa(fontSize: 20, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                       Text(
                         '${totalAmount.toStringAsFixed(2)} \$',
-                        style: GoogleFonts.comfortaa(fontSize: 20, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
                       ),
                     ],
+                  ),
+                  SizedBox(
+                    height: 40,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: (){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => const CompleteOrder()),
+                          );
+                        },
+                        child: Container(
+                          width: 220,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            color: Colors.yellow.shade600,
+                            borderRadius: BorderRadius.circular(10),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.5),
+                                spreadRadius: 1,
+                                blurRadius: 5,
+                                offset: Offset(0, 3),
+                              ),
+                            ],
+                          ),
+                          child: const Center(
+                            child: Text(
+                              'Complete Order',
+                              style: TextStyle(fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  SizedBox(
+                    height: 30,
                   ),
                 ],
               );
             }
           }
         } else {
-          return Center(
-            child: CircularProgressIndicator(),
+          return const Center(
+            child: LoadingAllpages(),
           );
         }
       },

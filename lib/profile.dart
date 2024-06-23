@@ -30,9 +30,11 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
+
     _initializeHive();
     _initializeProfileData();
     _loadUserName();
+    // _clearAllAddresses();
     _changeBodyContent();
   }
 
@@ -118,6 +120,31 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+//   void _clearAllAddresses() async {
+//   final box = await Hive.openBox('userBox');
+//   final keysToRemove = [];
+
+//   for (int i = 0; i < box.length; i++) {
+//     if (box.containsKey('addressTi$i')) {
+//       keysToRemove.add('addressTi$i');
+//       keysToRemove.add('addressCi$i');
+//       keysToRemove.add('addressSt$i');
+//       keysToRemove.add('addressBu$i');
+//     }
+//   }
+
+//   for (String key in keysToRemove) {
+//     await box.delete(key);
+//   }
+
+//   setState(() {
+//     addresses.clear();
+//   });
+
+//   widget.onProfileUpdate();
+// }
+
+
   void _loadUserName() async {
     var box = Hive.box('userBox');
     setState(() {
@@ -185,15 +212,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
       widget.onProfileUpdate();
     }
-  }
-
-  Future<void> _clearAllAddresses() async {
-    final addressBox = await Hive.openBox('addressBox');
-    await addressBox.clear();
-    setState(() {
-      addresses.clear();
-    });
-    widget.onProfileUpdate();
   }
 
   @override

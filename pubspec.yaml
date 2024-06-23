@@ -49,6 +49,8 @@ dependencies:
   google_fonts: ^4.0.4
   font_awesome_flutter: ^10.7.0
   url_launcher_windows: ^3.1.1
+  dotted_line: ^3.2.2
+  dotted_line_flutter: ^0.1.6
 
 dev_dependencies:
   flutter_test:

@@ -102,7 +102,9 @@ class CheckoutDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      
           appBar: AppBar(
+            surfaceTintColor: Colors.white,
         backgroundColor: Colors.white,
         title:  Center(child: Text('Checkout' ,  style: GoogleFonts.comfortaa(fontSize: 20),)),
         actions: const [
