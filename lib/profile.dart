@@ -895,17 +895,17 @@ class ProfileMainPage extends StatelessWidget {
     return TableCell(
       verticalAlignment: TableCellVerticalAlignment.middle,
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 17),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 17),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               item['label'],
-              style: TextStyle(fontSize: 11),
+              style:const TextStyle(fontSize: 11),
             ),
             Text(
               item['value'],
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
             ),
           ],
         ),

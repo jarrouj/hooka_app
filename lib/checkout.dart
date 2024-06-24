@@ -1,6 +1,5 @@
 import 'package:dotted_line_flutter/dotted_line_flutter.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:hooka_app/allpages.dart';
 import 'package:hooka_app/complete-order.dart';
@@ -12,7 +11,7 @@ class CheckoutPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: Center(
+        title: const Center(
           child: Text(
             'Checkout',
             style: TextStyle(fontSize: 20),
@@ -29,21 +28,6 @@ class CheckoutPage extends StatelessWidget {
         ),
       ),
       body: const CheckoutBody(),
-      bottomNavigationBar: GestureDetector(
-        onTap: () {
-          // Handle proceed to payment
-        },
-        child: Container(
-          height: 60,
-          color: Colors.yellow.shade600,
-          child: const Center(
-            child: Text(
-              'Proceed to Payment',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

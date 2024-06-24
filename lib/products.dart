@@ -20,7 +20,7 @@ class _ProductsPageState extends State<ProductsPage> {
         price: 5.00),
     Product(
         name: "Margerita Pizza 2",
-        image: "assets/images/pizza.jpeg",
+        image: "assets/images/pizza.jpg",
         price: 20.00),
   ];
 
