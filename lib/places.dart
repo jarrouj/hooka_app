@@ -152,16 +152,12 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
 
   void _sortPlacesByRating() {
     setState(() {
-      isLoading = true;
       isRatingPressed = !isRatingPressed;
     });
 
-    Future.delayed(const Duration(seconds: 1), () {
       setState(() {
         _applyFilters();
-        isLoading = false;
-      });
-    });
+  });
   }
 
   void _applyFilters() {
@@ -214,7 +210,7 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(10),
+            padding: const EdgeInsets.symmetric(horizontal: 10 , vertical: 10),
             child: TextField(
               decoration: InputDecoration(
                 filled: true,
@@ -468,7 +464,7 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
                                           Text(
                                             place.title,
                                             style: const TextStyle(
-                                                fontSize: 18,
+                                                fontSize: 15,
                                                 fontWeight: FontWeight.bold),
                                           ),
                                           const Spacer(),
@@ -513,7 +509,7 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
                                           Text(
                                             place.cuisine,
                                             style: TextStyle(
-                                                fontSize: 16,
+                                                fontSize: 14,
                                                 color: Colors.grey.shade800 , 
                                                 ),
                                           ),
@@ -538,7 +534,7 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
                                       Text(
                                         place.location,
                                         style: const TextStyle(
-                                            fontSize: 14, color: Colors.grey ,
+                                            fontSize: 12, color: Colors.grey ,
                                             fontStyle: FontStyle.italic
                                             ),
                                       ),

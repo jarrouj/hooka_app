@@ -234,20 +234,20 @@ class SettingMainPage extends StatelessWidget {
       body: Column(
         children: [
           SizedBox(height: 35,),
-          // Center(
-          //   child: Container(
-          //     width: 110,
-          //     height: 37,
-          //     decoration: BoxDecoration(
-          //       color: Colors.yellow.shade600,
-          //       borderRadius: BorderRadius.circular(10)
-          //     ),
-          //     child: Center(child: Text('Invite friends' , style: TextStyle(
-          //       fontWeight: FontWeight.w500,
-          //       fontSize: 14,
-          //     ),)),
-          // ),
-          // ),
+          Center(
+            child: Container(
+              width: 110,
+              height: 37,
+              decoration: BoxDecoration(
+                color: Colors.yellow.shade600,
+                borderRadius: BorderRadius.circular(10)
+              ),
+              child: Center(child: Text('Invite friends' , style: TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 14,
+              ),)),
+          ),
+          ),
         ],
       ),
     );

@@ -30,11 +30,9 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-
     _initializeHive();
     _initializeProfileData();
     _loadUserName();
-    // _clearAllAddresses();
     _changeBodyContent();
   }
 
@@ -119,31 +117,6 @@ class _ProfilePageState extends State<ProfilePage> {
       }
     }
   }
-
-//   void _clearAllAddresses() async {
-//   final box = await Hive.openBox('userBox');
-//   final keysToRemove = [];
-
-//   for (int i = 0; i < box.length; i++) {
-//     if (box.containsKey('addressTi$i')) {
-//       keysToRemove.add('addressTi$i');
-//       keysToRemove.add('addressCi$i');
-//       keysToRemove.add('addressSt$i');
-//       keysToRemove.add('addressBu$i');
-//     }
-//   }
-
-//   for (String key in keysToRemove) {
-//     await box.delete(key);
-//   }
-
-//   setState(() {
-//     addresses.clear();
-//   });
-
-//   widget.onProfileUpdate();
-// }
-
 
   void _loadUserName() async {
     var box = Hive.box('userBox');
@@ -246,11 +219,6 @@ class _ProfilePageState extends State<ProfilePage> {
               experiences: experiences,
               addresses: addresses,
             ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: _clearAllAddresses,
-      //   child: Icon(Icons.clear),
-      //   backgroundColor: Colors.red,
-      // ),
     );
   }
 }
@@ -283,7 +251,6 @@ class ProfileMainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -324,9 +291,7 @@ class ProfileMainPage extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      getValue(
-                        'Email',
-                      ),
+                      getValue('Email'),
                       overflow: TextOverflow.visible,
                     ),
                   ],
@@ -372,7 +337,127 @@ class ProfileMainPage extends StatelessWidget {
                 Table(
                   border: TableBorder.all(color: Colors.grey.shade400),
                   defaultColumnWidth: const IntrinsicColumnWidth(),
-                  children: _buildTableRows(basicInfo),
+                  children: [
+                    TableRow(
+                      children: [
+                        TableCell(
+                          verticalAlignment: TableCellVerticalAlignment.middle,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 17),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Date Of Birth', style: const TextStyle(fontSize: 11)),
+                                Text(getValue('Date Of Birth'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                              ],
+                            ),
+                          ),
+                        ),
+                        TableCell(
+                          verticalAlignment: TableCellVerticalAlignment.middle,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 17),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Gender', style: const TextStyle(fontSize: 11)),
+                                Text(getValue('Gender'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                              ],
+                            ),
+                          ),
+                        ),
+                        TableCell(
+                          verticalAlignment: TableCellVerticalAlignment.middle,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 17),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Status', style: const TextStyle(fontSize: 11)),
+                                Text(getValue('Status'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    TableRow(
+                      children: [
+                        TableCell(
+                          verticalAlignment: TableCellVerticalAlignment.middle,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 17),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Height', style: const TextStyle(fontSize: 11)),
+                                Text(getValue('Height'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                              ],
+                            ),
+                          ),
+                        ),
+                        TableCell(
+                          verticalAlignment: TableCellVerticalAlignment.middle,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 17),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Weight', style: const TextStyle(fontSize: 11)),
+                                Text(getValue('Weight'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                              ],
+                            ),
+                          ),
+                        ),
+                        TableCell(
+                          verticalAlignment: TableCellVerticalAlignment.middle,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 17),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Body Type', style: const TextStyle(fontSize: 11)),
+                                Text(getValue('Body Type'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    TableRow(
+                      children: [
+                        TableCell(
+                          verticalAlignment: TableCellVerticalAlignment.middle,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 17),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Hair', style: const TextStyle(fontSize: 11)),
+                                Text(getValue('Hair'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                              ],
+                            ),
+                          ),
+                        ),
+                        TableCell(
+                          verticalAlignment: TableCellVerticalAlignment.middle,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 17),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Eyes', style: const TextStyle(fontSize: 11)),
+                                Text(getValue('Eyes'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                              ],
+                            ),
+                          ),
+                        ),
+                        TableCell(
+                          child: Container(),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
                 const SizedBox(height: 10),
                 Table(
@@ -728,10 +813,10 @@ class ProfileMainPage extends StatelessWidget {
                                   TableCell(
                                     verticalAlignment:
                                         TableCellVerticalAlignment.middle,
-                                    child: Padding(
-                                      padding: EdgeInsets.only(
+                                    child:  Padding(
+                                      padding: const EdgeInsets.only(
                                           left: 20,
-                                          right: 60,
+                                          right: 85,
                                           top: 15,
                                           bottom: 15),
                                       child: Column(
@@ -754,7 +839,7 @@ class ProfileMainPage extends StatelessWidget {
                                     child: Padding(
                                       padding: EdgeInsets.only(
                                           left: 20,
-                                          right: 60,
+                                          right: 100,
                                           top: 15,
                                           bottom: 15),
                                       child: Column(
@@ -855,60 +940,6 @@ class ProfileMainPage extends StatelessWidget {
             ),
           ),
         ],
-      ),
-    );
-  }
-
- List<TableRow> _buildTableRows(List<Map<String, dynamic>> items) {
-  List<TableRow> rows = [];
-  List<Map<String, dynamic>> nonEmptyItems = items.where((item) => item['value'] != null && item['value'].toString().isNotEmpty).toList();
-
-  for (var i = 0; i < nonEmptyItems.length; i += 3) {
-    rows.add(
-      TableRow(
-        children: [
-          if (i < nonEmptyItems.length) _buildTableCell(nonEmptyItems[i]) else Container(),
-          if (i + 1 < nonEmptyItems.length) _buildTableCell(nonEmptyItems[i + 1]) else Container(),
-          if (i + 2 < nonEmptyItems.length) _buildTableCell(nonEmptyItems[i + 2]) else Container(),
-        ],
-      ),
-    );
-  }
-
-  return rows;
-}
-
-
-
-
-  Widget _buildTableCell(Map<String, dynamic> item) {
-    if (item['label'] == 'First Name' ||
-        item['label'] == 'Last Name' ||
-        item['label'] == 'Email' ||
-        item['label'] == 'Mobile' ||
-        item['label'] == 'Facebook Url' ||
-        item['label'] == 'Instagram Url' ||
-        item['label'] == 'Tiktok Url') {
-      return Container();
-    }
-
-    return TableCell(
-      verticalAlignment: TableCellVerticalAlignment.middle,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 17),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              item['label'],
-              style:const TextStyle(fontSize: 11),
-            ),
-            Text(
-              item['value'],
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
-            ),
-          ],
-        ),
       ),
     );
   }

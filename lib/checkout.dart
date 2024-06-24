@@ -106,13 +106,13 @@ class _CheckoutBodyState extends State<CheckoutBody> {
                     'Order Summary',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 30),
+                  const SizedBox(height: 30),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Order amount', style: TextStyle(fontSize: 16)),
+                      const Text('Order amount', style: TextStyle(fontSize: 16)),
                       Text('${totalAmount.toStringAsFixed(2)} \$',
-                          style: TextStyle(fontSize: 16)),
+                          style: const TextStyle(fontSize: 16)),
                     ],
                   ),
                   SizedBox(height: 30),
@@ -142,10 +142,15 @@ class _CheckoutBodyState extends State<CheckoutBody> {
                   Row(
                     children: [
                       Checkbox(
+                        activeColor: Colors.black,
+                        checkColor: Colors.yellow.shade600,
                         value: true,
                         onChanged: (value) {},
+                        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5.0),
+          ),
                       ),
-                      Text('Cash On Delivery', style: TextStyle(fontSize: 16)),
+                      Text('Cash On Delivery', style: TextStyle(fontSize: 14 , fontWeight: FontWeight.w700)),
                     ],
                   ),
                   SizedBox(
@@ -155,25 +160,25 @@ class _CheckoutBodyState extends State<CheckoutBody> {
                     size: Size(200, 1),
                     painter: DottedLinePainter(
                       dashWidth: 4,
-                      dashGap: 10,
+                      dashGap: 7,
                       color: Colors.grey.shade600,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 60,
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      const Text(
                         'Total amount',
                         style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                            fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       Text(
                         '${totalAmount.toStringAsFixed(2)} \$',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                        style: const TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
@@ -216,7 +221,7 @@ class _CheckoutBodyState extends State<CheckoutBody> {
                     ],
                   ),
                   SizedBox(
-                    height: 30,
+                    height: 10,
                   ),
                 ],
               );

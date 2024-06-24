@@ -143,7 +143,7 @@ class OrderDetailsPage extends StatelessWidget {
                     decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: Colors.black,
+                          color: Colors.grey,
                           width: 1,
                         )),
                     child: Padding(
@@ -270,11 +270,15 @@ class OrderDetailsPage extends StatelessWidget {
                     width: double.infinity,
                     height: 180,
                     decoration: BoxDecoration(
+                    
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(
-                          color: Colors.black,
+                          color: Colors.grey,
                           width: 1,
-                        )),
+                        ),
+                        
+                       
+                        ),
                     child: Padding(
                       padding:
                           EdgeInsets.symmetric(vertical: 10, horizontal: 30),
@@ -396,7 +400,9 @@ class OrderDetailsPage extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: 20),
-                  Divider(),
+                  Divider(
+                    thickness: 0.5,
+                  ),
                   const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -413,14 +419,23 @@ class OrderDetailsPage extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Divider(),
-                  SizedBox(height: 10),
+                   const Divider(
+                    thickness: 0.5,
+                  ),
+                  const SizedBox(height: 10),
                   Expanded(
                     child: ListView.builder(
                       itemCount: order['products'].length,
                       itemBuilder: (context, index) {
                         var product = order['products'][index];
-                        return Card(
+                        return Container(
+                        // color: Colors.white,
+                          decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        border: Border.all(
+                          color: Colors.grey,
+                          width: 1,
+                        )),
                           child: ListTile(
                             leading: Image.asset(product['image'],
                                 width: 50, height: 50),

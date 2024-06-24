@@ -476,7 +476,7 @@ class _ContentPageState extends State<ContentPage> {
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.grey.withOpacity(0.3),
-                                    spreadRadius: 5,
+                                    spreadRadius: 3,
                                     blurRadius: 7,
                                     offset: const Offset(0, 5),
                                   ),
@@ -496,7 +496,7 @@ class _ContentPageState extends State<ContentPage> {
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.w600,
-                                      fontSize: 20,
+                                      fontSize: 17,
                                     ),
                                   ),
                                 ],
@@ -588,7 +588,7 @@ class _ContentPageState extends State<ContentPage> {
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.grey.withOpacity(0.3),
-                                    spreadRadius: 5,
+                                    spreadRadius: 3,
                                     blurRadius: 7,
                                     offset: const Offset(0, 5),
                                   ),
@@ -608,7 +608,7 @@ class _ContentPageState extends State<ContentPage> {
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.w600,
-                                      fontSize: 20,
+                                      fontSize: 17,
                                     ),
                                   ),
                                 ],
@@ -638,7 +638,7 @@ class _ContentPageState extends State<ContentPage> {
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.grey.withOpacity(0.3),
-                                    spreadRadius: 5,
+                                    spreadRadius: 1,
                                     blurRadius: 7,
                                     offset: const Offset(0, 5),
                                   ),
@@ -658,7 +658,7 @@ class _ContentPageState extends State<ContentPage> {
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.w600,
-                                      fontSize: 20,
+                                      fontSize: 17,
                                     ),
                                   ),
                                 ],
@@ -683,7 +683,7 @@ class _ContentPageState extends State<ContentPage> {
                                 boxShadow: [
                                   BoxShadow(
                                     color: Colors.grey.withOpacity(0.3),
-                                    spreadRadius: 5,
+                                    spreadRadius: 1,
                                     blurRadius: 7,
                                     offset: const Offset(0, 5),
                                   ),
@@ -703,7 +703,7 @@ class _ContentPageState extends State<ContentPage> {
                                     style: TextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.w600,
-                                      fontSize: 20,
+                                      fontSize: 17,
                                     ),
                                   ),
                                 ],
