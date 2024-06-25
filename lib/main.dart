@@ -206,6 +206,7 @@ class _MenuScreenState extends State<MenuScreen> {
                         MaterialPageRoute(
                           builder: (context) => ProfilePage(
                             onProfileUpdate: _loadUserName,
+                            data: [],
                           ),
                         ),
                       );

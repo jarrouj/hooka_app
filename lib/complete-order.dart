@@ -297,6 +297,10 @@ class OrderPageLogged extends StatelessWidget {
                   onPressed: () => _clearAllData(context),
                 ),
                 bottom: TabBar(
+                      unselectedLabelColor: Colors.grey,
+          labelColor: Colors.black,
+          indicatorSize: TabBarIndicatorSize.tab ,
+          indicatorColor: Colors.black,
                   tabs: [
                     Tab(text: "Current"),
                     Tab(text: "All"),
@@ -321,39 +325,39 @@ class OrderPageLogged extends StatelessWidget {
   }
 }
 
-class OrderListView extends StatelessWidget {
-  final List<MapEntry<dynamic, dynamic>> orders;
+// class OrderListView extends StatelessWidget {
+//   final List<MapEntry<dynamic, dynamic>> orders;
 
-  const OrderListView({super.key, required this.orders});
+//   const OrderListView({super.key, required this.orders});
 
-  @override
-  Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(16.0),
-      itemCount: orders.length,
-      itemBuilder: (context, index) {
-        var order = orders[index].value;
-        return Card(
-          child: ListTile(
-            title: Text('Order ID: ${orders[index].key}'),
-            subtitle: Text(
-              'Total: \$${order['totalAmount'].toStringAsFixed(2)}\nStatus: ${order['status']}',
-            ),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      OrderDetailsPage(orderId: orders[index].key),
-                ),
-              );
-            },
-          ),
-        );
-      },
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return ListView.builder(
+//       padding: const EdgeInsets.all(16.0),
+//       itemCount: orders.length,
+//       itemBuilder: (context, index) {
+//         var order = orders[index].value;
+//         return Card(
+//           child: ListTile(
+//             title: Text('Order ID: ${orders[index].key}'),
+//             subtitle: Text(
+//               'Total: \$${order['totalAmount'].toStringAsFixed(2)}\nStatus: ${order['status']}',
+//             ),
+//             onTap: () {
+//               Navigator.push(
+//                 context,
+//                 MaterialPageRoute(
+//                   builder: (context) =>
+//                       OrderDetailsPage(orderId: orders[index].key),
+//                 ),
+//               );
+//             },
+//           ),
+//         );
+//       },
+//     );
+//   }
+// }
 
 // class OrderDetailsPage extends StatelessWidget {
 //   final String orderId;

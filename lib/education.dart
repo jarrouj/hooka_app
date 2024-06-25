@@ -24,7 +24,7 @@ class _EducationTabState extends State<EducationTab> {
   @override
   void initState() {
     super.initState();
-    educations = List.from(widget.items); // Ensure a copy is made
+    educations = List.from(widget.items); 
   }
 
   void _addEducation(Map<String, dynamic> newEducation) async {

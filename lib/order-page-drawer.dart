@@ -43,7 +43,11 @@ class OrderPageDrawer extends StatelessWidget {
                   icon: Icon(Icons.menu),
                   onPressed: () => ZoomDrawer.of(context)!.toggle(),
                 ),
-                bottom: TabBar(
+                bottom: const TabBar(
+                    unselectedLabelColor: Colors.grey,
+          labelColor: Colors.black,
+          indicatorSize: TabBarIndicatorSize.tab ,
+          indicatorColor: Colors.black,
                   tabs: [
                     Tab(text: "Current"),
                     Tab(text: "All"),
@@ -76,16 +80,13 @@ class OrderListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 2),
       itemCount: orders.length,
       itemBuilder: (context, index) {
         var order = orders[index].value;
-        return Card(
-          child: ListTile(
-            title: Text('Order ID: ${orders[index].key}'),
-            subtitle: Text(
-              'Total: \$${order['totalAmount'].toStringAsFixed(2)}\nStatus: ${order['status']}',
-            ),
+        return Padding(
+          padding: const EdgeInsets.only(top: 0),
+          child: GestureDetector(
             onTap: () {
               Navigator.push(
                 context,
@@ -95,6 +96,51 @@ class OrderListView extends StatelessWidget {
                 ),
               );
             },
+            child: Container(
+              height: 80,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                // borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 1,
+                    offset: const Offset(0, 1),
+                  ),
+                ],
+              ),
+              child: Row(
+                children: [
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Container(
+                    width: 50,
+                    height: 100,
+                    decoration: const BoxDecoration(
+                        shape: BoxShape.circle, color: Colors.yellow),
+                    child: Center(
+                        child: Text(
+                      '${orders[index].key.substring(10, 13)}',
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 15,
+                      ),
+                    )),
+                  ),
+                  SizedBox(
+                    width: 20,
+                  ),
+                  Text(
+                    '${order['status']}\nTotal: \$${order['totalAmount'].toStringAsFixed(2)}',
+                  ),
+                   
+                ],
+              ),
+            ),
           ),
         );
       },
@@ -270,15 +316,12 @@ class OrderDetailsPage extends StatelessWidget {
                     width: double.infinity,
                     height: 180,
                     decoration: BoxDecoration(
-                    
-                        borderRadius: BorderRadius.circular(20),
-                        border: Border.all(
-                          color: Colors.grey,
-                          width: 1,
-                        ),
-                        
-                       
-                        ),
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                        color: Colors.grey,
+                        width: 1,
+                      ),
+                    ),
                     child: Padding(
                       padding:
                           EdgeInsets.symmetric(vertical: 10, horizontal: 30),
@@ -419,7 +462,7 @@ class OrderDetailsPage extends StatelessWidget {
                       ),
                     ],
                   ),
-                   const Divider(
+                  const Divider(
                     thickness: 0.5,
                   ),
                   const SizedBox(height: 10),
@@ -428,46 +471,50 @@ class OrderDetailsPage extends StatelessWidget {
                       itemCount: order['products'].length,
                       itemBuilder: (context, index) {
                         var product = order['products'][index];
-                        return Container(
-                        // color: Colors.white,
-                          decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        border: Border.all(
-                          color: Colors.grey,
-                          width: 1,
-                        )),
-                          child: ListTile(
-                            leading: Image.asset(product['image'],
-                                width: 50, height: 50),
-                            title: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  product['name'],
-                                  style: const TextStyle(
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                Text(
-                                  '(${product['price'].toStringAsFixed(2)}\$/Per Item)',
-                                  style: const TextStyle(
-                                    fontSize: 9,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.grey,
-                                  ),
-                                ),
-                              ],
+                        return Padding(
+                          padding: const EdgeInsets.only(top: 10),
+                          child: Container(
+                            // color: Colors.white,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15),
+                              border: Border.all(
+                                color: Colors.grey,
+                                width: 1,
+                              ),
                             ),
-                            trailing: Text(
-                              'Price: \$${(product['price'] * product['quantity']).toStringAsFixed(2)}',
-                              overflow: TextOverflow.visible,
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Quantity: ${product['quantity']}'),
-                              ],
+                            child: ListTile(
+                              leading: Image.asset(product['image'],
+                                  width: 50, height: 50),
+                              title: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    product['name'],
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  Text(
+                                    '(${product['price'].toStringAsFixed(2)}\$/Per Item)',
+                                    style: const TextStyle(
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.w500,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              trailing: Text(
+                                'Price: \$${(product['price'] * product['quantity']).toStringAsFixed(2)}',
+                                overflow: TextOverflow.visible,
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Quantity: ${product['quantity']}'),
+                                ],
+                              ),
                             ),
                           ),
                         );

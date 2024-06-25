@@ -331,7 +331,7 @@ class _DetailsState extends State<Details> with TickerProviderStateMixin {
             ),
           ),
           SizedBox(
-            height: screenHeight - 230,
+            height: screenHeight - 223,
             child: GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,

@@ -166,6 +166,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         child: PersonalTab(
                           data: basicInfo,
                           onSave: _updateBasicInfo,
+                          saveProfile: _saveProfile,  // Pass down the save function
                         ),
                       ),
                       EducationTab(

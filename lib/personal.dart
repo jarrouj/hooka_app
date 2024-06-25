@@ -1,12 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
+import 'package:hooka_app/profile.dart';
 
 class PersonalTab extends StatefulWidget {
   final List<Map<String, dynamic>> data;
   final Function(List<Map<String, dynamic>>) onSave;
+  final Function saveProfile;  // Add this line
 
-  const PersonalTab({required this.data, required this.onSave, super.key});
+  const PersonalTab({required this.data, required this.onSave, required this.saveProfile, super.key});  // Modify constructor
 
   @override
   _PersonalTabState createState() => _PersonalTabState();
@@ -66,10 +69,10 @@ class _PersonalTabState extends State<PersonalTab> {
     _emailController.text = box.get('email', defaultValue: dataMap['Email'] ?? '');
     _mobileController.text = box.get('mobile', defaultValue: dataMap['Mobile'] ?? '');
     _dateController.text = dataMap['Date Of Birth'] ?? '';
-    _hairType = dataMap['Hair'];
-    _eyeColor = dataMap['Eyes'];
-    _gender = dataMap['Gender'];
-    _maritalStatus = dataMap['Status'];
+    _hairType = box.get('hairType', defaultValue: dataMap['Hair']);
+    _eyeColor = box.get('eyeColor', defaultValue: dataMap['Eyes']);
+    _gender = box.get('gender', defaultValue: dataMap['Gender']);
+    _maritalStatus = box.get('maritalStatus', defaultValue: dataMap['Status']);
     _bioController.text = dataMap['Bio'] ?? '';
     _weightController.text = dataMap['Weight'] ?? '';
     _heightController.text = dataMap['Height'] ?? '';
@@ -124,7 +127,9 @@ class _PersonalTabState extends State<PersonalTab> {
     }
   }
 
-  void _showPicker(BuildContext context, List<String> options, String title, ValueChanged<String> onSelected) {
+  void _showPicker(BuildContext context, List<String> options, String title, String? initialValue, ValueChanged<String> onSelected) {
+    final int initialIndex = initialValue != null ? options.indexOf(initialValue) : 0;
+
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -135,6 +140,7 @@ class _PersonalTabState extends State<PersonalTab> {
               height: 250,
               child: CupertinoPicker(
                 itemExtent: 32.0,
+                scrollController: FixedExtentScrollController(initialItem: initialIndex),
                 onSelectedItemChanged: (int index) {
                   onSelected(options[index]);
                 },
@@ -155,10 +161,9 @@ class _PersonalTabState extends State<PersonalTab> {
     );
   }
 
-  void _saveData() {
+  void _saveData() async {
     if (_formKey.currentState!.validate()) {
-      // Save data to Hive
-      var box = Hive.box('userBox');
+      var box = await Hive.openBox('userBox');
       box.put('firstName', _firstNameController.text);
       box.put('lastName', _lastNameController.text);
       box.put('email', _emailController.text);
@@ -172,9 +177,12 @@ class _PersonalTabState extends State<PersonalTab> {
       box.put('facebook', _facebookController.text);
       box.put('instagram', _instagramController.text);
       box.put('tiktok', _tiktokController.text);
+      box.put('hairType', _hairType);
+      box.put('eyeColor', _eyeColor);
+      box.put('gender', _gender);
+      box.put('maritalStatus', _maritalStatus);
 
-      // Update basic info
-      widget.onSave(widget.data.map((item) {
+      List<Map<String, dynamic>> updatedData = widget.data.map((item) {
         if (item['label'] == 'First Name') {
           item['value'] = _firstNameController.text;
         } else if (item['label'] == 'Last Name') {
@@ -213,11 +221,12 @@ class _PersonalTabState extends State<PersonalTab> {
           item['value'] = _tiktokController.text;
         }
         return item;
-      }).toList());
+      }).toList();
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Data saved successfully')),
-      );
+      widget.onSave(updatedData);
+
+      // Call the saveProfile method passed from EditProfilePage
+      widget.saveProfile();
     }
   }
 
@@ -227,257 +236,269 @@ class _PersonalTabState extends State<PersonalTab> {
       padding: const EdgeInsets.all(16.0),
       child: Form(
         key: _formKey,
-        child: Column(
-          children: [
-            TextFormField(
-              controller: _firstNameController,
-              decoration: InputDecoration(
-                labelText: 'First Name',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              TextFormField(
+                controller: _firstNameController,
+                decoration: InputDecoration(
+                  labelText: 'First Name',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _lastNameController,
-              decoration: InputDecoration(
-                labelText: 'Last Name',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _lastNameController,
+                decoration: InputDecoration(
+                  labelText: 'Last Name',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: 16),
-            TextFormField(
-              controller: _emailController,
-              decoration: InputDecoration(
-                labelText: 'Email',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
+              SizedBox(height: 16),
+              TextFormField(
+                controller: _emailController,
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: 16),
-            TextFormField(
-              controller: _mobileController,
-              decoration: InputDecoration(
-                labelText: 'Mobile',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
+              SizedBox(height: 16),
+              TextFormField(
+                controller: _mobileController,
+                decoration: InputDecoration(
+                  labelText: 'Mobile',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
                 ),
               ),
-            ),
-            SizedBox(height: 16),
-            TextFormField(
-              controller: _dateController,
-              readOnly: true,
-              onTap: () => _selectDate(context),
-              decoration: InputDecoration(
-                labelText: 'Date of Birth',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
+              SizedBox(height: 16),
+              TextFormField(
+                controller: _dateController,
+                readOnly: true,
+                onTap: () => _selectDate(context),
+                decoration: InputDecoration(
+                  labelText: 'Date of Birth',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                  suffixIcon: Icon(Icons.calendar_today),
                 ),
-                suffixIcon: Icon(Icons.calendar_today),
               ),
-            ),
-            SizedBox(height: 16),
-            GestureDetector(
-              onTap: () {
-                _showPicker(context, ['Curly', 'Straight'], 'Hair Type', (String value) {
-                  setState(() {
-                    _hairType = value;
+              SizedBox(height: 16),
+              GestureDetector(
+                onTap: () {
+                  _showPicker(context, ['Curly', 'Straight'], 'Hair Type', _hairType, (String value) {
+                    setState(() {
+                      _hairType = value;
+                    });
                   });
-                });
-              },
-              child: AbsorbPointer(
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    labelText: _hairType ?? 'Hair Type',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
+                },
+                child: AbsorbPointer(
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      labelText: _hairType ?? 'Hair Type',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      suffixIcon: Icon(Icons.arrow_drop_down),
                     ),
-                    suffixIcon: Icon(Icons.arrow_drop_down),
                   ),
                 ),
               ),
-            ),
-            SizedBox(height: 16),
-            GestureDetector(
-              onTap: () {
-                _showPicker(context, ['Brown', 'Blue', 'Green'], 'Eye Color', (String value) {
-                  setState(() {
-                    _eyeColor = value;
+              SizedBox(height: 16),
+              GestureDetector(
+                onTap: () {
+                  _showPicker(context, ['Brown', 'Blue', 'Green'], 'Eye Color', _eyeColor, (String value) {
+                    setState(() {
+                      _eyeColor = value;
+                    });
                   });
-                });
-              },
-              child: AbsorbPointer(
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    labelText: _eyeColor ?? 'Eye Color',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
+                },
+                child: AbsorbPointer(
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      labelText: _eyeColor ?? 'Eye Color',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      suffixIcon: Icon(Icons.arrow_drop_down),
                     ),
-                    suffixIcon: Icon(Icons.arrow_drop_down),
                   ),
                 ),
               ),
-            ),
-            SizedBox(height: 16),
-            GestureDetector(
-              onTap: () {
-                _showPicker(context, ['Male', 'Female', 'Rather Not To Say'], 'Gender', (String value) {
-                  setState(() {
-                    _gender = value;
+              SizedBox(height: 16),
+              GestureDetector(
+                onTap: () {
+                  _showPicker(context, ['Male', 'Female', 'Rather Not To Say'], 'Gender', _gender, (String value) {
+                    setState(() {
+                      _gender = value;
+                    });
                   });
-                });
-              },
-              child: AbsorbPointer(
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    labelText: _gender ?? 'Gender',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
+                },
+                child: AbsorbPointer(
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      labelText: _gender ?? 'Gender',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      suffixIcon: Icon(Icons.arrow_drop_down),
                     ),
-                    suffixIcon: Icon(Icons.arrow_drop_down),
                   ),
                 ),
               ),
-            ),
-            SizedBox(height: 16),
-            GestureDetector(
-              onTap: () {
-                _showPicker(context, ['Single', 'Married', 'Divorced'], 'Marital Status', (String value) {
-                  setState(() {
-                    _maritalStatus = value;
+              SizedBox(height: 16),
+              GestureDetector(
+                onTap: () {
+                  _showPicker(context, ['Single', 'Married', 'Divorced'], 'Marital Status', _maritalStatus, (String value) {
+                    setState(() {
+                      _maritalStatus = value;
+                    });
                   });
-                });
-              },
-              child: AbsorbPointer(
-                child: TextFormField(
-                  decoration: InputDecoration(
-                    labelText: _maritalStatus ?? 'Marital Status',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10.0),
+                },
+                child: AbsorbPointer(
+                  child: TextFormField(
+                    decoration: InputDecoration(
+                      labelText: _maritalStatus ?? 'Marital Status',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      suffixIcon: Icon(Icons.arrow_drop_down),
                     ),
-                    suffixIcon: Icon(Icons.arrow_drop_down),
                   ),
                 ),
               ),
-            ),
-            SizedBox(height: 16),
-            TextFormField(
-              controller: _bioController,
-              decoration: InputDecoration(
-                labelText: 'Bio',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _weightController,
-              decoration: InputDecoration(
-                labelText: 'Weight (kg)',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _heightController,
-              decoration: InputDecoration(
-                labelText: 'Height (cm)',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _interestController,
-              decoration: InputDecoration(
-                labelText: 'Interest',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _professionController,
-              decoration: InputDecoration(
-                labelText: 'Profession',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _hobbiesController,
-              decoration: InputDecoration(
-                labelText: 'Hobbies',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Social Media',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20.0,
+              SizedBox(height: 16),
+              TextFormField(
+                controller: _bioController,
+                decoration: InputDecoration(
+                  labelText: 'Bio',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
                   ),
-                )
-              ],
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _facebookController,
-              decoration: InputDecoration(
-                labelText: 'Facebook Url',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _instagramController,
-              decoration: InputDecoration(
-                labelText: 'Instagram Url',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _weightController,
+                decoration: InputDecoration(
+                  labelText: 'Weight (kg)',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _tiktokController,
-              decoration: InputDecoration(
-                labelText: 'Tiktok Url',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _heightController,
+                decoration: InputDecoration(
+                  labelText: 'Height (cm)',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _saveData,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.yellow,
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _interestController,
+                decoration: InputDecoration(
+                  labelText: 'Interest',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
               ),
-              child: Text('Save'),
-            ),
-          ],
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _professionController,
+                decoration: InputDecoration(
+                  labelText: 'Profession',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _hobbiesController,
+                decoration: InputDecoration(
+                  labelText: 'Hobbies',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Social Media',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20.0,
+                    ),
+                  )
+                ],
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _facebookController,
+                decoration: InputDecoration(
+                  labelText: 'Facebook Url',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _instagramController,
+                decoration: InputDecoration(
+                  labelText: 'Instagram Url',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _tiktokController,
+                decoration: InputDecoration(
+                  labelText: 'Tiktok Url',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              GestureDetector(
+                onTap: (){
+                  _saveData();
+                },
+                child: Container(
+                  width: double.infinity,
+                  height: 50,
+               decoration: BoxDecoration(
+                 borderRadius: BorderRadius.circular(10.0),
+                 color: Colors.yellow.shade600,
+               ),
+                 
+                  child: const Center(child: Text('Save' , style: 
+                  TextStyle(fontSize: 20),)),
+                ),
+              ),
+              SizedBox(height: 20,),
+            ],
+          ),
         ),
       ),
     );

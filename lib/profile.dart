@@ -9,8 +9,9 @@ import 'package:url_launcher/url_launcher.dart';
 
 class ProfilePage extends StatefulWidget {
   final VoidCallback onProfileUpdate;
+  final List<Map<String, dynamic>> data;
 
-  const ProfilePage({super.key, required this.onProfileUpdate});
+  const ProfilePage({super.key, required this.onProfileUpdate, required this.data});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -326,8 +327,7 @@ class ProfileMainPage extends StatelessWidget {
                       style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
+                        fontSize: 18),
                     ),
                   ],
                 ),
@@ -520,8 +520,7 @@ class ProfileMainPage extends StatelessWidget {
                         style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
+                          fontSize: 18),
                       ),
                     ],
                   ),
@@ -657,8 +656,7 @@ class ProfileMainPage extends StatelessWidget {
                         style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
+                          fontSize: 18),
                       ),
                     ],
                   ),
@@ -791,8 +789,7 @@ class ProfileMainPage extends StatelessWidget {
                         'Addresses',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 20,
-                        ),
+                          fontSize: 20),
                       ),
                     ],
                   ),
@@ -814,9 +811,9 @@ class ProfileMainPage extends StatelessWidget {
                                     verticalAlignment:
                                         TableCellVerticalAlignment.middle,
                                     child:  Padding(
-                                      padding: const EdgeInsets.only(
+                                      padding: EdgeInsets.only(
                                           left: 20,
-                                          right: 85,
+                                          right: 80,
                                           top: 15,
                                           bottom: 15),
                                       child: Column(
@@ -889,7 +886,7 @@ class ProfileMainPage extends StatelessWidget {
                                     child: Padding(
                                       padding: EdgeInsets.only(
                                           left: 20,
-                                          right: 60,
+                                          right: 100,
                                           top: 15,
                                           bottom: 15),
                                       child: Column(
