@@ -50,10 +50,10 @@ class _InvitationsPageState extends State<InvitationsPage>
         bottom: TabBar(
           unselectedLabelColor: Colors.grey,
           labelColor: Colors.black,
-          indicatorSize: TabBarIndicatorSize.tab ,
+          indicatorSize: TabBarIndicatorSize.tab,
           indicatorColor: Colors.black,
           controller: _tabController,
-          tabs: [
+          tabs: const [
             Tab(text: 'Received'),
             Tab(text: 'Sent'),
           ],
@@ -63,8 +63,7 @@ class _InvitationsPageState extends State<InvitationsPage>
         controller: _tabController,
         children: [
           ListView.builder(
-            itemCount:
-                1, 
+            itemCount: 1,
             itemBuilder: (context, index) {
               return Container(
                 decoration: BoxDecoration(color: Colors.white, boxShadow: [
@@ -90,14 +89,21 @@ class _InvitationsPageState extends State<InvitationsPage>
                       Icon(Icons.check),
                     ],
                   ),
-                  subtitle: const Column(
+                  subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Test'),
-                      Text('2023-10-25'),
+                      Text(
+                        'Test',
+                        style: TextStyle(color: Colors.grey.shade600),
+                      ),
+                      Text(
+                        '2023-10-25',
+                        style: TextStyle(color: Colors.grey.shade600),
+                      ),
                       Text(
                         'You Will Pay For Your Own Hooka & Food',
-                        style: TextStyle(fontSize: 10),
+                        style: TextStyle(
+                            fontSize: 10, color: Colors.grey.shade600),
                       ),
                       SizedBox(
                         height: 10,
@@ -125,7 +131,7 @@ class _InvitationsPageState extends State<InvitationsPage>
                   leading: CircleAvatar(
                     radius: 30,
                     backgroundColor: Colors.grey.shade300,
-                    backgroundImage: AssetImage(
+                    backgroundImage: const AssetImage(
                         'assets/images/profile-img.png'), // Replace with actual image
                   ),
                   title: const Row(
@@ -135,14 +141,19 @@ class _InvitationsPageState extends State<InvitationsPage>
                       Icon(Icons.check),
                     ],
                   ),
-                  subtitle: const Column(
+                  subtitle:  Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Test'),
-                      Text('2023-10-25'),
+                       Text('Test' , style: TextStyle(
+                        color: Colors.grey.shade600
+                      ),),
+                      Text('2023-10-25' , style: TextStyle(
+                        color: Colors.grey.shade600
+                      ),),
                       Text(
                         'You Will Pay For Your Own Hooka & Food',
-                        style: TextStyle(fontSize: 10),
+                        style: TextStyle(fontSize: 10 , color: Colors.grey.shade600
+ ),
                       ),
                       SizedBox(
                         height: 10,

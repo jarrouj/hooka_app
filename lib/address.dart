@@ -23,7 +23,7 @@ class _AddressTabState extends State<AddressTab> {
   @override
   void initState() {
     super.initState();
-    addresses = List.from(widget.items); 
+    addresses = List.from(widget.items);
   }
 
   void _addAddress(Map<String, dynamic> newAddress) async {
@@ -55,6 +55,7 @@ class _AddressTabState extends State<AddressTab> {
 
   @override
   Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
     return Stack(
       children: [
         Padding(
@@ -67,7 +68,8 @@ class _AddressTabState extends State<AddressTab> {
                   itemBuilder: (context, index) {
                     final item = addresses[index];
                     return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 15, vertical: 10),
                       child: Card(
                         surfaceTintColor: Colors.white,
                         child: Container(
@@ -87,7 +89,8 @@ class _AddressTabState extends State<AddressTab> {
                                 child: const Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Icon(Icons.home, color: Colors.black, size: 40),
+                                    Icon(Icons.home,
+                                        color: Colors.black, size: 40),
                                     SizedBox(width: 10),
                                   ],
                                 ),
@@ -99,7 +102,17 @@ class _AddressTabState extends State<AddressTab> {
                                 color: Colors.grey.shade300,
                                 child: Padding(
                                   padding: const EdgeInsets.only(left: 30),
-                                  child: Text('Title: ${item['title']}'),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text('Title :'),
+                                      Text('${item['title']}'),
+                                      SizedBox(
+                                        width: size.width * 0.1,
+                                      )
+                                    ],
+                                  ),
                                 ),
                               ),
                               SizedBox(height: 16),
@@ -109,7 +122,19 @@ class _AddressTabState extends State<AddressTab> {
                                 color: Colors.grey.shade300,
                                 child: Padding(
                                   padding: const EdgeInsets.only(left: 30),
-                                  child: Text('City: ${item['city']}'),
+                                  child: Row(
+                                    children: [
+                                      Text('City :'),
+                                      SizedBox(
+                                        width: size.width * 0.1,
+                                      ),
+                                      Column(
+                                        children: [
+                                          Text('${item['city']}'),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                               SizedBox(height: 16),
@@ -119,7 +144,21 @@ class _AddressTabState extends State<AddressTab> {
                                 color: Colors.grey.shade300,
                                 child: Padding(
                                   padding: const EdgeInsets.only(left: 30),
-                                  child: Text('Street: ${item['street']}'),
+                                  child: Row(
+                                    children: [
+                                      Text('Street :'),
+                                      SizedBox(
+                                        width: size.width * 0.1,
+                                      ),
+                                      Column(
+                                        children: [
+                                          Text(
+                                            '${item['street']}',
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                               SizedBox(height: 16),
@@ -153,12 +192,14 @@ class _AddressTabState extends State<AddressTab> {
                                           padding: EdgeInsets.all(8.0),
                                           child: Row(
                                             children: [
-                                              Icon(Icons.delete, color: Colors.white),
+                                              Icon(Icons.delete,
+                                                  color: Colors.white),
                                               SizedBox(width: 5),
                                               Text('Remove item',
                                                   style: TextStyle(
                                                       color: Colors.white,
-                                                      fontWeight: FontWeight.w600)),
+                                                      fontWeight:
+                                                          FontWeight.w600)),
                                             ],
                                           ),
                                         ),
@@ -241,7 +282,7 @@ class _AddAddressPageState extends State<AddAddressPage> {
               TextFormField(
                 controller: _titleController,
                 decoration: InputDecoration(
-                  labelText: 'Title',
+                  labelText: 'Address title *',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
@@ -257,7 +298,7 @@ class _AddAddressPageState extends State<AddAddressPage> {
               TextFormField(
                 controller: _cityController,
                 decoration: InputDecoration(
-                  labelText: 'City',
+                  labelText: 'City *',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
@@ -273,7 +314,7 @@ class _AddAddressPageState extends State<AddAddressPage> {
               TextFormField(
                 controller: _streetController,
                 decoration: InputDecoration(
-                  labelText: 'Street',
+                  labelText: 'Street *',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
@@ -289,7 +330,7 @@ class _AddAddressPageState extends State<AddAddressPage> {
               TextFormField(
                 controller: _buildingController,
                 decoration: InputDecoration(
-                  labelText: 'Building',
+                  labelText: 'Building *',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
@@ -302,20 +343,39 @@ class _AddAddressPageState extends State<AddAddressPage> {
                 },
               ),
               SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
+              SizedBox(height: 20),
+              GestureDetector(
+                onTap: () {
                   if (_formKey.currentState!.validate()) {
-                    final newAddress = {
+                    final newExperince = {
                       'title': _titleController.text,
                       'city': _cityController.text,
                       'street': _streetController.text,
                       'building': _buildingController.text,
                     };
-                    Navigator.pop(context, newAddress);
+                    Navigator.pop(context, newExperince);
                   }
                 },
-                child: Text('Save'),
-              ),
+                child: Container(
+                  width: 100,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.0),
+                    color: Colors.yellow.shade600,
+                  ),
+                  child: const Center(
+                    child: Center(
+                        child: Text(
+                      'Add',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
+                    )),
+                  ),
+                ),
+              )
             ],
           ),
         ),

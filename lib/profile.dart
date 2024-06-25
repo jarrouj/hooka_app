@@ -49,21 +49,21 @@ class _ProfilePageState extends State<ProfilePage> {
     basicInfo = [
       {
         'label': 'Date Of Birth',
-        'value': box.get('dateOfBirth', defaultValue: '2003-05-29')
+        'value': box.get('dateOfBirth')
       },
-      {'label': 'Gender', 'value': box.get('gender', defaultValue: 'Male')},
-      {'label': 'Status', 'value': box.get('status', defaultValue: 'Married')},
-      {'label': 'Height', 'value': box.get('height', defaultValue: 'null')},
+      {'label': 'Gender', 'value': box.get('gender', )},
+      {'label': 'Status', 'value': box.get('status', )},
+      {'label': 'Height', 'value': box.get('height', )},
       {
         'label': 'Weight',
-        'value': box.get('weight', defaultValue: 'Can\'t say')
+        'value': box.get('weight',)
       },
       {
         'label': 'Body Type',
-        'value': box.get('bodyType', defaultValue: 'Super Skinny')
+        'value': box.get('bodyType')
       },
-      {'label': 'Hair', 'value': box.get('hair', defaultValue: 'No Hair')},
-      {'label': 'Eyes', 'value': box.get('eyes', defaultValue: 'Blue')},
+      {'label': 'Hair', 'value': box.get('hair', )},
+      {'label': 'Eyes', 'value': box.get('eyes',)},
       {'label': 'First Name', 'value': _firstName},
       {'label': 'Last Name', 'value': _lastName},
       {'label': 'Email', 'value': _email},
@@ -318,7 +318,7 @@ class ProfileMainPage extends StatelessWidget {
                   ],
                 ),
                 const SizedBox(
-                  height: 20,
+                  height: 60,
                 ),
                 const Row(
                   children: [
@@ -507,6 +507,32 @@ class ProfileMainPage extends StatelessWidget {
                         ),
                       ],
                     ),
+                  ],
+                ),
+
+                SizedBox(height: 30,),
+                const Row(
+                  children: [
+                    Text('Interest' ,  style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18),
+                       )
+                  ],
+                ),
+                SizedBox(height: 10,),
+                Row(
+                  children: [
+                    Container(
+                      width: 75,
+                      height: 23,
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade200,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+
+                      child: Center(child: Text('int')),
+                    )
                   ],
                 ),
                 if (educations.isNotEmpty) ...[

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hooka_app/login.dart';
 import 'package:hooka_app/places.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -226,106 +227,106 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
                     color: Colors.grey,
                   ),
                   // Uncomment and modify the following lines as needed
-                  // const SizedBox(
-                  //   height: 20,
-                  // ),
-                  // GestureDetector(
-                  //   onTap: () {
-                  //     showDialog(
-                  //       context: context,
-                  //       builder: (BuildContext context) {
-                  //         return Column(
-                  //           mainAxisAlignment: MainAxisAlignment.center,
-                  //           children: [
-                  //             SizedBox(
-                  //               height: 30,
-                  //             ),
-                  //             AlertDialog(
-                  //               shape: RoundedRectangleBorder(
-                  //                 borderRadius: BorderRadius.circular(10.0),
-                  //               ),
-                  //               content: Container(
-                  //                 height: 85,
-                  //                 width: 850,
-                  //                 child: Column(
-                  //                   mainAxisSize: MainAxisSize.min,
-                  //                   children: [
-                  //                     SizedBox(
-                  //                       height: 20,
-                  //                     ),
-                  //                     const Row(
-                  //                       mainAxisAlignment:
-                  //                           MainAxisAlignment.center,
-                  //                       children: [
-                  //                         Text(
-                  //                           'Please log in first',
-                  //                           style: TextStyle(
-                  //                             fontSize: 18,
-                  //                             fontWeight: FontWeight.w500,
-                  //                           ),
-                  //                         ),
-                  //                       ],
-                  //                     ),
-                  //                     const SizedBox(height: 15),
-                  //                     GestureDetector(
-                  //                       onTap: () {
-                  //                         Navigator.push(
-                  //                           context,
-                  //                           MaterialPageRoute(
-                  //                               builder: (context) =>
-                  //                                   const LoginPage()),
-                  //                         );
-                  //                       },
-                  //                       child: const Row(
-                  //                         mainAxisAlignment:
-                  //                             MainAxisAlignment.end,
-                  //                         children: [
-                  //                           Icon(Icons.login),
-                  //                           SizedBox(width: 5),
-                  //                           Text(
-                  //                             'Login',
-                  //                             style: TextStyle(
-                  //                               fontSize: 16,
-                  //                               fontWeight: FontWeight.w500,
-                  //                             ),
-                  //                           ),
-                  //                         ],
-                  //                       ),
-                  //                     ),
-                  //                   ],
-                  //                 ),
-                  //               ),
-                  //             ),
-                  //           ],
-                  //         );
-                  //       },
-                  //     );
-                  //   },
-                  //   child: Row(
-                  //     children: [
-                  //       Icon(
-                  //         Icons.add_circle,
-                  //         color: Colors.yellow.shade600,
-                  //         size: 25,
-                  //       ),
-                  //       const SizedBox(
-                  //         width: 5,
-                  //       ),
-                  //       const Text(
-                  //         'Invite buddy',
-                  //         style: TextStyle(
-                  //             fontSize: 13,
-                  //             fontWeight: FontWeight.bold,
-                  //             color: Colors.black,
-                  //             decoration: TextDecoration.underline,
-                  //             decorationThickness: 0.5),
-                  //       )
-                  //     ],
-                  //   ),
-                  // ),
-                  // const SizedBox(
-                  //   height: 24,
-                  // ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                height: 30,
+                              ),
+                              AlertDialog(
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                                content: Container(
+                                  height: 85,
+                                  width: 850,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      SizedBox(
+                                        height: 20,
+                                      ),
+                                      const Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            'Please log in first',
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 15),
+                                      GestureDetector(
+                                        onTap: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const LoginPage()),
+                                          );
+                                        },
+                                        child: const Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            Icon(Icons.login),
+                                            SizedBox(width: 5),
+                                            Text(
+                                              'Login',
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.add_circle,
+                          color: Colors.yellow.shade600,
+                          size: 25,
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        const Text(
+                          'Invite buddy',
+                          style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                              decoration: TextDecoration.underline,
+                              decorationThickness: 0.5),
+                        )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 24,
+                  ),
                   const Divider(
                     thickness: 1,
                     color: Colors.grey,
@@ -346,13 +347,31 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
                   const SizedBox(
                     height: 200,
                   ),
-                  const Padding(
+                   Padding(
                     padding: EdgeInsets.only(left: 10),
                     child: Row(
                       children: [
-                        Text('Reviews',
+                        const Text('Reviews',
                             style: TextStyle(
                                 fontSize: 20, fontWeight: FontWeight.bold)),
+                                Spacer(),
+                                 Icon(
+                          Icons.add_circle,
+                          color: Colors.yellow.shade600,
+                          size: 25,
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        const Text(
+                          'Invite buddy',
+                          style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                              decoration: TextDecoration.underline,
+                              decorationThickness: 0.5),
+                        )
                       ],
                     ),
                   ),

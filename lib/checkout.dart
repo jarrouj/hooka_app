@@ -1,5 +1,6 @@
 import 'package:dotted_line_flutter/dotted_line_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:hooka_app/allpages.dart';
 import 'package:hooka_app/complete-order.dart';
@@ -11,12 +12,15 @@ class CheckoutPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.white,
-        title: const Center(
+        title:  Center(
           child: Text(
             'Checkout',
-            style: TextStyle(fontSize: 20),
+            style: GoogleFonts.comfortaa(fontSize: 20),
           ),
         ),
+        actions: [
+          SizedBox(width: 45,),
+        ],
         leading: IconButton(
           icon: const Icon(
             Icons.arrow_back_ios,

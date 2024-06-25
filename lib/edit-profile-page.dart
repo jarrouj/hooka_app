@@ -6,6 +6,7 @@ import 'package:hooka_app/experience.dart';
 import 'package:hooka_app/personal.dart';
 import 'package:hooka_app/tab-item.dart';
 import 'package:hive/hive.dart';
+import 'package:image_picker/image_picker.dart';
 
 class EditProfilePage extends StatefulWidget {
   final List<Map<String, dynamic>> basicInfo;
@@ -30,6 +31,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   late List<Map<String, dynamic>> educations;
   late List<Map<String, dynamic>> experiences;
   late List<Map<String, dynamic>> addresses;
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
@@ -81,6 +83,70 @@ class _EditProfilePageState extends State<EditProfilePage> {
     });
   }
 
+  Future<void> _pickImage(ImageSource source) async {
+    final pickedFile = await _picker.pickImage(source: source);
+
+    if (pickedFile != null) {
+      var box = Hive.box('userBox');
+      box.put('profileImage', pickedFile.path);
+
+      setState(() {
+        basicInfo.firstWhere((item) => item['label'] == 'Profile Image')['value'] = pickedFile.path;
+      });
+    }
+  }
+
+  void _showImageSourceDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.black,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  children: [
+                     Text(
+                      'Choose an option',
+                      style: TextStyle(
+                        color: Colors.yellow.shade600,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20),
+                ListTile(
+                  leading: Icon(Icons.camera_alt_outlined, color: Colors.yellow.shade600),
+                  title: Text('Camera', style: TextStyle(color: Colors.yellow.shade600)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickImage(ImageSource.camera);
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.photo, color: Colors.yellow.shade600),
+                  title: Text('Gallery', style: TextStyle(color: Colors.yellow.shade600)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    _pickImage(ImageSource.gallery);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -97,6 +163,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
               _saveProfile();
             },
           ),
+          actions: const [
+            SizedBox(width: 45,),
+          ],
         ),
         body: Stack(
           children: [
@@ -166,7 +235,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         child: PersonalTab(
                           data: basicInfo,
                           onSave: _updateBasicInfo,
-                          saveProfile: _saveProfile,  // Pass down the save function
+                          saveProfile: _saveProfile,  
                         ),
                       ),
                       EducationTab(
@@ -216,15 +285,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
             Positioned(
               top: 170,
               right: 100,
-              child: Container(
-                width: 60,
-                height: 60,
-                decoration: BoxDecoration(
-                  color: Colors.black,
-                  borderRadius: BorderRadius.circular(50),
-                ),
-                child: Center(
-                  child: Icon(Icons.camera_alt_outlined, color: Colors.yellow.shade600),
+              child: GestureDetector(
+                onTap: (){
+                  _showImageSourceDialog(context);
+                },
+                child: Container(
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    color: Colors.black,
+                    borderRadius: BorderRadius.circular(50),
+                  ),
+                  child: Center(
+                    child: Icon(Icons.camera_alt_outlined, color: Colors.yellow.shade600),
+                  ),
                 ),
               ),
             ),

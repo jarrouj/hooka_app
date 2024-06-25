@@ -17,11 +17,11 @@ class _ProductsPageState extends State<ProductsPage> {
     Product(
         name: "Margerita Pizza",
         image: "assets/images/pizza.jpg",
-        price: 5.00),
+        price: 5),
     Product(
         name: "Margerita Pizza 2",
         image: "assets/images/pizza.jpg",
-        price: 20.00),
+        price: 20),
   ];
 
   @override
@@ -115,7 +115,7 @@ class ProductsContent extends StatelessWidget {
                   },
                   child: Container(
                     width: MediaQuery.of(context).size.width - 32, // Adjust width for padding
-                    height: MediaQuery.of(context).size.height * 0.15,
+                    height: MediaQuery.of(context).size.height * 0.17,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       border: Border.all(
@@ -364,7 +364,7 @@ class _DetailsState extends State<Details> with TickerProviderStateMixin {
                       ),
                       if (!_controllers[index].isCompleted && !_controllers[index].isAnimating)
                         Positioned(
-                          right: 11,
+                          right: 1,
                           top: 15,
                           child: Container(
                             width: 45,
@@ -376,7 +376,7 @@ class _DetailsState extends State<Details> with TickerProviderStateMixin {
                           ),
                         ),
                       Positioned(
-                        right: 13,
+                        right: 3,
                         top: 18,
                         child: AnimatedBuilder(
                           animation: animation,

@@ -39,7 +39,7 @@ class _CartPageState extends State<CartPage> {
       if (quantity == 0) {
         _removeCartItem(product);
       } else {
-        cartBox.put(product.name, product); // Update the item in Hive
+        cartBox.put(product.name, product); 
       }
     });
   }
@@ -96,7 +96,7 @@ class _CartPageState extends State<CartPage> {
                           padding: const EdgeInsets.only(left: 10, right: 10, top: 10),
                           child: Container(
                             width: double.infinity,
-                            height: 100,
+                            height: 105,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(20),
                               color: Colors.white,

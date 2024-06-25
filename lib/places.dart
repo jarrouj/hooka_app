@@ -408,7 +408,7 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
                 : filteredPlaces.isEmpty
                     ? const Center(
                         child: Text(
-                          'No data found',
+                          'No restaurants found',
                           style: TextStyle(fontSize: 20),
                         ),
                       )
@@ -530,7 +530,7 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
                                           ),
                                         ],
                                       ),
-                                      const SizedBox(height: 3),
+                                      // const SizedBox(height: 3),
                                       Text(
                                         place.location,
                                         style: const TextStyle(

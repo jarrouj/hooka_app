@@ -24,7 +24,7 @@ class _EducationTabState extends State<EducationTab> {
   @override
   void initState() {
     super.initState();
-    educations = List.from(widget.items); 
+    educations = List.from(widget.items);
   }
 
   void _addEducation(Map<String, dynamic> newEducation) async {
@@ -56,6 +56,7 @@ class _EducationTabState extends State<EducationTab> {
 
   @override
   Widget build(BuildContext context) {
+    var screenWidth = MediaQuery.of(context).size.width;
     return Stack(
       children: [
         Padding(
@@ -72,15 +73,16 @@ class _EducationTabState extends State<EducationTab> {
                       child: Card(
                         child: Container(
                           decoration: BoxDecoration(
-                              border: Border.all(
-                            color: Colors.black,
-                            width: 1,
-                          )),
+                            border: Border.all(
+                              color: Colors.black,
+                              width: 1,
+                            ),
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
-                                height: 70,
+                                height: screenWidth * 0.2,
                                 width: double.infinity,
                                 color: Colors.yellow.shade600,
                                 child: const Row(
@@ -93,80 +95,69 @@ class _EducationTabState extends State<EducationTab> {
                               ),
                               const SizedBox(height: 16),
                               Container(
-                                  width: double.infinity,
-                                  height: 25,
-                                  color: Colors.grey.shade300,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 0),
-                                    child: Center(
-                                      child: Text(
-                                        'University:      ${item['university']}',
-                                        style: TextStyle(fontSize: 17),
-                                      ),
-                                    ),
-                                  )),
+                                width: double.infinity,
+                                height: screenWidth * 0.07,
+                                color: Colors.grey.shade300,
+                                child: Center(
+                                  child: Text(
+                                    'University:      ${item['university']}',
+                                    style: TextStyle(fontSize: screenWidth * 0.05),
+                                  ),
+                                ),
+                              ),
                               SizedBox(height: 16),
                               Container(
-                                  width: double.infinity,
-                                  height: 25,
-                                  color: Colors.grey.shade300,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 0),
-                                    child: Center(
-                                      child: Text(
-                                        'Degree:           ${item['degree']}',
-                                        style: const TextStyle(fontSize: 17),
+                                width: double.infinity,
+                                height: screenWidth * 0.07,
+                                color: Colors.grey.shade300,
+                                child: Center(
+                                  child: Text(
+                                    'Degree:           ${item['degree']}',
+                                    style: const TextStyle(fontSize: 20),
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 16),
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: screenWidth * 0.42,
+                                      height: screenWidth * 0.07,
+                                      color: Colors.grey.shade300,
+                                      child: Center(
+                                        child: Text(
+                                          'From : ${item['from']}',
+                                          style: TextStyle(fontSize: screenWidth * 0.043),
+                                        ),
                                       ),
                                     ),
-                                  )),
-                              SizedBox(height: 16),
-                              Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10),
-                                    child: Container(
-                                        width: 150,
-                                        height: 25,
-                                        color: Colors.grey.shade300,
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 10),
-                                          child: Center(
-                                            child: Text(
-                                              'From : ${item['from']}',
-                                              style: TextStyle(fontSize: 13),
-                                            ),
-                                          ),
-                                        )),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10),
-                                    child: Container(
-                                        width: 150,
-                                        height: 25,
-                                        color: Colors.grey.shade300,
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 0),
-                                          child: Center(
-                                            child: Text(
-                                              'To : ${item['to']}',
-                                              style: TextStyle(fontSize: 13),
-                                            ),
-                                          ),
-                                        )),
-                                  ),
-                                ],
+                                    SizedBox(
+                                      width: screenWidth * 0.042,
+                                    ),
+                                    Container(
+                                      width: screenWidth * 0.38,
+                                      height: screenWidth * 0.07,
+                                      color: Colors.grey.shade300,
+                                      child: Center(
+                                        child: Text(
+                                          'To : ${item['to']}',
+                                          style: TextStyle(fontSize: screenWidth * 0.045),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                               SizedBox(height: 16),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Container(
-                                    height: 40,
-                                    width: 140,
+                                    height: screenWidth * 0.09,
+                                    width: screenWidth * 0.36,
                                     decoration: BoxDecoration(
                                       color: Colors.black,
                                       border: Border.all(),
@@ -178,7 +169,7 @@ class _EducationTabState extends State<EducationTab> {
                                       },
                                       child: const Center(
                                         child: Padding(
-                                          padding: EdgeInsets.all(8.0),
+                                          padding: EdgeInsets.all(6.0),
                                           child: Row(
                                             children: [
                                               Icon(
@@ -231,8 +222,8 @@ class _EducationTabState extends State<EducationTab> {
               }
             },
             child: Container(
-              height: 55,
-              width: 55,
+              height: screenWidth * 0.14,
+              width: screenWidth * 0.14,
               decoration: BoxDecoration(
                 color: Colors.black,
                 border: Border.all(),
@@ -241,6 +232,7 @@ class _EducationTabState extends State<EducationTab> {
               child: Icon(
                 Icons.add,
                 color: Colors.yellow,
+                size: screenWidth * 0.07,
               ),
             ),
           ),
@@ -268,48 +260,48 @@ class _AddEducationPageState extends State<AddEducationPage> {
     DateTime firstDate = DateTime(1900);
     DateTime lastDate = DateTime(2100);
 
-    DateTime? pickedDate = await showModalBottomSheet<DateTime>(
+    DateTime selectedDate = initialDate;
+    await showModalBottomSheet<DateTime>(
       context: context,
       builder: (BuildContext context) {
-        DateTime selectedDate = initialDate;
-        return Container(
-          height: 250,
-          color: Colors.transparent,
-          child: Column(
-            children: [
-              Expanded(
-                child: CupertinoDatePicker(
-                  mode: CupertinoDatePickerMode.date,
-                  initialDateTime: initialDate,
-                  minimumDate: firstDate,
-                  maximumDate: lastDate,
-                  onDateTimeChanged: (DateTime date) {
-                    selectedDate = date;
-                  },
+        return GestureDetector(
+          onTap: () {
+            Navigator.pop(context, selectedDate);
+          },
+          child: Container(
+            height: 250,
+            color: Colors.transparent,
+            child: Column(
+              children: [
+                Expanded(
+                  child: CupertinoDatePicker(
+                    mode: CupertinoDatePickerMode.date,
+                    initialDateTime: initialDate,
+                    minimumDate: firstDate,
+                    maximumDate: lastDate,
+                    onDateTimeChanged: (DateTime date) {
+                      selectedDate = date;
+                    },
+                  ),
                 ),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context, selectedDate);
-                },
-                child: Text('Done'),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },
-    );
-
-    if (pickedDate != null && pickedDate != initialDate) {
-      setState(() {
-        controller.text =
-            "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
-      });
-    }
+    ).then((pickedDate) {
+      if (pickedDate != null && pickedDate != initialDate) {
+        setState(() {
+          controller.text =
+              "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
+        });
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    var screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Education'),
@@ -352,6 +344,10 @@ class _AddEducationPageState extends State<AddEducationPage> {
                 },
               ),
               SizedBox(height: 16),
+              Row(children: [
+                Text('From' ,style: TextStyle(fontWeight: FontWeight.w500, fontSize: 17),
+                )
+              ],),
               TextFormField(
                 controller: _fromDateController,
                 readOnly: true,
@@ -371,6 +367,10 @@ class _AddEducationPageState extends State<AddEducationPage> {
                 },
               ),
               SizedBox(height: 16),
+                 Row(children: [
+                Text('To' ,style: TextStyle(fontWeight: FontWeight.w500, fontSize: 17),
+                )
+              ],),
               TextFormField(
                 controller: _toDateController,
                 readOnly: true,
@@ -389,22 +389,39 @@ class _AddEducationPageState extends State<AddEducationPage> {
                   return null;
                 },
               ),
-              SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    final newEducation = {
-                      'university': _universityController.text,
-                      'degree': _degreeController.text,
-                      'from': _fromDateController.text,
-                      'to': _toDateController.text,
-                    };
-                    Navigator.pop(context, newEducation);
-                  }
+              const SizedBox(height: 25),
+              GestureDetector(
+                onTap: (){
+                    if (_formKey.currentState!.validate()) {
+                      final newEducation = {
+                        'university': _universityController.text,
+                        'degree': _degreeController.text,
+                        'from': _fromDateController.text,
+                        'to': _toDateController.text,
+                      };
+                      Navigator.pop(context, newEducation);
+                    }
+                  
                 },
-                child: Text('Save'),
+                child: Container(
+                 width: 100,
+                 height: 40,
+                 decoration: BoxDecoration(
+                   borderRadius: BorderRadius.circular(10.0),
+                   color: Colors.yellow.shade600,
+                 ),
+                 child: Center(
+                  child: Center(
+                    child: Text('Add' , style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),)
+                    ),
+                ),
               ),
-            ],
+              )
+              ],
           ),
         ),
       ),

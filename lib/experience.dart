@@ -56,6 +56,8 @@ class _ExperienceTabState extends State<ExperienceTab> {
 
   @override
   Widget build(BuildContext context) {
+    var screenWidth = MediaQuery.of(context).size.width;
+    var screenHeight = MediaQuery.of(context).size.height;
     return Stack(
       children: [
         Padding(
@@ -80,93 +82,86 @@ class _ExperienceTabState extends State<ExperienceTab> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
-                                height: 70,
+                                height: screenWidth * 0.2,
                                 width: double.infinity,
                                 color: Colors.yellow.shade600,
                                 child: const Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Icon(Icons.work,
-                                        color: Colors.black, size: 60),
+                                        color: Colors.black, size: 80),
                                   ],
                                 ),
                               ),
                               const SizedBox(height: 16),
                               Container(
                                   width: double.infinity,
-                                  height: 25,
+                                  height: screenWidth * 0.07,
                                   color: Colors.grey.shade300,
                                   child: Padding(
                                     padding: const EdgeInsets.only(left: 0),
                                     child: Center(
                                       child: Text(
-                                        'Title:            ${item['title']}',
-                                        style: TextStyle(fontSize: 17),
+                                        'Place:            ${item['title']}',
+                                        style: TextStyle(fontSize: screenWidth * 0.05),
                                       ),
                                     ),
                                   )),
                               SizedBox(height: 16),
                               Container(
                                   width: double.infinity,
-                                  height: 25,
+                                  height: screenWidth * 0.07,
                                   color: Colors.grey.shade300,
                                   child: Padding(
                                     padding: const EdgeInsets.only(left: 0),
                                     child: Center(
                                       child: Text(
                                         'Position:            ${item['position']}',
-                                        style: const TextStyle(fontSize: 17),
+                                        style: TextStyle(fontSize: screenWidth * 0.05),
                                       ),
                                     ),
                                   )),
                               SizedBox(height: 16),
-                              Row(
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10),
-                                    child: Container(
-                                        width: 150,
-                                        height: 25,
-                                        color: Colors.grey.shade300,
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 10),
-                                          child: Center(
-                                            child: Text(
-                                              'From : ${item['from']}',
-                                              style: TextStyle(fontSize: 13),
-                                            ),
-                                          ),
-                                        )),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 10),
-                                    child: Container(
-                                        width: 150,
-                                        height: 25,
-                                        color: Colors.grey.shade300,
-                                        child: Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 0),
-                                          child: Center(
-                                            child: Text(
-                                              'To : ${item['to']}',
-                                              style: TextStyle(fontSize: 13),
-                                            ),
-                                          ),
-                                        )),
-                                  ),
-                                ],
+                              Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      width: screenWidth * 0.42,
+                                      height: screenWidth * 0.07,
+                                      color: Colors.grey.shade300,
+                                      child: Center(
+                                        child: Text(
+                                          'From : ${item['from']}',
+                                          style: TextStyle(fontSize: screenWidth * 0.045),
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: screenWidth * 0.042,
+                                    ),
+                                    Container(
+                                      width: screenWidth * 0.38,
+                                      height: screenWidth * 0.07,
+                                      color: Colors.grey.shade300,
+                                      child: Center(
+                                        child: Text(
+                                          'To : ${item['to']}',
+                                          style: TextStyle(fontSize: screenWidth * 0.045),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                              SizedBox(height: 16),
+                              SizedBox(height: screenHeight * 0.035),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Container(
-                                    height: 40,
-                                    width: 140,
+                                    height: screenWidth * 0.09,
+                                    width: screenWidth * 0.38,
                                     decoration: BoxDecoration(
                                       color: Colors.black,
                                       border: Border.all(),
@@ -176,33 +171,29 @@ class _ExperienceTabState extends State<ExperienceTab> {
                                       onTap: () {
                                         _removeExperience(index);
                                       },
-                                      child: const Center(
-                                        child: Padding(
-                                          padding: EdgeInsets.all(8.0),
-                                          child: Row(
-                                            children: [
-                                              Icon(
-                                                Icons.delete,
-                                                color: Colors.white,
-                                              ),
-                                              SizedBox(
-                                                width: 5,
-                                              ),
-                                              Text('Remove item',
-                                                  style: TextStyle(
-                                                      color: Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.w600)),
-                                            ],
+                                      child:const Row(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Icon(
+                                            Icons.delete,
+                                            color: Colors.white,
                                           ),
-                                        ),
+                                          SizedBox(
+                                            width: 5,
+                                          ),
+                                          Text('Remove item',
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight:
+                                                      FontWeight.w600)),
+                                        ],
                                       ),
                                     ),
                                   )
                                 ],
                               ),
                               const SizedBox(
-                                height: 30,
+                                height: 15,
                               ),
                             ],
                           ),
@@ -231,8 +222,8 @@ class _ExperienceTabState extends State<ExperienceTab> {
               }
             },
             child: Container(
-              height: 55,
-              width: 55,
+              height: screenWidth * 0.14,
+              width: screenWidth * 0.14,
               decoration: BoxDecoration(
                 color: Colors.black,
                 border: Border.all(),
@@ -241,6 +232,7 @@ class _ExperienceTabState extends State<ExperienceTab> {
               child: Icon(
                 Icons.add,
                 color: Colors.yellow,
+                size: screenWidth * 0.07,
               ),
             ),
           ),
@@ -310,6 +302,7 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
 
   @override
   Widget build(BuildContext context) {
+    var screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Experience'),
@@ -320,22 +313,7 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
           key: _formKey,
           child: Column(
             children: [
-              TextFormField(
-                controller: _titleController,
-                decoration: InputDecoration(
-                  labelText: 'Title',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter title';
-                  }
-                  return null;
-                },
-              ),
-              SizedBox(height: 16),
+             
               TextFormField(
                 controller: _positionController,
                 decoration: InputDecoration(
@@ -351,7 +329,29 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
                   return null;
                 },
               ),
+
               SizedBox(height: 16),
+
+               TextFormField(
+                controller: _titleController,
+                decoration: InputDecoration(
+                  labelText: 'City',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter city';
+                  }
+                  return null;
+                },
+              ),
+              SizedBox(height: 16),
+                   Row(children: [
+                Text('From' ,style: TextStyle(fontWeight: FontWeight.w500, fontSize: 17),
+                ),
+            ]),
               TextFormField(
                 controller: _fromDateController,
                 readOnly: true,
@@ -371,6 +371,10 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
                 },
               ),
               SizedBox(height: 16),
+               Row(children: [
+                Text('To' ,style: TextStyle(fontWeight: FontWeight.w500, fontSize: 17),
+                ),
+            ]),
               TextFormField(
                 controller: _toDateController,
                 readOnly: true,
@@ -389,10 +393,10 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
                   return null;
                 },
               ),
-              SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
+              SizedBox(height: 20),
+               GestureDetector(
+                onTap: (){
+                    if (_formKey.currentState!.validate()) {
                     final newExperience = {
                       'title': _titleController.text,
                       'position': _positionController.text,
@@ -400,10 +404,27 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
                       'to': _toDateController.text,
                     };
                     Navigator.pop(context, newExperience);
-                  }
+                    }
+                  
                 },
-                child: Text('Add Experience'),
+                child: Container(
+                 width: 100,
+                 height: 40,
+                 decoration: BoxDecoration(
+                   borderRadius: BorderRadius.circular(10.0),
+                   color: Colors.yellow.shade600,
+                 ),
+                 child: const Center(
+                  child: Center(
+                    child: Text('Add' , style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),)
+                    ),
+                ),
               ),
+              )
             ],
           ),
         ),
