@@ -36,7 +36,10 @@ Future<void> main() async {
   Hive.init(appDocumentDir.path);
   Hive.registerAdapter(ProductAdapter());
   await Hive.openBox<Product>('productsBox');
-
+  await Hive.openBox('userBox');
+    await Hive.openBox('userInfoBox');
+    await Hive.openBox('aboutBox');
+    await Hive.openBox('interestBox');
   await Hive.openBox<Product>('cartBox2');
   mybox = await openHiveBox('Favorite');
 
@@ -168,14 +171,14 @@ class _MenuScreenState extends State<MenuScreen> {
     ),
   ];
 
-  String _firstName = 'Georges';
-  String _lastName = 'Jarrouj';
+  String _firstName = '';
+  String _lastName = '';
 
   void _loadUserName() async {
     var box = await Hive.openBox('userBox');
     setState(() {
-      _firstName = box.get('firstName', defaultValue: 'Georges');
-      _lastName = box.get('lastName', defaultValue: 'Jarrouj');
+      _firstName = box.get('firstName', defaultValue: '');
+      _lastName = box.get('lastName', defaultValue: '');
     });
   }
 

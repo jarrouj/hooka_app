@@ -36,6 +36,7 @@ class _AddressTabState extends State<AddressTab> {
     await box.put('addressCi$index', newAddress['city']);
     await box.put('addressSt$index', newAddress['street']);
     await box.put('addressBu$index', newAddress['building']);
+    await box.put('addressAp$index', newAddress['appartment']);
     widget.onAdd(newAddress);
   }
 
@@ -49,6 +50,7 @@ class _AddressTabState extends State<AddressTab> {
       await box.delete('addressCi$index');
       await box.delete('addressSt$index');
       await box.delete('addressBu$index');
+      await box.delete('addressAp$index');
       widget.onRemove(index);
     }
   }
@@ -266,6 +268,7 @@ class _AddAddressPageState extends State<AddAddressPage> {
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _streetController = TextEditingController();
   final TextEditingController _buildingController = TextEditingController();
+  final TextEditingController _appartmentController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -342,6 +345,22 @@ class _AddAddressPageState extends State<AddAddressPage> {
                   return null;
                 },
               ),
+               SizedBox(height: 16),
+              TextFormField(
+                controller: _appartmentController,
+                decoration: InputDecoration(
+                  labelText: 'Appartment *',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter appartment';
+                  }
+                  return null;
+                },
+              ),
               SizedBox(height: 16),
               SizedBox(height: 20),
               GestureDetector(
@@ -352,6 +371,7 @@ class _AddAddressPageState extends State<AddAddressPage> {
                       'city': _cityController.text,
                       'street': _streetController.text,
                       'building': _buildingController.text,
+                      'appartment': _appartmentController.text,
                     };
                     Navigator.pop(context, newExperince);
                   }

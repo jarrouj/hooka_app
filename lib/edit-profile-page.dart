@@ -44,8 +44,36 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   void _saveProfile() async {
     var box = Hive.box('userBox');
+    var userInfoBox = Hive.box('userInfoBox');
+    var aboutBox = Hive.box('aboutBox');
+    var interestBox = Hive.box('interestBox');
+
     for (var item in basicInfo) {
-      box.put(item['label'].toLowerCase().replaceAll(' ', ''), item['value']);
+      if (item['label'] == 'Date Of Birth') {
+        userInfoBox.put('dateOfBirth', item['value']);
+      } else if (item['label'] == 'Gender') {
+        userInfoBox.put('gender', item['value']);
+      } else if (item['label'] == 'Status') {
+        userInfoBox.put('maritalStatus', item['value']);
+      } else if (item['label'] == 'Height') {
+        userInfoBox.put('height', item['value']);
+      } else if (item['label'] == 'Weight') {
+        userInfoBox.put('weight', item['value']);
+      } else if (item['label'] == 'Body Type') {
+        userInfoBox.put('bodyType', item['value']);
+      } else if (item['label'] == 'Hair') {
+        userInfoBox.put('hairType', item['value']);
+      } else if (item['label'] == 'Eyes') {
+        userInfoBox.put('eyeColor', item['value']);
+      } else if (item['label'] == 'Bio') {
+        aboutBox.put('bio', item['value']);
+      } else if (item['label'] == 'Profession') {
+        aboutBox.put('profession', item['value']);
+      } else if (item['label'] == 'Hobbies') {
+        aboutBox.put('hobbies', item['value']);
+      } else if (item['label'] == 'Interest') {
+        interestBox.put('interest', item['value']);
+      }
     }
 
     for (var i = 0; i < educations.length; i++) {
@@ -63,10 +91,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
 
     for (var i = 0; i < addresses.length; i++) {
-      box.put('addressTitle$i', addresses[i]['title']);
-      box.put('addressCity$i', addresses[i]['city']);
-      box.put('addressStreet$i', addresses[i]['street']);
-      box.put('addressBuilding$i', addresses[i]['building']);
+      box.put('addressTi$i', addresses[i]['title']);
+      box.put('addressCi$i', addresses[i]['city']);
+      box.put('addressSt$i', addresses[i]['street']);
+      box.put('addressBu$i', addresses[i]['building']);
     }
 
     Navigator.pop(context, {
@@ -112,7 +140,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               children: [
                 Row(
                   children: [
-                     Text(
+                    Text(
                       'Choose an option',
                       style: TextStyle(
                         color: Colors.yellow.shade600,

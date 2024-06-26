@@ -23,67 +23,59 @@ class _ProfilePageState extends State<ProfilePage> {
   List<Map<String, dynamic>> educations = [];
   List<Map<String, dynamic>> experiences = [];
   List<Map<String, dynamic>> addresses = [];
-  String _firstName = 'Georges';
-  String _lastName = 'Jarrouj';
-  String _email = 'georgesjarrouj3@gmail.com';
-  String _mobile = '76974972';
+  String _firstName = '';
+  String _lastName = '';
+  String _email = '';
+  String _mobile = '';
 
   @override
   void initState() {
     super.initState();
-    _initializeHive();
-    _initializeProfileData();
-    _loadUserName();
-    _changeBodyContent();
+    _initializeHive().then((_) {
+      _initializeProfileData();
+      _loadUserName();
+      _changeBodyContent();
+    });
   }
 
   Future<void> _initializeHive() async {
     final directory = await getApplicationDocumentsDirectory();
     Hive.init(directory.path);
     await Hive.openBox('userBox');
+    await Hive.openBox('userInfoBox');
+    await Hive.openBox('aboutBox');
+    await Hive.openBox('interestBox');
   }
 
   void _initializeProfileData() {
-    final box = Hive.box('userBox');
+    final userBox = Hive.box('userBox');
+    final userInfoBox = Hive.box('userInfoBox');
+    final aboutBox = Hive.box('aboutBox');
+    final interestBox = Hive.box('interestBox');
 
     basicInfo = [
-      {
-        'label': 'Date Of Birth',
-        'value': box.get('dateOfBirth')
-      },
-      {'label': 'Gender', 'value': box.get('gender', )},
-      {'label': 'Status', 'value': box.get('status', )},
-      {'label': 'Height', 'value': box.get('height', )},
-      {
-        'label': 'Weight',
-        'value': box.get('weight',)
-      },
-      {
-        'label': 'Body Type',
-        'value': box.get('bodyType')
-      },
-      {'label': 'Hair', 'value': box.get('hair', )},
-      {'label': 'Eyes', 'value': box.get('eyes',)},
-      {'label': 'First Name', 'value': _firstName},
-      {'label': 'Last Name', 'value': _lastName},
-      {'label': 'Email', 'value': _email},
-      {'label': 'Mobile', 'value': _mobile},
-      {'label': 'Facebook Url', 'value': box.get('facebook', defaultValue: '')},
-      {
-        'label': 'Instagram Url',
-        'value': box.get('instagram', defaultValue: '')
-      },
-      {'label': 'Tiktok Url', 'value': box.get('tiktok', defaultValue: '')},
+      {'label': 'Date Of Birth', 'value': userInfoBox.get('dateOfBirth', defaultValue: '')},
+      {'label': 'Gender', 'value': userInfoBox.get('gender', defaultValue: '')},
+      {'label': 'Status', 'value': userInfoBox.get('maritalStatus', defaultValue: '')},
+      {'label': 'Height', 'value': userInfoBox.get('height', defaultValue: '')},
+      {'label': 'Weight', 'value': userInfoBox.get('weight', defaultValue: '')},
+      {'label': 'Body Type', 'value': userInfoBox.get('bodyType', defaultValue: '')},
+      {'label': 'Hair', 'value': userInfoBox.get('hairType', defaultValue: '')},
+      {'label': 'Eyes', 'value': userInfoBox.get('eyeColor', defaultValue: '')},
+      {'label': 'Bio', 'value': aboutBox.get('bio', defaultValue: '')},
+      {'label': 'Profession', 'value': aboutBox.get('profession', defaultValue: '')},
+      {'label': 'Hobbies', 'value': aboutBox.get('hobbies', defaultValue: '')},
+      {'label': 'Interest', 'value': interestBox.get('interest', defaultValue: '')},
     ];
 
     educations.clear();
     for (int i = 0;; i++) {
-      if (box.containsKey('university$i')) {
+      if (userBox.containsKey('university$i')) {
         educations.add({
-          'university': box.get('university$i'),
-          'from': box.get('educationFrom$i'),
-          'to': box.get('educationTo$i'),
-          'degree': box.get('degree$i'),
+          'university': userBox.get('university$i'),
+          'from': userBox.get('educationFrom$i'),
+          'to': userBox.get('educationTo$i'),
+          'degree': userBox.get('degree$i'),
         });
       } else {
         break;
@@ -92,12 +84,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
     experiences.clear();
     for (int i = 0;; i++) {
-      if (box.containsKey('experienceTitle$i')) {
+      if (userBox.containsKey('experienceTitle$i')) {
         experiences.add({
-          'title': box.get('experienceTitle$i'),
-          'position': box.get('experiencePosition$i'),
-          'from': box.get('experienceFrom$i'),
-          'to': box.get('experienceTo$i'),
+          'title': userBox.get('experienceTitle$i'),
+          'position': userBox.get('experiencePosition$i'),
+          'from': userBox.get('experienceFrom$i'),
+          'to': userBox.get('experienceTo$i'),
         });
       } else {
         break;
@@ -106,12 +98,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
     addresses.clear();
     for (int i = 0;; i++) {
-      if (box.containsKey('addressTi$i')) {
+      if (userBox.containsKey('addressTitle$i')) {
         addresses.add({
-          'title': box.get('addressTi$i'),
-          'city': box.get('addressCi$i'),
-          'street': box.get('addressSt$i'),
-          'building': box.get('addressBu$i'),
+          'title': userBox.get('addressTitle$i'),
+          'city': userBox.get('addressCity$i'),
+          'street': userBox.get('addressStreet$i'),
+          'building': userBox.get('addressBuilding$i'),
         });
       } else {
         break;
@@ -126,7 +118,6 @@ class _ProfilePageState extends State<ProfilePage> {
       _lastName = box.get('lastName', defaultValue: 'Jarrouj');
       _email = box.get('email', defaultValue: 'georgesjarrouj3@gmail.com');
       _mobile = box.get('mobile', defaultValue: '76974972');
-      _initializeProfileData();
     });
   }
 
@@ -159,8 +150,44 @@ class _ProfilePageState extends State<ProfilePage> {
       });
 
       var box = Hive.box('userBox');
+      var userInfoBox = Hive.box('userInfoBox');
+      var aboutBox = Hive.box('aboutBox');
+      var interestBox = Hive.box('interestBox');
+
       for (var item in basicInfo) {
-        box.put(item['label'].toLowerCase().replaceAll(' ', ''), item['value']);
+        if (item['label'] == 'Date Of Birth') {
+          userInfoBox.put('dateOfBirth', item['value']);
+        } else if (item['label'] == 'Gender') {
+          userInfoBox.put('gender', item['value']);
+        } else if (item['label'] == 'Status') {
+          userInfoBox.put('maritalStatus', item['value']);
+        } else if (item['label'] == 'Height') {
+          userInfoBox.put('height', item['value']);
+        } else if (item['label'] == 'Weight') {
+          userInfoBox.put('weight', item['value']);
+        } else if (item['label'] == 'Body Type') {
+          userInfoBox.put('bodyType', item['value']);
+        } else if (item['label'] == 'Hair') {
+          userInfoBox.put('hairType', item['value']);
+        } else if (item['label'] == 'Eyes') {
+          userInfoBox.put('eyeColor', item['value']);
+        } else if (item['label'] == 'Bio') {
+          aboutBox.put('bio', item['value']);
+        } else if (item['label'] == 'Profession') {
+          aboutBox.put('profession', item['value']);
+        } else if (item['label'] == 'Hobbies') {
+          aboutBox.put('hobbies', item['value']);
+        } else if (item['label'] == 'Interest') {
+          interestBox.put('interest', item['value']);
+        } else if (item['label'] == 'First Name') {
+          box.put('firstName', item['value']);
+        } else if (item['label'] == 'Last Name') {
+          box.put('lastName', item['value']);
+        } else if (item['label'] == 'Email') {
+          box.put('email', item['value']);
+        } else if (item['label'] == 'Mobile') {
+          box.put('mobile', item['value']);
+        }
       }
 
       for (var i = 0; i < educations.length; i++) {
@@ -178,13 +205,15 @@ class _ProfilePageState extends State<ProfilePage> {
       }
 
       for (var i = 0; i < addresses.length; i++) {
-        box.put('addressTi$i', addresses[i]['title']);
-        box.put('addressCi$i', addresses[i]['city']);
-        box.put('addressSt$i', addresses[i]['street']);
-        box.put('addressBu$i', addresses[i]['building']);
+        box.put('addressTitle$i', addresses[i]['title']);
+        box.put('addressCity$i', addresses[i]['city']);
+        box.put('addressStreet$i', addresses[i]['street']);
+        box.put('addressBuilding$i', addresses[i]['building']);
       }
 
+      _loadUserName();
       widget.onProfileUpdate();
+      setState(() {}); 
     }
   }
 
@@ -215,6 +244,10 @@ class _ProfilePageState extends State<ProfilePage> {
       body: _showLoading
           ? const LoadingAllpages()
           : ProfileMainPage(
+              firstName: _firstName,
+              lastName: _lastName,
+              email: _email,
+              mobile: _mobile,
               basicInfo: basicInfo,
               educations: educations,
               experiences: experiences,
@@ -224,13 +257,22 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 }
 
+
 class ProfileMainPage extends StatelessWidget {
+  final String firstName;
+  final String lastName;
+  final String email;
+  final String mobile;
   final List<Map<String, dynamic>> basicInfo;
   final List<Map<String, dynamic>> educations;
   final List<Map<String, dynamic>> experiences;
   final List<Map<String, dynamic>> addresses;
 
   const ProfileMainPage({
+    required this.firstName,
+    required this.lastName,
+    required this.email,
+    required this.mobile,
     required this.basicInfo,
     required this.educations,
     required this.experiences,
@@ -239,7 +281,7 @@ class ProfileMainPage extends StatelessWidget {
   });
 
   String getValue(String label) {
-    return basicInfo.firstWhere((item) => item['label'] == label)['value'];
+    return basicInfo.firstWhere((item) => item['label'] == label, orElse: () => {'value': ''})['value'];
   }
 
   void _launchUrl(String url) async {
@@ -252,6 +294,8 @@ class ProfileMainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<Map<String, dynamic>> filteredBasicInfo = basicInfo.where((item) => item['value'].isNotEmpty && !['First Name', 'Last Name', 'Email', 'Mobile', 'Bio', 'Hobbies', 'Profession', 'Interest'].contains(item['label'])).toList();
+
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -260,7 +304,7 @@ class ProfileMainPage extends StatelessWidget {
             height: 300,
             decoration: BoxDecoration(
               color: Colors.grey.shade300,
-              borderRadius: BorderRadius.only(
+              borderRadius: const BorderRadius.only(
                 bottomLeft: Radius.circular(40),
                 bottomRight: Radius.circular(40),
               ),
@@ -270,7 +314,7 @@ class ProfileMainPage extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(left: 20, top: 10),
+            padding: const EdgeInsets.only(left: 20, top: 10),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -278,7 +322,7 @@ class ProfileMainPage extends StatelessWidget {
                   children: [
                     Flexible(
                       child: Text(
-                        '${getValue('First Name')} ${getValue('Last Name')}',
+                        '$firstName $lastName',
                         style: TextStyle(
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
@@ -292,42 +336,53 @@ class ProfileMainPage extends StatelessWidget {
                 Row(
                   children: [
                     Text(
-                      getValue('Email'),
+                      email,
                       overflow: TextOverflow.visible,
                     ),
                   ],
                 ),
                 Row(
                   children: [
-                    Text(getValue('Mobile')),
+                    Text(mobile),
                   ],
                 ),
+                const SizedBox(
+                  height: 20,
+                ),
+                if ((getValue('Bio') ?? '').isNotEmpty ||
+                    (getValue('Hobbies') ?? '').isNotEmpty ||
+                    (getValue('Profession') ?? '').isNotEmpty) ...[
+                  const Row(
+                    children: [
+                      Text(
+                        'About',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  if ((getValue('Bio') ?? '').isNotEmpty) Text(getValue('Bio')),
+                  if ((getValue('Hobbies') ?? '').isNotEmpty)
+                    Text('Hobbies: ${getValue('Hobbies')}'),
+                  if ((getValue('Profession') ?? '').isNotEmpty)
+                    Text('Profession: ${getValue('Profession')}'),
+                ],
                 const SizedBox(
                   height: 20,
                 ),
                 const Row(
                   children: [
                     Text(
-                      'About',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: 60,
-                ),
-                const Row(
-                  children: [
-                    Text(
                       'Basic Information',
                       style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18),
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18),
                     ),
                   ],
                 ),
@@ -338,128 +393,42 @@ class ProfileMainPage extends StatelessWidget {
                   border: TableBorder.all(color: Colors.grey.shade400),
                   defaultColumnWidth: const IntrinsicColumnWidth(),
                   children: [
-                    TableRow(
-                      children: [
-                        TableCell(
-                          verticalAlignment: TableCellVerticalAlignment.middle,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 17),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Date Of Birth', style: const TextStyle(fontSize: 11)),
-                                Text(getValue('Date Of Birth'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                              ],
-                            ),
-                          ),
-                        ),
-                        TableCell(
-                          verticalAlignment: TableCellVerticalAlignment.middle,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 17),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Gender', style: const TextStyle(fontSize: 11)),
-                                Text(getValue('Gender'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                              ],
-                            ),
-                          ),
-                        ),
-                        TableCell(
-                          verticalAlignment: TableCellVerticalAlignment.middle,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 17),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Status', style: const TextStyle(fontSize: 11)),
-                                Text(getValue('Status'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    TableRow(
-                      children: [
-                        TableCell(
-                          verticalAlignment: TableCellVerticalAlignment.middle,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 17),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Height', style: const TextStyle(fontSize: 11)),
-                                Text(getValue('Height'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                              ],
-                            ),
-                          ),
-                        ),
-                        TableCell(
-                          verticalAlignment: TableCellVerticalAlignment.middle,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 17),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Weight', style: const TextStyle(fontSize: 11)),
-                                Text(getValue('Weight'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                              ],
-                            ),
-                          ),
-                        ),
-                        TableCell(
-                          verticalAlignment: TableCellVerticalAlignment.middle,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 17),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Body Type', style: const TextStyle(fontSize: 11)),
-                                Text(getValue('Body Type'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    TableRow(
-                      children: [
-                        TableCell(
-                          verticalAlignment: TableCellVerticalAlignment.middle,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 17),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Hair', style: const TextStyle(fontSize: 11)),
-                                Text(getValue('Hair'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                              ],
-                            ),
-                          ),
-                        ),
-                        TableCell(
-                          verticalAlignment: TableCellVerticalAlignment.middle,
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 17),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Eyes', style: const TextStyle(fontSize: 11)),
-                                Text(getValue('Eyes'), style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-                              ],
-                            ),
-                          ),
-                        ),
-                        TableCell(
-                          child: Container(),
-                        ),
-                      ],
-                    ),
+                    for (int i = 0; i < filteredBasicInfo.length; i += 3)
+                      TableRow(
+                        children: [
+                          for (int j = 0; j < 3; j++)
+                            if (i + j < filteredBasicInfo.length)
+                              TableCell(
+                                verticalAlignment: TableCellVerticalAlignment.middle,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 17),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        filteredBasicInfo[i + j]['label'],
+                                        style: const TextStyle(fontSize: 11),
+                                      ),
+                                      Text(
+                                        filteredBasicInfo[i + j]['value'],
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              )
+                            else
+                              TableCell(
+                                child: Container(), // Empty cell
+                              ),
+                        ],
+                      ),
                   ],
                 ),
-                const SizedBox(height: 10),
+              
+                // const SizedBox(height: 20),
                 Table(
                   columnWidths: const {
                     0: IntrinsicColumnWidth(),
@@ -472,8 +441,7 @@ class ProfileMainPage extends StatelessWidget {
                         GestureDetector(
                           onTap: () => _launchUrl(getValue('Facebook Url')),
                           child: const Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 45),
+                            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 45),
                             child: Icon(
                               FontAwesomeIcons.facebook,
                               size: 20,
@@ -484,8 +452,7 @@ class ProfileMainPage extends StatelessWidget {
                         GestureDetector(
                           onTap: () => _launchUrl(getValue('Instagram Url')),
                           child: const Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 53),
+                            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 53),
                             child: Icon(
                               FontAwesomeIcons.instagram,
                               size: 20,
@@ -496,8 +463,7 @@ class ProfileMainPage extends StatelessWidget {
                         GestureDetector(
                           onTap: () => _launchUrl(getValue('Tiktok Url')),
                           child: const Padding(
-                            padding: EdgeInsets.symmetric(
-                                vertical: 10, horizontal: 55),
+                            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 55),
                             child: Icon(
                               FontAwesomeIcons.tiktok,
                               size: 20,
@@ -509,32 +475,35 @@ class ProfileMainPage extends StatelessWidget {
                     ),
                   ],
                 ),
-
-                SizedBox(height: 30,),
-                const Row(
-                  children: [
-                    Text('Interest' ,  style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18),
-                       )
-                  ],
-                ),
-                SizedBox(height: 10,),
-                Row(
-                  children: [
-                    Container(
-                      width: 75,
-                      height: 23,
-                      decoration: BoxDecoration(
-                        color: Colors.blue.shade200,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-
-                      child: Center(child: Text('int')),
-                    )
-                  ],
-                ),
+                const SizedBox(height: 20),
+                  if ((getValue('Interest') ?? '').isNotEmpty) ...[
+                  SizedBox(height: 30),
+                  const Row(
+                    children: [
+                      Text(
+                        'Interest',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18),
+                      )
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Container(
+                        width: 75,
+                        height: 23,
+                        decoration: BoxDecoration(
+                          color: Colors.blue.shade200,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Center(child: Text(getValue('Interest'))),
+                      )
+                    ],
+                  ),
+                ],
                 if (educations.isNotEmpty) ...[
                   SizedBox(
                     height: 40,
@@ -544,9 +513,9 @@ class ProfileMainPage extends StatelessWidget {
                       Text(
                         'Educations',
                         style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18),
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18),
                       ),
                     ],
                   ),
@@ -567,8 +536,7 @@ class ProfileMainPage extends StatelessWidget {
                               TableRow(
                                 children: [
                                   TableCell(
-                                    verticalAlignment:
-                                        TableCellVerticalAlignment.middle,
+                                    verticalAlignment: TableCellVerticalAlignment.middle,
                                     child: Padding(
                                       padding: EdgeInsets.only(
                                           left: 20,
@@ -576,8 +544,7 @@ class ProfileMainPage extends StatelessWidget {
                                           top: 15,
                                           bottom: 15),
                                       child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text('University'),
                                           Text(
@@ -590,8 +557,7 @@ class ProfileMainPage extends StatelessWidget {
                                     ),
                                   ),
                                   TableCell(
-                                    verticalAlignment:
-                                        TableCellVerticalAlignment.middle,
+                                    verticalAlignment: TableCellVerticalAlignment.middle,
                                     child: Padding(
                                       padding: EdgeInsets.only(
                                           left: 20,
@@ -599,8 +565,7 @@ class ProfileMainPage extends StatelessWidget {
                                           top: 15,
                                           bottom: 15),
                                       child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text('From'),
                                           Text(
@@ -617,8 +582,7 @@ class ProfileMainPage extends StatelessWidget {
                               TableRow(
                                 children: [
                                   TableCell(
-                                    verticalAlignment:
-                                        TableCellVerticalAlignment.middle,
+                                    verticalAlignment: TableCellVerticalAlignment.middle,
                                     child: Padding(
                                       padding: EdgeInsets.only(
                                           left: 20,
@@ -626,8 +590,7 @@ class ProfileMainPage extends StatelessWidget {
                                           top: 15,
                                           bottom: 15),
                                       child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text('Degree'),
                                           Text(
@@ -640,8 +603,7 @@ class ProfileMainPage extends StatelessWidget {
                                     ),
                                   ),
                                   TableCell(
-                                    verticalAlignment:
-                                        TableCellVerticalAlignment.middle,
+                                    verticalAlignment: TableCellVerticalAlignment.middle,
                                     child: Padding(
                                       padding: EdgeInsets.only(
                                           left: 20,
@@ -649,8 +611,7 @@ class ProfileMainPage extends StatelessWidget {
                                           top: 15,
                                           bottom: 15),
                                       child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text('To'),
                                           Text(
@@ -680,9 +641,9 @@ class ProfileMainPage extends StatelessWidget {
                       Text(
                         'Experiences',
                         style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18),
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18),
                       ),
                     ],
                   ),
@@ -814,8 +775,7 @@ class ProfileMainPage extends StatelessWidget {
                       Text(
                         'Addresses',
                         style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 20),
+                            fontWeight: FontWeight.bold, fontSize: 20),
                       ),
                     ],
                   ),
@@ -836,7 +796,7 @@ class ProfileMainPage extends StatelessWidget {
                                   TableCell(
                                     verticalAlignment:
                                         TableCellVerticalAlignment.middle,
-                                    child:  Padding(
+                                    child: Padding(
                                       padding: EdgeInsets.only(
                                           left: 20,
                                           right: 80,
