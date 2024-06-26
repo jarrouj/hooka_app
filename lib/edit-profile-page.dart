@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooka_app/address.dart';
@@ -119,7 +120,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
       box.put('profileImage', pickedFile.path);
 
       setState(() {
-        basicInfo.firstWhere((item) => item['label'] == 'Profile Image')['value'] = pickedFile.path;
+        final profileImageItem = basicInfo.firstWhere(
+          (item) => item['label'] == 'Profile Image',
+          orElse: () => {'label': 'Profile Image', 'value': null},
+        );
+        profileImageItem['value'] = pickedFile.path;
+        if (!basicInfo.contains(profileImageItem)) {
+          basicInfo.add(profileImageItem);
+        }
       });
     }
   }
@@ -177,6 +185,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final profileImageItem = basicInfo.firstWhere(
+      (item) => item['label'] == 'Profile Image',
+      orElse: () => {'label': 'Profile Image', 'value': null},
+    );
+
     return DefaultTabController(
       length: 4,
       child: Scaffold(
@@ -213,18 +226,25 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         borderRadius: BorderRadius.circular(100),
                       ),
                       child: ClipOval(
-                        child: Image.asset(
-                          'assets/images/profile-img.png',
-                          fit: BoxFit.cover,
-                          width: 200,
-                          height: 200,
-                        ),
+                        child: profileImageItem['value'] != null
+                          ? Image.file(
+                              File(profileImageItem['value']),
+                              fit: BoxFit.cover,
+                              width: 200,
+                              height: 200,
+                            )
+                          : Image.asset(
+                              'assets/images/profile-img.png',
+                              fit: BoxFit.cover,
+                              width: 200,
+                              height: 200,
+                            ),
                       ),
                     ),
                   ],
                 ),
                 const SizedBox(height: 30,),
-                PreferredSize(
+               PreferredSize(
                   preferredSize: const Size.fromHeight(40),
                   child: Container(
                     height: 40,
@@ -256,7 +276,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ),
                   ),
                 ),
-                Expanded(
+                const SizedBox(height: 10,),
+                  Expanded(
                   child: TabBarView(
                     children: [
                       SingleChildScrollView(
@@ -312,21 +333,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ),
             Positioned(
               top: 170,
-              right: 100,
-              child: GestureDetector(
-                onTap: (){
-                  _showImageSourceDialog(context);
-                },
-                child: Container(
-                  width: 60,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    borderRadius: BorderRadius.circular(50),
-                  ),
-                  child: Center(
-                    child: Icon(Icons.camera_alt_outlined, color: Colors.yellow.shade600),
-                  ),
+              left: MediaQuery.of(context).size.width / 1.7,
+              child: Container(
+                height: 50,
+                width: 50,
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(25),
+                ),
+                child: IconButton(
+                  icon: Icon(Icons.camera_alt, color: Colors.yellow.shade600),
+                  onPressed: () {
+                    _showImageSourceDialog(context);
+                  },
                 ),
               ),
             ),

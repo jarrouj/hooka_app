@@ -83,7 +83,7 @@ class _CheckoutBodyState extends State<CheckoutBody> {
                     'Your Basket',
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 25),
                   ...cartBox.values.map((product) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -136,7 +136,7 @@ class _CheckoutBodyState extends State<CheckoutBody> {
                     color: Colors.black,
                   ),
                   SizedBox(
-                    height: 40,
+                    height: 20,
                   ),
                   Text(
                     'Payment Method',
