@@ -13,31 +13,63 @@ class ProductsPage extends StatefulWidget {
 
 class _ProductsPageState extends State<ProductsPage> {
   bool isLoading = true;
-  List<Product> products = [
-    Product(
-        name: "Margerita Pizza",
-        image: "assets/images/pizza.jpg",
-        price: 5),
-    Product(
-        name: "Margerita Pizza 2",
-        image: "assets/images/pizza.jpg",
-        price: 20),
-  ];
+  List<Product> products = [];
 
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 3), () {
-      setState(() {
-        isLoading = false;
-      });
+    _loadProducts();
+  }
+
+  Future<void> _loadProducts() async {
+    final box = await Hive.openBox<Product>('productsBox');
+    if (box.isEmpty) {
+      products = [
+        Product(
+          name: "Margerita Pizza",
+          image: "assets/images/pizza.jpg",
+          price: 5,
+          quantity: 0,
+        ),
+        Product(
+          name: "Margerita Pizza 2",
+          image: "assets/images/pizza.jpg",
+          price: 20,
+          quantity: 0,
+        ),
+      ];
+      for (var product in products) {
+        await box.put(product.name, product);
+      }
+    } else {
+      products = box.values.toList();
+    }
+    setState(() {
+      isLoading = false;
     });
   }
 
-  void _updateProducts(List<Product> updatedProducts) {
+  void _updateProducts(List<Product> updatedProducts) async {
+    final box = await Hive.openBox<Product>('productsBox');
     setState(() {
       products = updatedProducts;
     });
+    await box.clear();
+    for (var product in updatedProducts) {
+      await box.put(product.name, product);
+    }
+  }
+
+  void _goToCart(BuildContext context) async {
+    final box = await Hive.openBox<Product>('cartBox2');
+    List<Product> cartItems = box.values.toList();
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CartPage(cartItems: cartItems),
+      ),
+    );
   }
 
   @override
@@ -51,9 +83,14 @@ class _ProductsPageState extends State<ProductsPage> {
             style: GoogleFonts.comfortaa(fontSize: 20),
           ),
         ),
-        actions: const [
-          Icon(Icons.shopping_cart),
-          SizedBox(
+        actions: [
+          GestureDetector(
+            onTap: () {
+              _goToCart(context);
+            },
+            child: const Icon(Icons.shopping_cart),
+          ),
+          const SizedBox(
             width: 15,
           ),
         ],
@@ -105,8 +142,7 @@ class ProductsContent extends StatelessWidget {
                     final result = await Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) =>
-                            ProductsDetails(products: products),
+                        builder: (context) => ProductsDetails(products: products),
                       ),
                     );
                     if (result != null) {
@@ -202,10 +238,11 @@ class ProductsDetails extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Center(
-            child: Text(
-          'Details',
-          style: GoogleFonts.comfortaa(fontSize: 20),
-        )),
+          child: Text(
+            'Details',
+            style: GoogleFonts.comfortaa(fontSize: 20),
+          ),
+        ),
         actions: const [
           SizedBox(
             width: 55,
@@ -238,38 +275,7 @@ class Details extends StatefulWidget {
 class _DetailsState extends State<Details> with TickerProviderStateMixin {
   late List<AnimationController> _controllers;
   late List<Animation<double>> _widthAnimations;
-  List<int> _counters = [];
-
-  void _goToCart() async {
-    List<Product> cartItems = [];
-    for (int i = 0; i < widget.products.length; i++) {
-      if (_counters[i] > 0) {
-        widget.products[i].quantity = _counters[i];
-        cartItems.add(widget.products[i]);
-      }
-    }
-    // Save to Hive
-    var box = Hive.box<Product>('cartBox2');
-    await box.clear();
-    for (var item in cartItems) {
-      box.put(item.name, item);
-    }
-
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => CartPage(cartItems: cartItems)),
-    );
-    if (result != null) {
-      setState(() {
-        for (int i = 0; i < widget.products.length; i++) {
-          _counters[i] = widget.products[i].quantity;
-          if (_counters[i] == 0 && _controllers[i].isCompleted) {
-            _controllers[i].reverse();
-          }
-        }
-      });
-    }
-  }
+  late List<int> _counters;
 
   @override
   void initState() {
@@ -310,6 +316,50 @@ class _DetailsState extends State<Details> with TickerProviderStateMixin {
         }
       });
       controller.forward();
+    }
+  }
+
+  void _updateQuantity(int index, int quantity) {
+    setState(() {
+      _counters[index] = quantity;
+      widget.products[index].quantity = quantity;
+      _saveProduct(widget.products[index]);
+    });
+  }
+
+  Future<void> _saveProduct(Product product) async {
+    final box = await Hive.openBox<Product>('productsBox');
+    await box.put(product.name, product);
+  }
+
+  void _goToCart() async {
+    List<Product> cartItems = [];
+    for (int i = 0; i < widget.products.length; i++) {
+      if (_counters[i] > 0) {
+        widget.products[i].quantity = _counters[i];
+        cartItems.add(widget.products[i]);
+      }
+    }
+    // Save to Hive
+    var box = Hive.box<Product>('cartBox2');
+    await box.clear();
+    for (var item in cartItems) {
+      box.put(item.name, item);
+    }
+
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => CartPage(cartItems: cartItems)),
+    );
+    if (result != null) {
+      setState(() {
+        for (int i = 0; i < widget.products.length; i++) {
+          _counters[i] = widget.products[i].quantity;
+          if (_counters[i] == 0 && _controllers[i].isCompleted) {
+            _controllers[i].reverse();
+          }
+        }
+      });
     }
   }
 
@@ -405,12 +455,10 @@ class _DetailsState extends State<Details> with TickerProviderStateMixin {
                                             ? Icon(Icons.delete_outline, color: Colors.yellow.shade700)
                                             : Icon(Icons.remove, color: Colors.yellow.shade700),
                                         onPressed: () {
-                                          setState(() {
-                                            if (_counters[index] > 0) _counters[index]--;
-                                            if (_counters[index] == 0) {
-                                              _controllers[index].reverse();
-                                            }
-                                          });
+                                          _updateQuantity(index, _counters[index] - 1);
+                                          if (_counters[index] == 0) {
+                                            _controllers[index].reverse();
+                                          }
                                         },
                                       ),
                                     if (_controllers[index].isCompleted && _counters[index] > 0)
@@ -423,18 +471,14 @@ class _DetailsState extends State<Details> with TickerProviderStateMixin {
                                       IconButton(
                                         icon: const Icon(Icons.add, color: Colors.black),
                                         onPressed: () {
-                                          setState(() {
-                                            _counters[index]++;
-                                          });
+                                          _updateQuantity(index, _counters[index] + 1);
                                         },
                                       ),
                                     if (_controllers[index].isCompleted && _counters[index] > 0)
                                       IconButton(
                                         icon: Icon(Icons.add, color: Colors.yellow.shade700),
                                         onPressed: () {
-                                          setState(() {
-                                            _counters[index]++;
-                                          });
+                                          _updateQuantity(index, _counters[index] + 1);
                                         },
                                       ),
                                   ],

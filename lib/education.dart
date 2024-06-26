@@ -89,7 +89,7 @@ class _EducationTabState extends State<EducationTab> {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Icon(Icons.school,
-                                        color: Colors.black, size: 60),
+                                        color: Colors.black, size: 80),
                                   ],
                                 ),
                               ),
@@ -99,9 +99,28 @@ class _EducationTabState extends State<EducationTab> {
                                 height: screenWidth * 0.07,
                                 color: Colors.grey.shade300,
                                 child: Center(
-                                  child: Text(
-                                    'University:      ${item['university']}',
-                                    style: TextStyle(fontSize: screenWidth * 0.05),
+                                  child: Row(
+                                    children: [
+                                      SizedBox(
+                                        width: screenWidth * 0.2,
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Text(
+                                          'University:',
+                                          style: TextStyle(
+                                              fontSize: screenWidth * 0.05),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Text(
+                                          '${item['university']}',
+                                          style: TextStyle(
+                                              fontSize: screenWidth * 0.05),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -111,9 +130,26 @@ class _EducationTabState extends State<EducationTab> {
                                 height: screenWidth * 0.07,
                                 color: Colors.grey.shade300,
                                 child: Center(
-                                  child: Text(
-                                    'Degree:           ${item['degree']}',
-                                    style: const TextStyle(fontSize: 20),
+                                  child: Row(
+                                    children: [
+                                      SizedBox(
+                                        width: screenWidth * 0.2,
+                                      ),
+                                      const Expanded(
+                                        flex: 1,
+                                        child: Text(
+                                          'Degree:',
+                                          style: const TextStyle(fontSize: 20),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Text(
+                                          '${item['degree']}',
+                                          style: const TextStyle(fontSize: 20),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
@@ -130,7 +166,8 @@ class _EducationTabState extends State<EducationTab> {
                                       child: Center(
                                         child: Text(
                                           'From : ${item['from']}',
-                                          style: TextStyle(fontSize: screenWidth * 0.043),
+                                          style: TextStyle(
+                                              fontSize: screenWidth * 0.042),
                                         ),
                                       ),
                                     ),
@@ -144,7 +181,8 @@ class _EducationTabState extends State<EducationTab> {
                                       child: Center(
                                         child: Text(
                                           'To : ${item['to']}',
-                                          style: TextStyle(fontSize: screenWidth * 0.045),
+                                          style: TextStyle(
+                                              fontSize: screenWidth * 0.044),
                                         ),
                                       ),
                                     ),
@@ -306,7 +344,10 @@ class _AddEducationPageState extends State<AddEducationPage> {
   }
 
   Future<void> _selectFromList(
-      BuildContext context, TextEditingController controller, List<String> items, String selectedItem) async {
+      BuildContext context,
+      TextEditingController controller,
+      List<String> items,
+      String selectedItem) async {
     await showModalBottomSheet<String>(
       context: context,
       isDismissible: true,
@@ -360,7 +401,8 @@ class _AddEducationPageState extends State<AddEducationPage> {
           child: Column(
             children: [
               GestureDetector(
-                onTap: () => _selectFromList(context, _universityController, universities, _selectedUniversity),
+                onTap: () => _selectFromList(context, _universityController,
+                    universities, _selectedUniversity),
                 child: AbsorbPointer(
                   child: TextFormField(
                     controller: _universityController,
@@ -382,7 +424,8 @@ class _AddEducationPageState extends State<AddEducationPage> {
               ),
               SizedBox(height: 16),
               GestureDetector(
-                onTap: () => _selectFromList(context, _degreeController, degrees, _selectedDegree),
+                onTap: () => _selectFromList(
+                    context, _degreeController, degrees, _selectedDegree),
                 child: AbsorbPointer(
                   child: TextFormField(
                     controller: _degreeController,

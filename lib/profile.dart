@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -27,6 +29,7 @@ class _ProfilePageState extends State<ProfilePage> {
   String _lastName = '';
   String _email = '';
   String _mobile = '';
+  String? _profileImagePath;
 
   @override
   void initState() {
@@ -66,6 +69,9 @@ class _ProfilePageState extends State<ProfilePage> {
       {'label': 'Profession', 'value': aboutBox.get('profession', defaultValue: '')},
       {'label': 'Hobbies', 'value': aboutBox.get('hobbies', defaultValue: '')},
       {'label': 'Interest', 'value': interestBox.get('interest', defaultValue: '')},
+      {'label': 'Facebook Url', 'value': userBox.get('facebook', defaultValue: '')},
+      {'label': 'Instagram Url', 'value': userBox.get('instagram', defaultValue: '')},
+      {'label': 'Tiktok Url', 'value': userBox.get('tiktok', defaultValue: '')},
     ];
 
     educations.clear();
@@ -109,6 +115,7 @@ class _ProfilePageState extends State<ProfilePage> {
         break;
       }
     }
+    _profileImagePath = userBox.get('profileImage', defaultValue: '');
   }
 
   void _loadUserName() async {
@@ -130,92 +137,98 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _editProfile() async {
-    final result = await Navigator.of(context).push(
-      MaterialPageRoute(
-        builder: (context) => EditProfilePage(
-          basicInfo: basicInfo,
-          educations: educations,
-          experiences: experiences,
-          addresses: addresses,
-        ),
+  final result = await Navigator.of(context).push(
+    MaterialPageRoute(
+      builder: (context) => EditProfilePage(
+        basicInfo: basicInfo,
+        educations: educations,
+        experiences: experiences,
+        addresses: addresses,
       ),
-    );
+    ),
+  );
 
-    if (result != null) {
-      setState(() {
-        basicInfo = result['basicInfo'];
-        educations = result['educations'];
-        experiences = result['experiences'];
-        addresses = result['addresses'];
-      });
+  if (result != null) {
+    setState(() {
+      basicInfo = result['basicInfo'];
+      educations = result['educations'];
+      experiences = result['experiences'];
+      addresses = result['addresses'];
+      _profileImagePath = result['profileImagePath'];
+    });
 
-      var box = Hive.box('userBox');
-      var userInfoBox = Hive.box('userInfoBox');
-      var aboutBox = Hive.box('aboutBox');
-      var interestBox = Hive.box('interestBox');
+    var box = Hive.box('userBox');
+    var userInfoBox = Hive.box('userInfoBox');
+    var aboutBox = Hive.box('aboutBox');
+    var interestBox = Hive.box('interestBox');
 
-      for (var item in basicInfo) {
-        if (item['label'] == 'Date Of Birth') {
-          userInfoBox.put('dateOfBirth', item['value']);
-        } else if (item['label'] == 'Gender') {
-          userInfoBox.put('gender', item['value']);
-        } else if (item['label'] == 'Status') {
-          userInfoBox.put('maritalStatus', item['value']);
-        } else if (item['label'] == 'Height') {
-          userInfoBox.put('height', item['value']);
-        } else if (item['label'] == 'Weight') {
-          userInfoBox.put('weight', item['value']);
-        } else if (item['label'] == 'Body Type') {
-          userInfoBox.put('bodyType', item['value']);
-        } else if (item['label'] == 'Hair') {
-          userInfoBox.put('hairType', item['value']);
-        } else if (item['label'] == 'Eyes') {
-          userInfoBox.put('eyeColor', item['value']);
-        } else if (item['label'] == 'Bio') {
-          aboutBox.put('bio', item['value']);
-        } else if (item['label'] == 'Profession') {
-          aboutBox.put('profession', item['value']);
-        } else if (item['label'] == 'Hobbies') {
-          aboutBox.put('hobbies', item['value']);
-        } else if (item['label'] == 'Interest') {
-          interestBox.put('interest', item['value']);
-        } else if (item['label'] == 'First Name') {
-          box.put('firstName', item['value']);
-        } else if (item['label'] == 'Last Name') {
-          box.put('lastName', item['value']);
-        } else if (item['label'] == 'Email') {
-          box.put('email', item['value']);
-        } else if (item['label'] == 'Mobile') {
-          box.put('mobile', item['value']);
-        }
+    for (var item in basicInfo) {
+      if (item['label'] == 'Date Of Birth') {
+        userInfoBox.put('dateOfBirth', item['value']);
+      } else if (item['label'] == 'Gender') {
+        userInfoBox.put('gender', item['value']);
+      } else if (item['label'] == 'Status') {
+        userInfoBox.put('maritalStatus', item['value']);
+      } else if (item['label'] == 'Height') {
+        userInfoBox.put('height', item['value']);
+      } else if (item['label'] == 'Weight') {
+        userInfoBox.put('weight', item['value']);
+      } else if (item['label'] == 'Body Type') {
+        userInfoBox.put('bodyType', item['value']);
+      } else if (item['label'] == 'Hair') {
+        userInfoBox.put('hairType', item['value']);
+      } else if (item['label'] == 'Eyes') {
+        userInfoBox.put('eyeColor', item['value']);
+      } else if (item['label'] == 'Bio') {
+        aboutBox.put('bio', item['value']);
+      } else if (item['label'] == 'Profession') {
+        aboutBox.put('profession', item['value']);
+      } else if (item['label'] == 'Hobbies') {
+        aboutBox.put('hobbies', item['value']);
+      } else if (item['label'] == 'Interest') {
+        interestBox.put('interest', item['value']);
+      } else if (item['label'] == 'First Name') {
+        box.put('firstName', item['value']);
+      } else if (item['label'] == 'Last Name') {
+        box.put('lastName', item['value']);
+      } else if (item['label'] == 'Email') {
+        box.put('email', item['value']);
+      } else if (item['label'] == 'Mobile') {
+        box.put('mobile', item['value']);
+      } else if (item['label'] == 'Profile Image') {
+        box.put('profileImage', item['value']);
+      } else if (item['label'] == 'Facebook Url') {
+        box.put('facebook', item['value']);
       }
-
-      for (var i = 0; i < educations.length; i++) {
-        box.put('university$i', educations[i]['university']);
-        box.put('educationFrom$i', educations[i]['from']);
-        box.put('educationTo$i', educations[i]['to']);
-        box.put('degree$i', educations[i]['degree']);
-      }
-
-      for (var i = 0; i < experiences.length; i++) {
-        box.put('experienceTitle$i', experiences[i]['title']);
-        box.put('experiencePosition$i', experiences[i]['position']);
-        box.put('experienceFrom$i', experiences[i]['from']);
-        box.put('experienceTo$i', experiences[i]['to']);
-      }
-
-      for (var i = 0; i < addresses.length; i++) {
-        box.put('addressTitle$i', addresses[i]['title']);
-        box.put('addressCity$i', addresses[i]['city']);
-        box.put('addressStreet$i', addresses[i]['street']);
-        box.put('addressBuilding$i', addresses[i]['building']);
-      }
-
-      _loadUserName();
-      widget.onProfileUpdate();
-      setState(() {}); 
     }
+
+    for (var i = 0; i < educations.length; i++) {
+      box.put('university$i', educations[i]['university']);
+      box.put('educationFrom$i', educations[i]['from']);
+      box.put('educationTo$i', educations[i]['to']);
+      box.put('degree$i', educations[i]['degree']);
+    }
+
+    for (var i = 0; i < experiences.length; i++) {
+      box.put('experienceTitle$i', experiences[i]['title']);
+      box.put('experiencePosition$i', experiences[i]['position']);
+      box.put('experienceFrom$i', experiences[i]['from']);
+      box.put('experienceTo$i', experiences[i]['to']);
+    }
+
+    for (var i = 0; i < addresses.length; i++) {
+      box.put('addressTitle$i', addresses[i]['title']);
+      box.put('addressCity$i', addresses[i]['city']);
+      box.put('addressStreet$i', addresses[i]['street']);
+      box.put('addressBuilding$i', addresses[i]['building']);
+    }
+
+    _loadUserName();
+    widget.onProfileUpdate();
+    setState(() {}); 
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -252,11 +265,11 @@ class _ProfilePageState extends State<ProfilePage> {
               educations: educations,
               experiences: experiences,
               addresses: addresses,
+              profileImagePath: _profileImagePath,
             ),
     );
   }
 }
-
 
 class ProfileMainPage extends StatelessWidget {
   final String firstName;
@@ -267,6 +280,7 @@ class ProfileMainPage extends StatelessWidget {
   final List<Map<String, dynamic>> educations;
   final List<Map<String, dynamic>> experiences;
   final List<Map<String, dynamic>> addresses;
+  final String? profileImagePath;
 
   const ProfileMainPage({
     required this.firstName,
@@ -277,6 +291,7 @@ class ProfileMainPage extends StatelessWidget {
     required this.educations,
     required this.experiences,
     required this.addresses,
+    this.profileImagePath,
     super.key,
   });
 
@@ -294,25 +309,42 @@ class ProfileMainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Map<String, dynamic>> filteredBasicInfo = basicInfo.where((item) => item['value'].isNotEmpty && !['First Name', 'Last Name', 'Email', 'Mobile', 'Bio', 'Hobbies', 'Profession', 'Interest'].contains(item['label'])).toList();
+    List<Map<String, dynamic>> filteredBasicInfo = basicInfo.where((item) => item['value'].isNotEmpty && !['First Name', 'Last Name', 'Email', 'Mobile', 'Bio', 'Hobbies', 'Profession', 'Interest' , 'Facebook Url' , 'Instagram Url' , 'Tiktok Url'].contains(item['label'])).toList();
+
+    String facebookUrl = getValue('Facebook Url');
+    String instagramUrl = getValue('Instagram Url');
+    String tiktokUrl = getValue('Tiktok Url');
 
     return SingleChildScrollView(
       child: Column(
         children: [
-          Container(
-            width: double.infinity,
-            height: 300,
-            decoration: BoxDecoration(
-              color: Colors.grey.shade300,
-              borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(40),
-                bottomRight: Radius.circular(40),
-              ),
-            ),
-            child: Image.asset(
-              'assets/images/profile-img.png',
-            ),
-          ),
+         Container(
+  width: double.infinity,
+  height: 300,
+  decoration: BoxDecoration(
+    color: Colors.grey.shade300,
+    borderRadius: const BorderRadius.only(
+      bottomLeft: Radius.circular(40),
+      bottomRight: Radius.circular(40),
+    ),
+  ),
+  child: ClipRRect(
+    borderRadius: const BorderRadius.only(
+      bottomLeft: Radius.circular(40),
+      bottomRight: Radius.circular(40),
+    ),
+    child: profileImagePath != null && profileImagePath!.isNotEmpty
+      ? Image.file(
+          File(profileImagePath!),
+          fit: BoxFit.cover,
+        )
+      : Image.asset(
+          'assets/images/profile-img.png',
+          fit: BoxFit.cover,
+        ),
+  ),
+),
+
           Padding(
             padding: const EdgeInsets.only(left: 20, top: 10),
             child: Column(
@@ -349,9 +381,7 @@ class ProfileMainPage extends StatelessWidget {
                 const SizedBox(
                   height: 20,
                 ),
-                if ((getValue('Bio') ?? '').isNotEmpty ||
-                    (getValue('Hobbies') ?? '').isNotEmpty ||
-                    (getValue('Profession') ?? '').isNotEmpty) ...[
+                if ((getValue('Bio') ?? '').isNotEmpty ) ...[
                   const Row(
                     children: [
                       Text(
@@ -367,10 +397,7 @@ class ProfileMainPage extends StatelessWidget {
                     height: 10,
                   ),
                   if ((getValue('Bio') ?? '').isNotEmpty) Text(getValue('Bio')),
-                  if ((getValue('Hobbies') ?? '').isNotEmpty)
-                    Text('Hobbies: ${getValue('Hobbies')}'),
-                  if ((getValue('Profession') ?? '').isNotEmpty)
-                    Text('Profession: ${getValue('Profession')}'),
+                 
                 ],
                 const SizedBox(
                   height: 20,
@@ -439,7 +466,7 @@ class ProfileMainPage extends StatelessWidget {
                     TableRow(
                       children: [
                         GestureDetector(
-                          onTap: () => _launchUrl(getValue('Facebook Url')),
+                          onTap: () => _launchUrl(facebookUrl),
                           child: const Padding(
                             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 45),
                             child: Icon(
@@ -450,7 +477,7 @@ class ProfileMainPage extends StatelessWidget {
                           ),
                         ),
                         GestureDetector(
-                          onTap: () => _launchUrl(getValue('Instagram Url')),
+                          onTap: () => _launchUrl(instagramUrl),
                           child: const Padding(
                             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 53),
                             child: Icon(
@@ -461,7 +488,7 @@ class ProfileMainPage extends StatelessWidget {
                           ),
                         ),
                         GestureDetector(
-                          onTap: () => _launchUrl(getValue('Tiktok Url')),
+                          onTap: () => _launchUrl(tiktokUrl),
                           child: const Padding(
                             padding: EdgeInsets.symmetric(vertical: 10, horizontal: 55),
                             child: Icon(
@@ -489,17 +516,72 @@ class ProfileMainPage extends StatelessWidget {
                       )
                     ],
                   ),
-                  SizedBox(height: 10),
+                    SizedBox(height: 10),
                   Row(
                     children: [
                       Container(
-                        width: 75,
-                        height: 23,
+                        padding: EdgeInsets.symmetric(horizontal: 10),
                         decoration: BoxDecoration(
                           color: Colors.blue.shade200,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Center(child: Text(getValue('Interest'))),
+                      )
+                    ],
+                  ),
+                  ],
+                   const SizedBox(height: 20),
+                  if ((getValue('Hobbies') ?? '').isNotEmpty) ...[
+                  SizedBox(height: 30),
+                  const Row(
+                    children: [
+                      Text(
+                        'Hobbies',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18),
+                      )
+                    ],
+                  ),
+                    SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.shade200,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Center(child: Text(getValue('Hobbies'))),
+                      )
+                    ],
+                  ),
+                  ],
+                   const SizedBox(height: 20),
+                  if ((getValue('Profession') ?? '').isNotEmpty) ...[
+                  SizedBox(height: 30),
+                  const Row(
+                    children: [
+                      Text(
+                        'Profession',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18),
+                      )
+                    ],
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        decoration: BoxDecoration(
+                          color: Colors.blue.shade200,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Center(child: Text(getValue('Profession'))),
                       )
                     ],
                   ),

@@ -101,9 +101,25 @@ class _ExperienceTabState extends State<ExperienceTab> {
                                   child: Padding(
                                     padding: const EdgeInsets.only(left: 0),
                                     child: Center(
-                                      child: Text(
-                                        'Place:            ${item['title']}',
-                                        style: TextStyle(fontSize: screenWidth * 0.05),
+                                      child: Row(
+                                        children: [
+                                          SizedBox(width: screenWidth * 0.2,),
+                                          Expanded(
+                                            flex: 1,
+                                            child: Text(
+                                              'Place:',
+                                              style: TextStyle(fontSize: screenWidth * 0.05),
+                                            ),
+                                          ),
+
+                                           Expanded(
+                                            flex: 1,
+                                             child: Text(
+                                              '${item['title']}',
+                                              style: TextStyle(fontSize: screenWidth * 0.05),
+                                                                                       ),
+                                           ),
+                                        ],
                                       ),
                                     ),
                                   )),
@@ -115,9 +131,25 @@ class _ExperienceTabState extends State<ExperienceTab> {
                                   child: Padding(
                                     padding: const EdgeInsets.only(left: 0),
                                     child: Center(
-                                      child: Text(
-                                        'Position:            ${item['position']}',
-                                        style: TextStyle(fontSize: screenWidth * 0.05),
+                                      child: Row(
+                                        children: [
+                                          SizedBox(width: screenWidth * 0.2,),
+                                      
+                                          Expanded(
+                                            flex: 1,
+                                            child: Text(
+                                              'Position:',
+                                              style: TextStyle(fontSize: screenWidth * 0.05),
+                                            ),
+                                          ),
+                                            Expanded(
+                                              flex: 1,
+                                              child: Text(
+                                              '${item['position']}',
+                                              style: TextStyle(fontSize: screenWidth * 0.05),
+                                                                                        ),
+                                            ),
+                                        ],
                                       ),
                                     ),
                                   )),
@@ -134,7 +166,7 @@ class _ExperienceTabState extends State<ExperienceTab> {
                                       child: Center(
                                         child: Text(
                                           'From : ${item['from']}',
-                                          style: TextStyle(fontSize: screenWidth * 0.045),
+                                          style: TextStyle(fontSize: screenWidth * 0.044),
                                         ),
                                       ),
                                     ),
@@ -148,7 +180,7 @@ class _ExperienceTabState extends State<ExperienceTab> {
                                       child: Center(
                                         child: Text(
                                           'To : ${item['to']}',
-                                          style: TextStyle(fontSize: screenWidth * 0.045),
+                                          style: TextStyle(fontSize: screenWidth * 0.044),
                                         ),
                                       ),
                                     ),

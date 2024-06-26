@@ -58,6 +58,8 @@ class _AddressTabState extends State<AddressTab> {
 
   @override
   Widget build(BuildContext context) {
+        var screenWidth = MediaQuery.of(context).size.width;
+
     final Size size = MediaQuery.of(context).size;
     return Stack(
       children: [
@@ -87,13 +89,13 @@ class _AddressTabState extends State<AddressTab> {
                             children: [
                               Container(
                                 width: double.infinity,
-                                height: 60,
+                                height: screenWidth * 0.2,
                                 color: Colors.yellow.shade600,
                                 child: const Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Icon(Icons.home,
-                                        color: Colors.black, size: 40),
+                                        color: Colors.black, size: 80),
                                     SizedBox(width: 10),
                                   ],
                                 ),
@@ -111,11 +113,11 @@ class _AddressTabState extends State<AddressTab> {
                                     children: [
                                       Expanded(
                                         flex: 1,
-                                        child: Text('Title :'),
+                                        child: Text('Title :' , style: TextStyle(fontSize: 17),),
                                       ),
                                       Expanded(
                                         flex: 1,
-                                        child: Text('${item['title']}'),
+                                        child: Text('${item['title']}' , style: TextStyle(fontSize: 17)),
                                       ),
                                       SizedBox(
                                         width: size.width * 0.1,
@@ -135,35 +137,11 @@ class _AddressTabState extends State<AddressTab> {
                                     children: [
                                       Expanded(
                                         flex: 1,
-                                        child: Text('City :'),
+                                        child: Text('City :' , style: TextStyle(fontSize: 17)),
                                       ),
                                       Expanded(
                                         flex: 1,
-                                        child: Text('${item['city']}'),
-                                      ),
-                                      SizedBox(
-                                        width: size.width * 0.1,
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 16),
-                              Container(
-                                width: double.infinity,
-                                height: 25,
-                                color: Colors.grey.shade300,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 30),
-                                  child: Row(
-                                    children: [
-                                     Expanded(
-                                        flex: 1,
-                                        child: Text('Street :'),
-                                      ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Text('${item['street']}'),
+                                        child: Text('${item['city']}' , style: TextStyle(fontSize: 17)),
                                       ),
                                       SizedBox(
                                         width: size.width * 0.1,
@@ -183,11 +161,35 @@ class _AddressTabState extends State<AddressTab> {
                                     children: [
                                      Expanded(
                                         flex: 1,
-                                        child: Text('Building :'),
+                                        child: Text('Street :' , style: TextStyle(fontSize: 17)),
                                       ),
                                       Expanded(
                                         flex: 1,
-                                        child: Text('${item['building']}'),
+                                        child: Text('${item['street']}' , style: TextStyle(fontSize: 17)),
+                                      ),
+                                      SizedBox(
+                                        width: size.width * 0.1,
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              SizedBox(height: 16),
+                              Container(
+                                width: double.infinity,
+                                height: 25,
+                                color: Colors.grey.shade300,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 30),
+                                  child: Row(
+                                    children: [
+                                     Expanded(
+                                        flex: 1,
+                                        child: Text('Building :' , style: TextStyle(fontSize: 17)),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Text('${item['building']}' , style: TextStyle(fontSize: 17)),
                                       ),
                                       SizedBox(
                                         width: size.width * 0.1,

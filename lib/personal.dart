@@ -124,7 +124,7 @@ class _PersonalTabState extends State<PersonalTab> {
       setState(() {
         _dateController.text = "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
       });
-      _saveData();
+      // _saveData();
     }
   }
 
@@ -134,37 +134,26 @@ class _PersonalTabState extends State<PersonalTab> {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        return GestureDetector(
-          onTap: () {
-            Navigator.pop(context);
-          },
-          child: Container(
-            height: 250,
-            child: Column(
-              children: [
-                Expanded(
-                  child: CupertinoPicker(
-                    itemExtent: 32.0,
-                    scrollController: FixedExtentScrollController(initialItem: initialIndex),
-                    onSelectedItemChanged: (int index) {
-                      setState(() {
-                        onSelected(options[index]);
-                      });
-                    },
-                    children: options.map((String value) {
-                      return Center(child: Text(value));
-                    }).toList(),
-                  ),
-                ),
-                CupertinoButton(
-                  child: Text('Done'),
-                  onPressed: () {
-                    Navigator.pop(context);
-                    _saveData();
+        return Container(
+          height: 250,
+          child: Column(
+            children: [
+              Expanded(
+                child: CupertinoPicker(
+                  itemExtent: 32.0,
+                  scrollController: FixedExtentScrollController(initialItem: initialIndex),
+                  onSelectedItemChanged: (int index) {
+                    setState(() {
+                      onSelected(options[index]);
+                    });
                   },
+                  children: options.map((String value) {
+                    return Center(child: Text(value));
+                  }).toList(),
                 ),
-              ],
-            ),
+              ),
+             
+            ],
           ),
         );
       },
@@ -447,6 +436,16 @@ class _PersonalTabState extends State<PersonalTab> {
                     borderRadius: BorderRadius.circular(10.0),
                   ),
                 ),
+              ),
+              const SizedBox(height: 16),
+             const Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                Text('Social Media' , style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),)
+              ],
               ),
               const SizedBox(height: 16),
               TextFormField(

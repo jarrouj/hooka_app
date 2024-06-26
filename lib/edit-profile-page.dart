@@ -36,12 +36,21 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   @override
   void initState() {
-    super.initState();
-    basicInfo = List.from(widget.basicInfo);
-    educations = List.from(widget.educations);
-    experiences = List.from(widget.experiences);
-    addresses = List.from(widget.addresses);
+  super.initState();
+  basicInfo = List.from(widget.basicInfo);
+  educations = List.from(widget.educations);
+  experiences = List.from(widget.experiences);
+  addresses = List.from(widget.addresses);
+
+  var box = Hive.box('userBox');
+  final profileImageItem = basicInfo.firstWhere(
+    (item) => item['label'] == 'Profile Image',
+    orElse: () => {'label': 'Profile Image', 'value': box.get('profileImage', defaultValue: null)},
+  );
+  if (!basicInfo.contains(profileImageItem)) {
+    basicInfo.add(profileImageItem);
   }
+}
 
   void _saveProfile() async {
     var box = Hive.box('userBox');
@@ -74,6 +83,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
         aboutBox.put('hobbies', item['value']);
       } else if (item['label'] == 'Interest') {
         interestBox.put('interest', item['value']);
+      } else if (item['label'] == 'Profile Image') {
+        box.put('profileImage', item['value']);
       }
     }
 
@@ -98,11 +109,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
       box.put('addressBu$i', addresses[i]['building']);
     }
 
+    final profileImageItem = basicInfo.firstWhere(
+      (item) => item['label'] == 'Profile Image',
+      orElse: () => {'label': 'Profile Image', 'value': null},
+    );
+
     Navigator.pop(context, {
       'basicInfo': basicInfo,
       'educations': educations,
       'experiences': experiences,
       'addresses': addresses,
+      'profileImagePath': profileImageItem['value'],
     });
   }
 
@@ -160,8 +177,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 ),
                 SizedBox(height: 20),
                 ListTile(
-                  leading: Icon(Icons.camera_alt_outlined, color: Colors.yellow.shade600),
-                  title: Text('Camera', style: TextStyle(color: Colors.yellow.shade600)),
+                  leading: Icon(Icons.camera_alt_outlined,
+                      color: Colors.yellow.shade600),
+                  title: Text('Camera',
+                      style: TextStyle(color: Colors.yellow.shade600)),
                   onTap: () {
                     Navigator.pop(context);
                     _pickImage(ImageSource.camera);
@@ -169,7 +188,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 ),
                 ListTile(
                   leading: Icon(Icons.photo, color: Colors.yellow.shade600),
-                  title: Text('Gallery', style: TextStyle(color: Colors.yellow.shade600)),
+                  title: Text('Gallery',
+                      style: TextStyle(color: Colors.yellow.shade600)),
                   onTap: () {
                     Navigator.pop(context);
                     _pickImage(ImageSource.gallery);
@@ -196,7 +216,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
         appBar: AppBar(
           backgroundColor: Colors.white,
           title: Center(
-            child: Text('Edit Account', style: GoogleFonts.comfortaa(fontSize: 20)),
+            child: Text('Edit Account',
+                style: GoogleFonts.comfortaa(fontSize: 20)),
           ),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios),
@@ -205,7 +226,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
             },
           ),
           actions: const [
-            SizedBox(width: 45,),
+            SizedBox(
+              width: 45,
+            ),
           ],
         ),
         body: Stack(
@@ -226,46 +249,51 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         borderRadius: BorderRadius.circular(100),
                       ),
                       child: ClipOval(
-                        child: profileImageItem['value'] != null
-                          ? Image.file(
-                              File(profileImageItem['value']),
-                              fit: BoxFit.cover,
-                              width: 200,
-                              height: 200,
-                            )
-                          : Image.asset(
-                              'assets/images/profile-img.png',
-                              fit: BoxFit.cover,
-                              width: 200,
-                              height: 200,
-                            ),
+                        child: profileImageItem['value'] != null &&
+                                File(profileImageItem['value']).existsSync()
+                            ? Image.file(
+                                File(profileImageItem['value']),
+                                fit: BoxFit.cover,
+                                width: 200,
+                                height: 200,
+                              )
+                            : Image.asset(
+                                'assets/images/profile-img.png',
+                                fit: BoxFit.cover,
+                                width: 200,
+                                height: 200,
+                              ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 30,),
-               PreferredSize(
+                const SizedBox(
+                  height: 30,
+                ),
+                PreferredSize(
                   preferredSize: const Size.fromHeight(40),
                   child: Container(
                     height: 40,
                     width: MediaQuery.of(context).size.width * 1,
-                    margin: const EdgeInsets.symmetric(horizontal: 10 ),
+                    margin: const EdgeInsets.symmetric(horizontal: 10),
                     decoration: BoxDecoration(
                       borderRadius: const BorderRadius.all(Radius.circular(10)),
                       color: Colors.grey.shade300,
                     ),
-                    child:  ClipRRect(
+                    child: ClipRRect(
                       borderRadius: const BorderRadius.all(Radius.circular(10)),
                       child: TabBar(
                         indicatorSize: TabBarIndicatorSize.tab,
                         dividerColor: Colors.transparent,
                         indicator: BoxDecoration(
                           color: Colors.yellow.shade600,
-                          borderRadius:const BorderRadius.all(Radius.circular(10)),
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(10)),
                         ),
                         labelColor: Colors.black,
                         unselectedLabelColor: Colors.black,
-                        labelPadding: const EdgeInsets.symmetric(horizontal: 12.0),
+                        labelPadding:
+                            const EdgeInsets.symmetric(horizontal: 12.0),
                         tabs: const [
                           TabItem(title: 'Personal'),
                           TabItem(title: 'Education'),
@@ -276,21 +304,23 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 10,),
-                  Expanded(
+                const SizedBox(
+                  height: 10,
+                ),
+                Expanded(
                   child: TabBarView(
                     children: [
                       SingleChildScrollView(
                         child: PersonalTab(
                           data: basicInfo,
                           onSave: _updateBasicInfo,
-                          saveProfile: _saveProfile,  
+                          saveProfile: _saveProfile,
                         ),
                       ),
                       EducationTab(
                         items: educations,
                         onAdd: (item) {
-                          setState(() { 
+                          setState(() {
                             educations.add(item);
                           });
                         },
