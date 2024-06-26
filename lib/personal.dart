@@ -65,57 +65,56 @@ class _PersonalTabState extends State<PersonalTab> {
     var aboutBox = await Hive.openBox('aboutBox');
     var interestBox = await Hive.openBox('interestBox');
     final Map<String, String> dataMap = {for (var item in widget.data) item['label']: item['value']};
-    _firstNameController.text = userBox.get('firstName', defaultValue: dataMap['First Name'] ?? '');
-    _lastNameController.text = userBox.get('lastName', defaultValue: dataMap['Last Name'] ?? '');
-    _emailController.text = userBox.get('email', defaultValue: dataMap['Email'] ?? '');
-    _mobileController.text = userBox.get('mobile', defaultValue: dataMap['Mobile'] ?? '');
-    _dateController.text = dataMap['Date Of Birth'] ?? '';
-    _hairType = userInfoBox.get('hairType', defaultValue: dataMap['Hair']);
-    _eyeColor = userInfoBox.get('eyeColor', defaultValue: dataMap['Eyes']);
-    _gender = userInfoBox.get('gender', defaultValue: dataMap['Gender']);
-    _maritalStatus = userInfoBox.get('maritalStatus', defaultValue: dataMap['Status']);
-    _bioController.text = aboutBox.get('bio', defaultValue: dataMap['Bio'] ?? '');
-    _weightController.text = dataMap['Weight'] ?? '';
-    _heightController.text = dataMap['Height'] ?? '';
-    _interestController.text = interestBox.get('interest', defaultValue: dataMap['Interest'] ?? '');
-    _professionController.text = aboutBox.get('profession', defaultValue: dataMap['Profession'] ?? '');
-    _hobbiesController.text = aboutBox.get('hobbies', defaultValue: dataMap['Hobbies'] ?? '');
-    _facebookController.text = dataMap['Facebook Url'] ?? '';
-    _instagramController.text = dataMap['Instagram Url'] ?? '';
-    _tiktokController.text = dataMap['Tiktok Url'] ?? '';
+    setState(() {
+      _firstNameController.text = userBox.get('firstName', defaultValue: dataMap['First Name'] ?? '');
+      _lastNameController.text = userBox.get('lastName', defaultValue: dataMap['Last Name'] ?? '');
+      _emailController.text = userBox.get('email', defaultValue: dataMap['Email'] ?? '');
+      _mobileController.text = userBox.get('mobile', defaultValue: dataMap['Mobile'] ?? '');
+      _dateController.text = dataMap['Date Of Birth'] ?? '';
+      _hairType = userInfoBox.get('hairType', defaultValue: dataMap['Hair']);
+      _eyeColor = userInfoBox.get('eyeColor', defaultValue: dataMap['Eyes']);
+      _gender = userInfoBox.get('gender', defaultValue: dataMap['Gender']);
+      _maritalStatus = userInfoBox.get('maritalStatus', defaultValue: dataMap['Status']);
+      _bioController.text = aboutBox.get('bio', defaultValue: dataMap['Bio'] ?? '');
+      _weightController.text = dataMap['Weight'] ?? '';
+      _heightController.text = dataMap['Height'] ?? '';
+      _interestController.text = interestBox.get('interest', defaultValue: dataMap['Interest'] ?? '');
+      _professionController.text = aboutBox.get('profession', defaultValue: dataMap['Profession'] ?? '');
+      _hobbiesController.text = aboutBox.get('hobbies', defaultValue: dataMap['Hobbies'] ?? '');
+      _facebookController.text = userBox.get('facebook', defaultValue: dataMap['Facebook Url'] ?? '');
+      _instagramController.text = userBox.get('instagram', defaultValue: dataMap['Instagram Url'] ?? '');
+      _tiktokController.text = userBox.get('tiktok', defaultValue: dataMap['Tiktok Url'] ?? '');
+    });
   }
 
   Future<void> _selectDate(BuildContext context) async {
     DateTime initialDate = DateTime.now();
     DateTime firstDate = DateTime(1900);
-    DateTime lastDate = DateTime(2100);
+    DateTime lastDate = DateTime(2025);
 
     DateTime pickedDate = initialDate;
-    await showModalBottomSheet<void>(
+
+    await showCupertinoModalPopup<void>(
       context: context,
       builder: (BuildContext context) {
-        return GestureDetector(
-          onTap: () {
-            Navigator.pop(context);
-          },
-          child: Container(
-            height: 250,
-            color: Colors.transparent,
-            child: Column(
-              children: [
-                Expanded(
-                  child: CupertinoDatePicker(
-                    mode: CupertinoDatePickerMode.date,
-                    initialDateTime: initialDate,
-                    minimumDate: firstDate,
-                    maximumDate: lastDate,
-                    onDateTimeChanged: (DateTime date) {
-                      pickedDate = date;
-                    },
-                  ),
+        return Container(
+          height: 250,
+          color: Colors.white,
+          child: Column(
+            children: [
+              Expanded(
+                child: CupertinoDatePicker(
+                  mode: CupertinoDatePickerMode.date,
+                  initialDateTime: initialDate,
+                  minimumDate: firstDate,
+                  maximumDate: lastDate,
+                  onDateTimeChanged: (DateTime date) {
+                    pickedDate = date;
+                  },
                 ),
-              ],
-            ),
+              ),
+             
+            ],
           ),
         );
       },
@@ -125,6 +124,7 @@ class _PersonalTabState extends State<PersonalTab> {
       setState(() {
         _dateController.text = "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
       });
+      _saveData();
     }
   }
 
@@ -134,29 +134,38 @@ class _PersonalTabState extends State<PersonalTab> {
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              height: 250,
-              child: CupertinoPicker(
-                itemExtent: 32.0,
-                scrollController: FixedExtentScrollController(initialItem: initialIndex),
-                onSelectedItemChanged: (int index) {
-                  onSelected(options[index]);
-                },
-                children: options.map((String value) {
-                  return Center(child: Text(value));
-                }).toList(),
-              ),
+        return GestureDetector(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Container(
+            height: 250,
+            child: Column(
+              children: [
+                Expanded(
+                  child: CupertinoPicker(
+                    itemExtent: 32.0,
+                    scrollController: FixedExtentScrollController(initialItem: initialIndex),
+                    onSelectedItemChanged: (int index) {
+                      setState(() {
+                        onSelected(options[index]);
+                      });
+                    },
+                    children: options.map((String value) {
+                      return Center(child: Text(value));
+                    }).toList(),
+                  ),
+                ),
+                CupertinoButton(
+                  child: Text('Done'),
+                  onPressed: () {
+                    Navigator.pop(context);
+                    _saveData();
+                  },
+                ),
+              ],
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Text('Save', style: TextStyle(color: Colors.yellow)),
-            ),
-          ],
+          ),
         );
       },
     );

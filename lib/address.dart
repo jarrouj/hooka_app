@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 
@@ -108,8 +109,14 @@ class _AddressTabState extends State<AddressTab> {
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Text('Title :'),
-                                      Text('${item['title']}'),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Text('Title :'),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Text('${item['title']}'),
+                                      ),
                                       SizedBox(
                                         width: size.width * 0.1,
                                       )
@@ -126,15 +133,17 @@ class _AddressTabState extends State<AddressTab> {
                                   padding: const EdgeInsets.only(left: 30),
                                   child: Row(
                                     children: [
-                                      Text('City :'),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Text('City :'),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Text('${item['city']}'),
+                                      ),
                                       SizedBox(
                                         width: size.width * 0.1,
-                                      ),
-                                      Column(
-                                        children: [
-                                          Text('${item['city']}'),
-                                        ],
-                                      ),
+                                      )
                                     ],
                                   ),
                                 ),
@@ -148,17 +157,17 @@ class _AddressTabState extends State<AddressTab> {
                                   padding: const EdgeInsets.only(left: 30),
                                   child: Row(
                                     children: [
-                                      Text('Street :'),
+                                     Expanded(
+                                        flex: 1,
+                                        child: Text('Street :'),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Text('${item['street']}'),
+                                      ),
                                       SizedBox(
                                         width: size.width * 0.1,
-                                      ),
-                                      Column(
-                                        children: [
-                                          Text(
-                                            '${item['street']}',
-                                          ),
-                                        ],
-                                      ),
+                                      )
                                     ],
                                   ),
                                 ),
@@ -170,7 +179,21 @@ class _AddressTabState extends State<AddressTab> {
                                 color: Colors.grey.shade300,
                                 child: Padding(
                                   padding: const EdgeInsets.only(left: 30),
-                                  child: Text('Building: ${item['building']}'),
+                                  child: Row(
+                                    children: [
+                                     Expanded(
+                                        flex: 1,
+                                        child: Text('Building :'),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Text('${item['building']}'),
+                                      ),
+                                      SizedBox(
+                                        width: size.width * 0.1,
+                                      )
+                                    ],
+                                  ),
                                 ),
                               ),
                               const SizedBox(height: 30),
@@ -270,6 +293,51 @@ class _AddAddressPageState extends State<AddAddressPage> {
   final TextEditingController _buildingController = TextEditingController();
   final TextEditingController _appartmentController = TextEditingController();
 
+    List<String> cities = ['Zahle', 'Beirut', 'Byblos'];
+
+    Future<void> _selectFromList(
+      BuildContext context, TextEditingController controller, List<String> items, String selectedItem) async {
+    await showModalBottomSheet<String>(
+      context: context,
+      isDismissible: true,
+      builder: (BuildContext context) {
+        return GestureDetector(
+          onTap: () {
+            Navigator.pop(context, selectedItem);
+          },
+          child: Container(
+            height: 250,
+            color: Colors.transparent,
+            child: Column(
+              children: [
+                Expanded(
+                  child: CupertinoPicker(
+                    itemExtent: 32.0,
+                    onSelectedItemChanged: (int index) {
+                      setState(() {
+                        selectedItem = items[index];
+                      });
+                    },
+                    children: items.map((item) {
+                      return Center(child: Text(item));
+                    }).toList(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    ).then((pickedItem) {
+      if (pickedItem != null) {
+        setState(() {
+          controller.text = pickedItem;
+        });
+      }
+    });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -298,20 +366,26 @@ class _AddAddressPageState extends State<AddAddressPage> {
                 },
               ),
               SizedBox(height: 16),
-              TextFormField(
-                controller: _cityController,
-                decoration: InputDecoration(
-                  labelText: 'City *',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
+              GestureDetector(
+                onTap: () => _selectFromList(context, _cityController, cities, cities[0]),
+                child: AbsorbPointer(
+                  child: TextFormField(
+                    controller: _cityController,
+                    decoration: InputDecoration(
+                      labelText: 'City',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      suffixIcon: Icon(Icons.arrow_drop_down),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please select city';
+                      }
+                      return null;
+                    },
                   ),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter city';
-                  }
-                  return null;
-                },
               ),
               SizedBox(height: 16),
               TextFormField(
@@ -345,7 +419,7 @@ class _AddAddressPageState extends State<AddAddressPage> {
                   return null;
                 },
               ),
-               SizedBox(height: 16),
+              SizedBox(height: 16),
               TextFormField(
                 controller: _appartmentController,
                 decoration: InputDecoration(

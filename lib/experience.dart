@@ -254,6 +254,9 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
   final TextEditingController _fromDateController = TextEditingController();
   final TextEditingController _toDateController = TextEditingController();
 
+  List<String> positions = ['Professor', 'Developer'];
+  List<String> cities = ['Zahle', 'Beirut', 'Byblos'];
+
   Future<void> _selectDate(
       BuildContext context, TextEditingController controller) async {
     DateTime initialDate = DateTime.now();
@@ -300,9 +303,50 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
     }
   }
 
+  Future<void> _selectFromList(
+      BuildContext context, TextEditingController controller, List<String> items, String selectedItem) async {
+    await showModalBottomSheet<String>(
+      context: context,
+      isDismissible: true,
+      builder: (BuildContext context) {
+        return GestureDetector(
+          onTap: () {
+            Navigator.pop(context, selectedItem);
+          },
+          child: Container(
+            height: 250,
+            color: Colors.transparent,
+            child: Column(
+              children: [
+                Expanded(
+                  child: CupertinoPicker(
+                    itemExtent: 32.0,
+                    onSelectedItemChanged: (int index) {
+                      setState(() {
+                        selectedItem = items[index];
+                      });
+                    },
+                    children: items.map((item) {
+                      return Center(child: Text(item));
+                    }).toList(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    ).then((pickedItem) {
+      if (pickedItem != null) {
+        setState(() {
+          controller.text = pickedItem;
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    var screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Experience'),
@@ -313,45 +357,58 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
           key: _formKey,
           child: Column(
             children: [
-             
-              TextFormField(
-                controller: _positionController,
-                decoration: InputDecoration(
-                  labelText: 'Position',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
+              GestureDetector(
+                onTap: () => _selectFromList(context, _positionController, positions, positions[0]),
+                child: AbsorbPointer(
+                  child: TextFormField(
+                    controller: _positionController,
+                    decoration: InputDecoration(
+                      labelText: 'Position',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      suffixIcon: Icon(Icons.arrow_drop_down),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please select position';
+                      }
+                      return null;
+                    },
                   ),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter position';
-                  }
-                  return null;
-                },
               ),
-
               SizedBox(height: 16),
-
-               TextFormField(
-                controller: _titleController,
-                decoration: InputDecoration(
-                  labelText: 'City',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
+              GestureDetector(
+                onTap: () => _selectFromList(context, _titleController, cities, cities[0]),
+                child: AbsorbPointer(
+                  child: TextFormField(
+                    controller: _titleController,
+                    decoration: InputDecoration(
+                      labelText: 'City',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      suffixIcon: Icon(Icons.arrow_drop_down),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please select city';
+                      }
+                      return null;
+                    },
                   ),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter city';
-                  }
-                  return null;
-                },
               ),
               SizedBox(height: 16),
-                   Row(children: [
-                Text('From' ,style: TextStyle(fontWeight: FontWeight.w500, fontSize: 17),
-                ),
-            ]),
+              Row(
+                children: [
+                  Text(
+                    'From',
+                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 17),
+                  )
+                ],
+              ),
               TextFormField(
                 controller: _fromDateController,
                 readOnly: true,
@@ -371,10 +428,14 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
                 },
               ),
               SizedBox(height: 16),
-               Row(children: [
-                Text('To' ,style: TextStyle(fontWeight: FontWeight.w500, fontSize: 17),
-                ),
-            ]),
+              Row(
+                children: [
+                  Text(
+                    'To',
+                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 17),
+                  )
+                ],
+              ),
               TextFormField(
                 controller: _toDateController,
                 readOnly: true,
@@ -394,9 +455,9 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
                 },
               ),
               SizedBox(height: 20),
-               GestureDetector(
-                onTap: (){
-                    if (_formKey.currentState!.validate()) {
+              GestureDetector(
+                onTap: () {
+                  if (_formKey.currentState!.validate()) {
                     final newExperience = {
                       'title': _titleController.text,
                       'position': _positionController.text,
@@ -404,27 +465,27 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
                       'to': _toDateController.text,
                     };
                     Navigator.pop(context, newExperience);
-                    }
-                  
+                  }
                 },
                 child: Container(
-                 width: 100,
-                 height: 40,
-                 decoration: BoxDecoration(
-                   borderRadius: BorderRadius.circular(10.0),
-                   color: Colors.yellow.shade600,
-                 ),
-                 child: const Center(
-                  child: Center(
-                    child: Text('Add' , style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                    ),)
+                  width: 100,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.0),
+                    color: Colors.yellow.shade600,
+                  ),
+                  child: const Center(
+                    child: Text(
+                      'Add',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
                     ),
+                  ),
                 ),
               ),
-              )
             ],
           ),
         ),

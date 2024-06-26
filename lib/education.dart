@@ -254,6 +254,11 @@ class _AddEducationPageState extends State<AddEducationPage> {
   final TextEditingController _fromDateController = TextEditingController();
   final TextEditingController _toDateController = TextEditingController();
 
+  List<String> universities = ['Lau', 'Aul', 'Antonine'];
+  List<String> degrees = ['BA'];
+  String _selectedUniversity = 'Lau';
+  String _selectedDegree = 'BA';
+
   Future<void> _selectDate(
       BuildContext context, TextEditingController controller) async {
     DateTime initialDate = DateTime.now();
@@ -263,6 +268,7 @@ class _AddEducationPageState extends State<AddEducationPage> {
     DateTime selectedDate = initialDate;
     await showModalBottomSheet<DateTime>(
       context: context,
+      isDismissible: true,
       builder: (BuildContext context) {
         return GestureDetector(
           onTap: () {
@@ -290,7 +296,7 @@ class _AddEducationPageState extends State<AddEducationPage> {
         );
       },
     ).then((pickedDate) {
-      if (pickedDate != null && pickedDate != initialDate) {
+      if (pickedDate != null) {
         setState(() {
           controller.text =
               "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
@@ -299,9 +305,50 @@ class _AddEducationPageState extends State<AddEducationPage> {
     });
   }
 
+  Future<void> _selectFromList(
+      BuildContext context, TextEditingController controller, List<String> items, String selectedItem) async {
+    await showModalBottomSheet<String>(
+      context: context,
+      isDismissible: true,
+      builder: (BuildContext context) {
+        return GestureDetector(
+          onTap: () {
+            Navigator.pop(context, selectedItem);
+          },
+          child: Container(
+            height: 250,
+            color: Colors.transparent,
+            child: Column(
+              children: [
+                Expanded(
+                  child: CupertinoPicker(
+                    itemExtent: 32.0,
+                    onSelectedItemChanged: (int index) {
+                      setState(() {
+                        selectedItem = items[index];
+                      });
+                    },
+                    children: items.map((item) {
+                      return Center(child: Text(item));
+                    }).toList(),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    ).then((pickedItem) {
+      if (pickedItem != null) {
+        setState(() {
+          controller.text = pickedItem;
+        });
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    var screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Education'),
@@ -312,42 +359,58 @@ class _AddEducationPageState extends State<AddEducationPage> {
           key: _formKey,
           child: Column(
             children: [
-              TextFormField(
-                controller: _universityController,
-                decoration: InputDecoration(
-                  labelText: 'University',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
+              GestureDetector(
+                onTap: () => _selectFromList(context, _universityController, universities, _selectedUniversity),
+                child: AbsorbPointer(
+                  child: TextFormField(
+                    controller: _universityController,
+                    decoration: InputDecoration(
+                      labelText: 'University',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      suffixIcon: Icon(Icons.arrow_drop_down),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please select university';
+                      }
+                      return null;
+                    },
                   ),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter university';
-                  }
-                  return null;
-                },
               ),
               SizedBox(height: 16),
-              TextFormField(
-                controller: _degreeController,
-                decoration: InputDecoration(
-                  labelText: 'Degree',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
+              GestureDetector(
+                onTap: () => _selectFromList(context, _degreeController, degrees, _selectedDegree),
+                child: AbsorbPointer(
+                  child: TextFormField(
+                    controller: _degreeController,
+                    decoration: InputDecoration(
+                      labelText: 'Degree',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      suffixIcon: Icon(Icons.arrow_drop_down),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please select degree';
+                      }
+                      return null;
+                    },
                   ),
                 ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter degree';
-                  }
-                  return null;
-                },
               ),
               SizedBox(height: 16),
-              Row(children: [
-                Text('From' ,style: TextStyle(fontWeight: FontWeight.w500, fontSize: 17),
-                )
-              ],),
+              Row(
+                children: [
+                  Text(
+                    'From',
+                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 17),
+                  )
+                ],
+              ),
               TextFormField(
                 controller: _fromDateController,
                 readOnly: true,
@@ -367,10 +430,14 @@ class _AddEducationPageState extends State<AddEducationPage> {
                 },
               ),
               SizedBox(height: 16),
-                 Row(children: [
-                Text('To' ,style: TextStyle(fontWeight: FontWeight.w500, fontSize: 17),
-                )
-              ],),
+              Row(
+                children: [
+                  Text(
+                    'To',
+                    style: TextStyle(fontWeight: FontWeight.w500, fontSize: 17),
+                  )
+                ],
+              ),
               TextFormField(
                 controller: _toDateController,
                 readOnly: true,
@@ -391,37 +458,37 @@ class _AddEducationPageState extends State<AddEducationPage> {
               ),
               const SizedBox(height: 25),
               GestureDetector(
-                onTap: (){
-                    if (_formKey.currentState!.validate()) {
-                      final newEducation = {
-                        'university': _universityController.text,
-                        'degree': _degreeController.text,
-                        'from': _fromDateController.text,
-                        'to': _toDateController.text,
-                      };
-                      Navigator.pop(context, newEducation);
-                    }
-                  
+                onTap: () {
+                  if (_formKey.currentState!.validate()) {
+                    final newEducation = {
+                      'university': _universityController.text,
+                      'degree': _degreeController.text,
+                      'from': _fromDateController.text,
+                      'to': _toDateController.text,
+                    };
+                    Navigator.pop(context, newEducation);
+                  }
                 },
                 child: Container(
-                 width: 100,
-                 height: 40,
-                 decoration: BoxDecoration(
-                   borderRadius: BorderRadius.circular(10.0),
-                   color: Colors.yellow.shade600,
-                 ),
-                 child: Center(
+                  width: 100,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.0),
+                    color: Colors.yellow.shade600,
+                  ),
                   child: Center(
-                    child: Text('Add' , style: TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                    ),)
+                    child: Text(
+                      'Add',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
                     ),
+                  ),
                 ),
-              ),
               )
-              ],
+            ],
           ),
         ),
       ),
