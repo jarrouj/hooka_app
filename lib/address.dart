@@ -33,33 +33,53 @@ class _AddressTabState extends State<AddressTab> {
     });
     var box = await Hive.openBox('userBox');
     int index = addresses.length - 1;
-    await box.put('addressTi$index', newAddress['title']);
-    await box.put('addressCi$index', newAddress['city']);
-    await box.put('addressSt$index', newAddress['street']);
-    await box.put('addressBu$index', newAddress['building']);
-    await box.put('addressAp$index', newAddress['appartment']);
+    await box.put('addressTitle$index', newAddress['title']);
+    await box.put('addressCity$index', newAddress['city']);
+    await box.put('addressStreet$index', newAddress['street']);
+    await box.put('addressBuilding$index', newAddress['building']);
+    await box.put('addressAppartment$index', newAddress['appartment']);
     widget.onAdd(newAddress);
   }
 
   void _removeAddress(int index) async {
     if (index >= 0 && index < addresses.length) {
+      var box = await Hive.openBox('userBox');
+      
+      // Remove the specified address
+      await box.delete('addressTitle$index');
+      await box.delete('addressCity$index');
+      await box.delete('addressStreet$index');
+      await box.delete('addressBuilding$index');
+      await box.delete('addressAppartment$index');
+
       setState(() {
         addresses.removeAt(index);
       });
-      var box = await Hive.openBox('userBox');
-      await box.delete('addressTi$index');
-      await box.delete('addressCi$index');
-      await box.delete('addressSt$index');
-      await box.delete('addressBu$index');
-      await box.delete('addressAp$index');
+
+      // Shift the subsequent addresses up by one position
+      for (int i = index; i < addresses.length; i++) {
+        await box.put('addressTitle$i', box.get('addressTitle${i + 1}'));
+        await box.put('addressCity$i', box.get('addressCity${i + 1}'));
+        await box.put('addressStreet$i', box.get('addressStreet${i + 1}'));
+        await box.put('addressBuilding$i', box.get('addressBuilding${i + 1}'));
+        await box.put('addressAppartment$i', box.get('addressAppartment${i + 1}'));
+      }
+
+      // Remove the last shifted address
+      int lastIndex = addresses.length;
+      await box.delete('addressTitle$lastIndex');
+      await box.delete('addressCity$lastIndex');
+      await box.delete('addressStreet$lastIndex');
+      await box.delete('addressBuilding$lastIndex');
+      await box.delete('addressAppartment$lastIndex');
+
       widget.onRemove(index);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-        var screenWidth = MediaQuery.of(context).size.width;
-
+    var screenWidth = MediaQuery.of(context).size.width;
     final Size size = MediaQuery.of(context).size;
     return Stack(
       children: [
@@ -442,14 +462,14 @@ class _AddAddressPageState extends State<AddAddressPage> {
               GestureDetector(
                 onTap: () {
                   if (_formKey.currentState!.validate()) {
-                    final newExperince = {
+                    final newAddress = {
                       'title': _titleController.text,
                       'city': _cityController.text,
                       'street': _streetController.text,
                       'building': _buildingController.text,
                       'appartment': _appartmentController.text,
                     };
-                    Navigator.pop(context, newExperince);
+                    Navigator.pop(context, newAddress);
                   }
                 },
                 child: Container(

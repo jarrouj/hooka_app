@@ -48,7 +48,7 @@ class _CartPageState extends State<CartPage> {
     setState(() {
       product.quantity = 0;
       widget.cartItems.remove(product);
-      cartBox.delete(product.name); // Remove the item from Hive
+      cartBox.delete(product.name); 
     });
   }
 
@@ -115,7 +115,7 @@ class _CartPageState extends State<CartPage> {
                                 item.name,
                                 style: const TextStyle(fontWeight: FontWeight.bold),
                               ),
-                              subtitle: Text('\$ ${item.price.toStringAsFixed(2)} '),
+                              subtitle: Text('\$ ${item.price.toStringAsFixed(0)} '),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
@@ -195,12 +195,13 @@ class _CartPageState extends State<CartPage> {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     Text(
-                      'Total:             \$${totalAmount.toStringAsFixed(2)}',
+                      'Total:             \$${totalAmount.toStringAsFixed(0)}',
                       style: const TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
+                    SizedBox(width: 10,)
                   ],
                 ),
                 const SizedBox(height: 25),

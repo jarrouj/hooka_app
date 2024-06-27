@@ -407,7 +407,7 @@ class _DetailsState extends State<Details> with TickerProviderStateMixin {
                               child: Image.asset(product.image),
                             ),
                             const SizedBox(height: 10),
-                            Text('USD ${product.price.toStringAsFixed(2)}', textAlign: TextAlign.center, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15)),
+                            Text('USD ${product.price.toStringAsFixed(0)}', textAlign: TextAlign.center, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15)),
                             Text(product.name, textAlign: TextAlign.center, style: GoogleFonts.comfortaa(color: Colors.black, fontSize: 15, fontWeight: FontWeight.w500)),
                           ],
                         ),

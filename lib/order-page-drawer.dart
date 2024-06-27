@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
@@ -44,10 +43,10 @@ class OrderPageDrawer extends StatelessWidget {
                   onPressed: () => ZoomDrawer.of(context)!.toggle(),
                 ),
                 bottom: const TabBar(
-                    unselectedLabelColor: Colors.grey,
-          labelColor: Colors.black,
-          indicatorSize: TabBarIndicatorSize.tab ,
-          indicatorColor: Colors.black,
+                  unselectedLabelColor: Colors.grey,
+                  labelColor: Colors.black,
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  indicatorColor: Colors.black,
                   tabs: [
                     Tab(text: "Current"),
                     Tab(text: "All"),
@@ -101,7 +100,6 @@ class OrderListView extends StatelessWidget {
               width: double.infinity,
               decoration: BoxDecoration(
                 color: Colors.white,
-                // borderRadius: BorderRadius.circular(10),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.1),
@@ -112,32 +110,47 @@ class OrderListView extends StatelessWidget {
                 ],
               ),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SizedBox(
-                    width: 10,
-                  ),
-                  Container(
-                    width: 50,
-                    height: 100,
-                    decoration: const BoxDecoration(
-                        shape: BoxShape.circle, color: Colors.yellow),
-                    child: Center(
-                        child: Text(
-                      '${orders[index].key.substring(10, 13)}',
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 15,
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: 10,
                       ),
-                    )),
+                      Container(
+                        width: 50,
+                        height: 50,
+                        decoration: const BoxDecoration(
+                            shape: BoxShape.circle, color: Colors.yellow),
+                        child: Center(
+                          child: Text(
+                            '${orders[index].key.substring(10, 13)}',
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        width: 20,
+                      ),
+                      Text(
+                        '${order['status']}\nTotal: \$${order['totalAmount'].toStringAsFixed(2)}',
+                      ),
+                    ],
                   ),
-                  SizedBox(
-                    width: 20,
+                  Padding(
+                    padding: const EdgeInsets.only(right: 10),
+                    child: Text(
+                      order['date'],
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 12,
+                      ),
+                    ),
                   ),
-                  Text(
-                    '${order['status']}\nTotal: \$${order['totalAmount'].toStringAsFixed(2)}',
-                  ),
-                   
                 ],
               ),
             ),
@@ -474,7 +487,6 @@ class OrderDetailsPage extends StatelessWidget {
                         return Padding(
                           padding: const EdgeInsets.only(top: 10),
                           child: Container(
-                            // color: Colors.white,
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(15),
                               border: Border.all(

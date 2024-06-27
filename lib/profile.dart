@@ -110,6 +110,7 @@ class _ProfilePageState extends State<ProfilePage> {
           'city': userBox.get('addressCity$i'),
           'street': userBox.get('addressStreet$i'),
           'building': userBox.get('addressBuilding$i'),
+          'appartment`': userBox.get('addressAppartment$i'),
         });
       } else {
         break;
@@ -121,10 +122,10 @@ class _ProfilePageState extends State<ProfilePage> {
   void _loadUserName() async {
     var box = Hive.box('userBox');
     setState(() {
-      _firstName = box.get('firstName', defaultValue: 'Georges');
-      _lastName = box.get('lastName', defaultValue: 'Jarrouj');
-      _email = box.get('email', defaultValue: 'georgesjarrouj3@gmail.com');
-      _mobile = box.get('mobile', defaultValue: '76974972');
+      _firstName = box.get('firstName', defaultValue: '');
+      _lastName = box.get('lastName', defaultValue: '');
+      _email = box.get('email', defaultValue: '');
+      _mobile = box.get('mobile', defaultValue: '');
     });
   }
 
