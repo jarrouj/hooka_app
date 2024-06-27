@@ -601,7 +601,7 @@ class _PlacesStartPageState extends State<PlacesStartPage> {
           ),
         ],
         leading: IconButton(
-          icon: const Icon(
+          icon: const Icon( 
             Icons.arrow_back_ios,
             color: Colors.black,
           ),

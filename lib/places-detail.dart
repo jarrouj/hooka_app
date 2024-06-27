@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooka_app/login.dart';
+import 'package:hooka_app/main.dart';
 import 'package:hooka_app/places.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -16,8 +17,28 @@ class PlacesDetailPage extends StatefulWidget {
 class _PlacesDetailPageState extends State<PlacesDetailPage> {
   bool isFavorite = false;
 
-  void _toggleFavorite() {
+  @override
+  void initState() {
+    super.initState();
+    _checkFavoriteStatus();
+  }
+
+  void _checkFavoriteStatus() {
+    final savedFavorites = mybox?.get('favoriteIds', defaultValue: []) as List;
     setState(() {
+      isFavorite = savedFavorites.contains(widget.place.id);
+    });
+  }
+
+  void _toggleFavorite() {
+    final savedFavorites = mybox?.get('favoriteIds', defaultValue: []) as List;
+    setState(() {
+      if (isFavorite) {
+        savedFavorites.remove(widget.place.id);
+      } else {
+        savedFavorites.add(widget.place.id);
+      }
+      mybox?.put('favoriteIds', savedFavorites);
       isFavorite = !isFavorite;
     });
   }
@@ -31,6 +52,20 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
       await launch(phoneUri.toString());
     } else {
       print('Could not launch $phoneUri');
+    }
+  }
+
+  void _openMap(String location) async {
+    final Uri mapUri = Uri(
+      scheme: 'https',
+      host: 'www.google.com',
+      path: '/maps/search/',
+      queryParameters: {'api': '1', 'query': location},
+    );
+    if (await canLaunch(mapUri.toString())) {
+      await launch(mapUri.toString());
+    } else {
+      throw 'Could not launch ${mapUri.toString()}';
     }
   }
 
@@ -57,7 +92,9 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
                       Text(
                         widget.place.title,
                         style: const TextStyle(
-                            fontSize: 24, fontWeight: FontWeight.bold),
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                       Spacer(),
                       Padding(
@@ -80,10 +117,15 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
                               Text(
                                 widget.place.rating.toString(),
                                 style: const TextStyle(
-                                    fontSize: 16, color: Colors.white),
+                                  fontSize: 16,
+                                  color: Colors.white,
+                                ),
                               ),
-                              const Icon(Icons.star,
-                                  color: Colors.white, size: 10),
+                              const Icon(
+                                Icons.star,
+                                color: Colors.white,
+                                size: 10,
+                              ),
                             ],
                           ),
                         ),
@@ -91,14 +133,13 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
                       Padding(
                         padding: const EdgeInsets.only(right: 10),
                         child: GestureDetector(
-                            onTap: _toggleFavorite,
-                            child: Icon(
-                              isFavorite
-                                  ? Icons.favorite
-                                  : Icons.favorite_border,
-                              color: isFavorite ? Colors.red : Colors.black,
-                              size: 22,
-                            )),
+                          onTap: _toggleFavorite,
+                          child: Icon(
+                            isFavorite ? Icons.favorite : Icons.favorite_border,
+                            color: isFavorite ? Colors.red : Colors.black,
+                            size: 22,
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -119,7 +160,16 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
                   const SizedBox(height: 8),
                   Row(
                     children: [
-                      Text('${widget.place.location}'),
+                      GestureDetector(
+                        onTap: () => _openMap(widget.place.location),
+                        child: Text(
+                          '${widget.place.location}',
+                          style: const TextStyle(
+                            decoration: TextDecoration.underline,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
+                      ),
                       const Spacer(),
                       const Icon(
                         Icons.location_on_outlined,
@@ -155,8 +205,9 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
                         child: Text(
                           '${widget.place.phoneNumber}',
                           style: const TextStyle(
-                              decoration: TextDecoration.underline,
-                              fontStyle: FontStyle.italic),
+                            decoration: TextDecoration.underline,
+                            fontStyle: FontStyle.italic,
+                          ),
                         ),
                       ),
                       const Spacer(),
@@ -175,9 +226,7 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
                 ],
               ),
             ),
-            const SizedBox(
-              height: 20,
-            ),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -205,31 +254,28 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
                 children: [
                   const Row(
                     children: [
-                      Text('Album',
-                          style: TextStyle(
-                              fontSize: 20, fontWeight: FontWeight.bold)),
+                      Text(
+                        'Album',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
-                  const SizedBox(
-                    height: 15,
-                  ),
+                  const SizedBox(height: 15),
                   Image.asset(
                     widget.place.imageUrl,
                     height: 200,
                     width: double.infinity,
                     fit: BoxFit.cover,
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
+                  const SizedBox(height: 20),
                   const Divider(
                     thickness: 1,
                     color: Colors.grey,
                   ),
-                  // Uncomment and modify the following lines as needed
-                  const SizedBox(
-                    height: 20,
-                  ),
+                  const SizedBox(height: 20),
                   GestureDetector(
                     onTap: () {
                       showDialog(
@@ -238,9 +284,7 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
                           return Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              SizedBox(
-                                height: 30,
-                              ),
+                              const SizedBox(height: 30),
                               AlertDialog(
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10.0),
@@ -251,9 +295,7 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      SizedBox(
-                                        height: 20,
-                                      ),
+                                      const SizedBox(height: 20),
                                       const Row(
                                         mainAxisAlignment:
                                             MainAxisAlignment.center,
@@ -273,8 +315,9 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                                builder: (context) =>
-                                                    const LoginPage()),
+                                              builder: (context) =>
+                                                  const LoginPage(),
+                                            ),
                                           );
                                         },
                                         child: const Row(
@@ -309,75 +352,73 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
                           color: Colors.yellow.shade600,
                           size: 25,
                         ),
-                        const SizedBox(
-                          width: 5,
-                        ),
+                        const SizedBox(width: 5),
                         const Text(
                           'Invite buddy',
                           style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                              decoration: TextDecoration.underline,
-                              decorationThickness: 0.5),
-                        )
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                            decoration: TextDecoration.underline,
+                            decorationThickness: 0.5,
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                  const SizedBox(
-                    height: 24,
-                  ),
+                  const SizedBox(height: 24),
                   const Divider(
                     thickness: 1,
                     color: Colors.grey,
                   ),
-                  const SizedBox(
-                    height: 20,
-                  ),
+                  const SizedBox(height: 20),
                   const Padding(
                     padding: EdgeInsets.only(left: 10),
                     child: Row(
                       children: [
-                        Text('Menus',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold)),
+                        Text(
+                          'Menus',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                  const SizedBox(
-                    height: 200,
-                  ),
-                   Padding(
-                    padding: EdgeInsets.only(left: 10),
+                  const SizedBox(height: 200),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 10),
                     child: Row(
                       children: [
-                        const Text('Reviews',
-                            style: TextStyle(
-                                fontSize: 20, fontWeight: FontWeight.bold)),
-                                Spacer(),
-                                 Icon(
+                        const Text(
+                          'Reviews',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const Spacer(),
+                        Icon(
                           Icons.add_circle,
                           color: Colors.yellow.shade600,
                           size: 25,
                         ),
-                        const SizedBox(
-                          width: 5,
-                        ),
+                        const SizedBox(width: 5),
                         const Text(
-                          'Invite buddy',
+                          'Add review',
                           style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                              decoration: TextDecoration.underline,
-                              decorationThickness: 0.5),
-                        )
+                            fontSize: 13,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                            decoration: TextDecoration.underline,
+                            decorationThickness: 0.5,
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                  SizedBox(
-                    height: 20,
-                  ),
+                  const SizedBox(height: 20),
                   Container(
                     width: double.infinity,
                     height: 65,
@@ -385,10 +426,11 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(5),
                       border: const Border(
-                          left: BorderSide(color: Colors.grey, width: 0.6),
-                          bottom: BorderSide(color: Colors.grey, width: 0.6),
-                          right: BorderSide(color: Colors.grey, width: 0.2),
-                          top: BorderSide(color: Colors.grey, width: 0.2)),
+                        left: BorderSide(color: Colors.grey, width: 0.6),
+                        bottom: BorderSide(color: Colors.grey, width: 0.6),
+                        right: BorderSide(color: Colors.grey, width: 0.2),
+                        top: BorderSide(color: Colors.grey, width: 0.2),
+                      ),
                     ),
                     child: const Padding(
                       padding: EdgeInsets.only(left: 10),
@@ -452,17 +494,15 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
                                 color: Colors.grey,
                               ),
                             ),
-                          )
+                          ),
                         ],
                       ),
                     ),
                   ),
-                  const SizedBox(
-                    height: 200,
-                  ),
+                  const SizedBox(height: 200),
                 ],
               ),
-            )
+            ),
           ],
         ),
       ),
