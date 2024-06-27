@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooka_app/login.dart';
@@ -315,23 +316,25 @@ class ContactUsPage extends StatelessWidget {
                   SizedBox(
                     height: 30,
                   ),
-                  TextField(
-                    decoration: InputDecoration(
-                      labelText: 'Mobile',
-                      labelStyle: TextStyle(color: Colors.black, fontSize: 12),
-                      hintText: 'Mobile',
-                      hintStyle: TextStyle(fontSize: 12),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.black),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 12.0, horizontal: 16.0),
-                    ),
+                 TextField(
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                decoration: InputDecoration(
+                  labelText: 'Mobile',
+                  labelStyle: const TextStyle(color: Colors.black, fontSize: 12),
+                  hintText: 'Mobile',
+                  hintStyle: const TextStyle(fontSize: 12),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
                   ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.black),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                      vertical: 12.0, horizontal: 16.0),
+                ),
+              ),
                   SizedBox(
                     height: 30,
                   ),

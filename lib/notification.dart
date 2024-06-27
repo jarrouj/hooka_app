@@ -39,8 +39,8 @@ class NotificationsPage extends StatelessWidget {
               boxShadow: [
                 BoxShadow(
                   color: Colors.yellow.shade600,
-                  blurRadius: 0.5,
-                  offset: Offset(0, 2),
+                  blurRadius: 0.1,
+                  offset: Offset(0, 0.8),
                 ),
               ],
               borderRadius: BorderRadius.circular(10.0),

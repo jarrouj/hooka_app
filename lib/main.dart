@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:hooka_app/allpages.dart';
+import 'package:hooka_app/buddies.dart';
 import 'package:hooka_app/checkout.dart';
 import 'package:hooka_app/complete-order.dart';
 import 'package:hooka_app/contactus.dart';
@@ -510,77 +511,80 @@ class _ContentPageState extends State<ContentPage> {
                           SizedBox(width: isLargeScreen ? 20 : 5),
                           GestureDetector(
                             onTap: () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const SizedBox(
-                                        height: 30,
-                                      ),
-                                      AlertDialog(
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10.0),
-                                        ),
-                                        content: Container(
-                                          height: 85,
-                                          width: 850,
-                                          child: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: [
-                                              const SizedBox(
-                                                height: 20,
-                                              ),
-                                              const Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  Text(
-                                                    'Please log in first',
-                                                    style: TextStyle(
-                                                      fontSize: 18,
-                                                      fontWeight:
-                                                          FontWeight.w500,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                              const SizedBox(height: 15),
-                                              GestureDetector(
-                                                onTap: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                        builder: (context) =>
-                                                            const LoginPage()),
-                                                  );
-                                                },
-                                                child: const Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.end,
-                                                  children: [
-                                                    Icon(Icons.login),
-                                                    SizedBox(width: 5),
-                                                    Text(
-                                                      'Login',
-                                                      style: TextStyle(
-                                                        fontSize: 16,
-                                                        fontWeight:
-                                                            FontWeight.w500,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                },
+                              // showDialog(
+                              //   context: context,
+                              //   builder: (BuildContext context) {
+                              //     return Column(
+                              //       mainAxisAlignment: MainAxisAlignment.center,
+                              //       children: [
+                              //         const SizedBox(
+                              //           height: 30,
+                              //         ),
+                              //         AlertDialog(
+                              //           shape: RoundedRectangleBorder(
+                              //             borderRadius:
+                              //                 BorderRadius.circular(10.0),
+                              //           ),
+                              //           content: Container(
+                              //             height: 85,
+                              //             width: 850,
+                              //             child: Column(
+                              //               mainAxisSize: MainAxisSize.min,
+                              //               children: [
+                              //                 const SizedBox(
+                              //                   height: 20,
+                              //                 ),
+                              //                 const Row(
+                              //                   mainAxisAlignment:
+                              //                       MainAxisAlignment.center,
+                              //                   children: [
+                              //                     Text(
+                              //                       'Please log in first',
+                              //                       style: TextStyle(
+                              //                         fontSize: 18,
+                              //                         fontWeight:
+                              //                             FontWeight.w500,
+                              //                       ),
+                              //                     ),
+                              //                   ],
+                              //                 ),
+                              //                 const SizedBox(height: 15),
+                              //                 GestureDetector(
+                              //                   onTap: () {
+                              //                     Navigator.push(
+                              //                       context,
+                              //                       MaterialPageRoute(
+                              //                           builder: (context) =>
+                              //                               const LoginPage()),
+                              //                     );
+                              //                   },
+                              //                   child: const Row(
+                              //                     mainAxisAlignment:
+                              //                         MainAxisAlignment.end,
+                              //                     children: [
+                              //                       Icon(Icons.login),
+                              //                       SizedBox(width: 5),
+                              //                       Text(
+                              //                         'Login',
+                              //                         style: TextStyle(
+                              //                           fontSize: 16,
+                              //                           fontWeight:
+                              //                               FontWeight.w500,
+                              //                         ),
+                              //                       ),
+                              //                     ],
+                              //                   ),
+                              //                 ),
+                              //               ],
+                              //             ),
+                              //           ),
+                              //         ),
+                              //       ],
+                              //     );
+                              //   },
+                              // );
+                              Navigator.of(context).push(
+                                MaterialPageRoute(builder: (context) => BuddiesPage())
                               );
                             },
                             child: Container(

@@ -310,7 +310,7 @@ class ProfileMainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Map<String, dynamic>> filteredBasicInfo = basicInfo.where((item) => item['value'].isNotEmpty && !['First Name', 'Last Name', 'Email', 'Mobile', 'Bio', 'Hobbies', 'Profession', 'Interest' , 'Facebook Url' , 'Instagram Url' , 'Tiktok Url'].contains(item['label'])).toList();
+    List<Map<String, dynamic>> filteredBasicInfo = basicInfo.where((item) => item['value'].isNotEmpty && !['First Name', 'Last Name', 'Email', 'Mobile', 'Bio', 'Hobbies', 'Profession', 'Interest' , 'Facebook Url' , 'Instagram Url' , 'Tiktok Url' , 'Profile Image'].contains(item['label'])).toList();
 
     String facebookUrl = getValue('Facebook Url');
     String instagramUrl = getValue('Instagram Url');

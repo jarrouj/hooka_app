@@ -110,7 +110,7 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
             .map((json) => Cuisine.fromJson(json))
             .toList();
         if (cuisines.isNotEmpty) {
-          cuisines.insert(0, Cuisine(name: 'Cuisines'));
+          cuisines.insert(0, Cuisine(name: 'All Cuisines'));
           selectedCuisine = cuisines.first.name;
         } else {
           selectedCuisine = null;
@@ -136,28 +136,22 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
   }
 
   void _toggleFavorite(int placeId) {
-   
-
-      setState(() {
-        if (favoriteIds.contains(placeId)) {
-          favoriteIds.remove(placeId);
-        } else {
-          favoriteIds.add(placeId);
-        }
-        mybox?.put('favoriteIds', favoriteIds);
-        _applyFilters();
-      });
-    
+    setState(() {
+      if (favoriteIds.contains(placeId)) {
+        favoriteIds.remove(placeId);
+      } else {
+        favoriteIds.add(placeId);
+      }
+      mybox?.put('favoriteIds', favoriteIds);
+      _applyFilters();
+    });
   }
 
   void _sortPlacesByRating() {
     setState(() {
       isRatingPressed = !isRatingPressed;
+      _applyFilters();
     });
-
-      setState(() {
-        _applyFilters();
-  });
   }
 
   void _applyFilters() {
@@ -173,6 +167,12 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
     if (showFavoritesOnly) {
       tempPlaces =
           tempPlaces.where((place) => favoriteIds.contains(place.id)).toList();
+    }
+
+    if (selectedCuisine != null && selectedCuisine != 'All Cuisines') {
+      tempPlaces = tempPlaces.where((place) {
+        return place.cuisine.toLowerCase() == selectedCuisine!.toLowerCase();
+      }).toList();
     }
 
     if (isRatingPressed) {
@@ -198,9 +198,7 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
     setState(() {
       showFavoritesOnly = !showFavoritesOnly;
       _applyFilters();
-
     });
-
   }
 
   @override
@@ -210,7 +208,7 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10 , vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
             child: TextField(
               decoration: InputDecoration(
                 filled: true,
@@ -259,6 +257,7 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
                     onChanged: (String? newValue) {
                       setState(() {
                         selectedCuisine = newValue!;
+                        _applyFilters();
                       });
                     },
                     decoration: InputDecoration(
@@ -299,18 +298,18 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
                 const SizedBox(width: 10),
                 ElevatedButton(
                   style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all(Colors.white),
-                    shape: WidgetStateProperty.all(RoundedRectangleBorder(
+                    backgroundColor: MaterialStateProperty.all(Colors.white),
+                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5),
                       side: BorderSide(color: Colors.grey.shade500),
                     )),
-                    textStyle: WidgetStateProperty.all(const TextStyle(
+                    textStyle: MaterialStateProperty.all(const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
                     )),
-                    minimumSize: WidgetStateProperty.all(Size(80, 35)),
-                    padding: WidgetStateProperty.all(const EdgeInsets.symmetric(
+                    minimumSize: MaterialStateProperty.all(Size(80, 35)),
+                    padding: MaterialStateProperty.all(const EdgeInsets.symmetric(
                         horizontal: 10, vertical: 5)),
                   ),
                   onPressed: () {
@@ -324,15 +323,15 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
                 const SizedBox(width: 10),
                 ElevatedButton(
                   style: ButtonStyle(
-                    minimumSize: WidgetStateProperty.all(Size(90, 35)),
-                    padding: WidgetStateProperty.all(const EdgeInsets.symmetric(
+                    minimumSize: MaterialStateProperty.all(Size(90, 35)),
+                    padding: MaterialStateProperty.all(const EdgeInsets.symmetric(
                         horizontal: 10, vertical: 5)),
-                    backgroundColor: WidgetStateProperty.all(Colors.white),
-                    shape: WidgetStateProperty.all(RoundedRectangleBorder(
+                    backgroundColor: MaterialStateProperty.all(Colors.white),
+                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5),
                       side: BorderSide(color: Colors.grey.shade500),
                     )),
-                    textStyle: WidgetStateProperty.all(const TextStyle(
+                    textStyle: MaterialStateProperty.all(const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
@@ -355,15 +354,15 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
                 const SizedBox(width: 10),
                 ElevatedButton(
                   style: ButtonStyle(
-                    minimumSize: WidgetStateProperty.all(Size(80, 35)),
-                    padding: WidgetStateProperty.all(const EdgeInsets.symmetric(
+                    minimumSize: MaterialStateProperty.all(Size(80, 35)),
+                    padding: MaterialStateProperty.all(const EdgeInsets.symmetric(
                         horizontal: 10, vertical: 5)),
-                    backgroundColor: WidgetStateProperty.all(Colors.white),
-                    shape: WidgetStateProperty.all(RoundedRectangleBorder(
+                    backgroundColor: MaterialStateProperty.all(Colors.white),
+                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5),
                       side: BorderSide(color: Colors.grey.shade500),
                     )),
-                    textStyle: WidgetStateProperty.all(const TextStyle(
+                    textStyle: MaterialStateProperty.all(const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
@@ -403,7 +402,7 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
           ),
           const SizedBox(height: 15),
           Expanded(
-            child: isLoading 
+            child: isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : filteredPlaces.isEmpty
                     ? const Center(
@@ -510,8 +509,7 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
                                             place.cuisine,
                                             style: TextStyle(
                                                 fontSize: 14,
-                                                color: Colors.grey.shade800 , 
-                                                ),
+                                                color: Colors.grey.shade800),
                                           ),
                                           const Spacer(),
                                           GestureDetector(
@@ -530,13 +528,12 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
                                           ),
                                         ],
                                       ),
-                                      // const SizedBox(height: 3),
                                       Text(
                                         place.location,
                                         style: const TextStyle(
-                                            fontSize: 12, color: Colors.grey ,
-                                            fontStyle: FontStyle.italic
-                                            ),
+                                            fontSize: 12,
+                                            color: Colors.grey,
+                                            fontStyle: FontStyle.italic),
                                       ),
                                       const SizedBox(height: 20),
                                     ],
@@ -553,6 +550,7 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
     );
   }
 }
+
 
 
 class PlacesStartPage extends StatefulWidget {

@@ -25,6 +25,7 @@ class OrderPageDrawer extends StatelessWidget {
           return DefaultTabController(
             length: 2,
             child: Scaffold(
+              backgroundColor: Colors.grey.shade100,
               appBar: AppBar(
                 backgroundColor: Colors.white,
                 title: Center(
@@ -42,15 +43,26 @@ class OrderPageDrawer extends StatelessWidget {
                   icon: Icon(Icons.menu),
                   onPressed: () => ZoomDrawer.of(context)!.toggle(),
                 ),
-                bottom: const TabBar(
-                  unselectedLabelColor: Colors.grey,
-                  labelColor: Colors.black,
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  indicatorColor: Colors.black,
-                  tabs: [
-                    Tab(text: "Current"),
-                    Tab(text: "All"),
-                  ],
+                bottom: PreferredSize(
+                  preferredSize: const Size.fromHeight(kToolbarHeight),
+                  child: Material(
+                    color: Colors.grey.shade100,
+                    child:  TabBar(
+                      padding: const EdgeInsets.only(top: 15),
+                      indicatorPadding: const EdgeInsets.symmetric(horizontal: 20),
+                      unselectedLabelColor: Colors.grey,
+                      labelColor: Colors.black,
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      indicatorColor: Colors.black,
+                      labelStyle: GoogleFonts.comfortaa(
+                        fontWeight: FontWeight.w800
+                      ),
+                      tabs: [
+                        Tab(text: "Current"),
+                        Tab(text: "All"),
+                      ],
+                    ),
+                  ),
                 ),
               ),
               body: TabBarView(
@@ -100,14 +112,12 @@ class OrderListView extends StatelessWidget {
               width: double.infinity,
               decoration: BoxDecoration(
                 color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    spreadRadius: 1,
-                    blurRadius: 1,
-                    offset: const Offset(0, 1),
+                border: Border(
+                  bottom: BorderSide(
+                    color: Colors.grey.shade300,
+                    width: 1.0,
                   ),
-                ],
+                ),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -136,18 +146,31 @@ class OrderListView extends StatelessWidget {
                       const SizedBox(
                         width: 20,
                       ),
-                      Text(
-                        '${order['status']}\nTotal: \$${order['totalAmount'].toStringAsFixed(2)}',
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            '${order['status']}',
+                            style: const TextStyle(
+                                fontSize: 15, fontWeight: FontWeight.w500),
+                          ),
+                          Text(
+                            'Total: \$${order['totalAmount'].toStringAsFixed(0)}',
+                            style:  TextStyle(
+                                fontSize: 13, color: Colors.grey.shade700),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                   Padding(
-                    padding: const EdgeInsets.only(right: 10),
+                    padding: const EdgeInsets.only(right: 15),
                     child: Text(
                       order['date'],
                       style: const TextStyle(
-                        color: Colors.grey,
-                        fontSize: 12,
+                        color: Colors.black,
+                        fontSize: 14,
                       ),
                     ),
                   ),
@@ -238,39 +261,44 @@ class OrderDetailsPage extends StatelessWidget {
                           ),
                           Row(
                             children: [
-                              Container(
-                                width: size.width * 0.35,
-                                height: 30,
-                                decoration: BoxDecoration(
+                              Flexible(
+                                child: Container(
+                                  height: 30,
+                                  decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
                                     border: Border.all(
                                       color: Colors.grey,
                                       width: 1,
-                                    )),
-                                child: Center(
-                                  child: Text('Id: $orderId',
-                                      style: TextStyle(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold)),
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                        'Id: ${orderId.substring(10, 13)}',
+                                        style: const TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold)),
+                                  ),
                                 ),
                               ),
                               SizedBox(
                                 width: 20,
                               ),
-                              Container(
-                                width: size.width * 0.35,
-                                height: 30,
-                                decoration: BoxDecoration(
+                              Flexible(
+                                child: Container(
+                                  height: 30,
+                                  decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
                                     border: Border.all(
                                       color: Colors.grey,
                                       width: 1,
-                                    )),
-                                child: Center(
-                                  child: Text('Status: ${order['status']}',
-                                      style: TextStyle(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold)),
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text('Status: ${order['status']}',
+                                        style: const TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold)),
+                                  ),
                                 ),
                               ),
                             ],
@@ -280,40 +308,44 @@ class OrderDetailsPage extends StatelessWidget {
                           ),
                           Row(
                             children: [
-                              Container(
-                                width: size.width * 0.35,
-                                height: 30,
-                                decoration: BoxDecoration(
+                              Flexible(
+                                child: Container(
+                                  height: 30,
+                                  decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
                                     border: Border.all(
                                       color: Colors.grey,
                                       width: 1,
-                                    )),
-                                child: Center(
-                                  child: Text(
-                                      'Total Price: ${order['totalAmount'].toStringAsFixed(2)} \$',
-                                      style: TextStyle(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold)),
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                        'Total Price: ${order['totalAmount'].toStringAsFixed(0)} \$',
+                                        style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold)),
+                                  ),
                                 ),
                               ),
                               SizedBox(
                                 width: 20,
                               ),
-                              Container(
-                                width: size.width * 0.35,
-                                height: 30,
-                                decoration: BoxDecoration(
+                              Flexible(
+                                child: Container(
+                                  height: 30,
+                                  decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
                                     border: Border.all(
                                       color: Colors.grey,
                                       width: 1,
-                                    )),
-                                child: Center(
-                                  child: Text('Date : ${order['date']}',
-                                      style: TextStyle(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold)),
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text('Date : ${order['date']}',
+                                        style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold)),
+                                  ),
                                 ),
                               ),
                             ],
@@ -327,7 +359,7 @@ class OrderDetailsPage extends StatelessWidget {
                   ),
                   Container(
                     width: double.infinity,
-                    height: 180,
+                    height: 200,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
@@ -368,41 +400,45 @@ class OrderDetailsPage extends StatelessWidget {
                           ),
                           Row(
                             children: [
-                              Container(
-                                width: size.width * 0.35,
-                                height: 30,
-                                decoration: BoxDecoration(
+                              Flexible(
+                                child: Container(
+                                  height: 30,
+                                  decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
                                     border: Border.all(
                                       color: Colors.grey,
                                       width: 1,
-                                    )),
-                                child: Center(
-                                  child: Text(
-                                      'Name: ${order['address']['title']}',
-                                      style: TextStyle(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold)),
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                        'Name: ${order['address']['title']}',
+                                        style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold)),
+                                  ),
                                 ),
                               ),
                               SizedBox(
                                 width: 20,
                               ),
-                              Container(
-                                width: size.width * 0.35,
-                                height: 30,
-                                decoration: BoxDecoration(
+                              Flexible(
+                                child: Container(
+                                  height: 30,
+                                  decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
                                     border: Border.all(
                                       color: Colors.grey,
                                       width: 1,
-                                    )),
-                                child: Center(
-                                  child: Text(
-                                      'City: ${order['address']['city']}',
-                                      style: TextStyle(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold)),
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                        'City: ${order['address']['city']}',
+                                        style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold)),
+                                  ),
                                 ),
                               ),
                             ],
@@ -412,45 +448,78 @@ class OrderDetailsPage extends StatelessWidget {
                           ),
                           Row(
                             children: [
-                              Container(
-                                width: size.width * 0.35,
-                                height: 30,
-                                decoration: BoxDecoration(
+                              Flexible(
+                                child: Container(
+                                  height: 30,
+                                  decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
                                     border: Border.all(
                                       color: Colors.grey,
                                       width: 1,
-                                    )),
-                                child: Center(
-                                  child: Text(
-                                      'Street: ${order['address']['street']}',
-                                      style: TextStyle(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold)),
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                        'Street: ${order['address']['street']}',
+                                        style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold)),
+                                  ),
                                 ),
                               ),
                               SizedBox(
                                 width: 20,
                               ),
-                              Container(
-                                width: size.width * 0.35,
-                                height: 30,
-                                decoration: BoxDecoration(
+                              Flexible(
+                                child: Container(
+                                  height: 30,
+                                  decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(10),
                                     border: Border.all(
                                       color: Colors.grey,
                                       width: 1,
-                                    )),
-                                child: Center(
-                                  child: Text(
-                                      'Building : ${order['address']['building']}',
-                                      style: TextStyle(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold)),
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                        'Building : ${order['address']['building']}',
+                                        style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold)),
+                                  ),
                                 ),
                               ),
                             ],
                           ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Flexible(
+                                child: Container(
+                                  height: 30,
+                                  width: 150,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    border: Border.all(
+                                      color: Colors.grey,
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Center(
+                                    child: Text(
+                                        textAlign: TextAlign.center,
+                                        'Appartment : ${order['address']['appartment']}',
+                                        style: const TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold)),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          )
                         ],
                       ),
                     ),
