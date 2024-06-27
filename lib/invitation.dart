@@ -28,6 +28,7 @@ class _InvitationsPageState extends State<InvitationsPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Center(
@@ -47,16 +48,25 @@ class _InvitationsPageState extends State<InvitationsPage>
             ZoomDrawer.of(context)!.toggle();
           },
         ),
-        bottom: TabBar(
-          unselectedLabelColor: Colors.grey,
-          labelColor: Colors.black,
-          indicatorSize: TabBarIndicatorSize.tab,
-          indicatorColor: Colors.black,
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Received'),
-            Tab(text: 'Sent'),
-          ],
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(kToolbarHeight),
+          child: Material(
+            color: Colors.grey.shade100,
+            child: TabBar(
+              padding: const EdgeInsets.only(top: 15),
+              indicatorPadding: const EdgeInsets.symmetric(horizontal: 20),
+              unselectedLabelColor: Colors.grey,
+              labelColor: Colors.black,
+              indicatorSize: TabBarIndicatorSize.tab,
+              indicatorColor: Colors.black,
+              labelStyle: GoogleFonts.comfortaa(fontWeight: FontWeight.w800),
+              controller: _tabController,
+              tabs: const [
+                Tab(text: 'Received'),
+                Tab(text: 'Sent'),
+              ],
+            ),
+          ),
         ),
       ),
       body: TabBarView(
@@ -141,19 +151,21 @@ class _InvitationsPageState extends State<InvitationsPage>
                       Icon(Icons.check),
                     ],
                   ),
-                  subtitle:  Column(
+                  subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                       Text('Test' , style: TextStyle(
-                        color: Colors.grey.shade600
-                      ),),
-                      Text('2023-10-25' , style: TextStyle(
-                        color: Colors.grey.shade600
-                      ),),
+                      Text(
+                        'Test',
+                        style: TextStyle(color: Colors.grey.shade600),
+                      ),
+                      Text(
+                        '2023-10-25',
+                        style: TextStyle(color: Colors.grey.shade600),
+                      ),
                       Text(
                         'You Will Pay For Your Own Hooka & Food',
-                        style: TextStyle(fontSize: 10 , color: Colors.grey.shade600
- ),
+                        style: TextStyle(
+                            fontSize: 10, color: Colors.grey.shade600),
                       ),
                       SizedBox(
                         height: 10,

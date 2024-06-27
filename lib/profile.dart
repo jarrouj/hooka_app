@@ -236,6 +236,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        surfaceTintColor: Colors.white,
         backgroundColor: Colors.white,
         title: Center(
           child: Text('My Account', style: GoogleFonts.comfortaa(fontSize: 20)),
@@ -315,6 +316,9 @@ class ProfileMainPage extends StatelessWidget {
     String facebookUrl = getValue('Facebook Url');
     String instagramUrl = getValue('Instagram Url');
     String tiktokUrl = getValue('Tiktok Url');
+
+    final size = MediaQuery.of(context).size;
+    final double tableWidth = size.width * 0.3;
 
     return SingleChildScrollView(
       child: Column(
@@ -403,108 +407,112 @@ class ProfileMainPage extends StatelessWidget {
                 const SizedBox(
                   height: 20,
                 ),
-                const Row(
-                  children: [
-                    Text(
-                      'Basic Information',
-                      style: TextStyle(
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18),
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                Table(
-                  border: TableBorder.all(color: Colors.grey.shade400),
-                  defaultColumnWidth: const IntrinsicColumnWidth(),
-                  children: [
-                    for (int i = 0; i < filteredBasicInfo.length; i += 3)
-                      TableRow(
-                        children: [
-                          for (int j = 0; j < 3; j++)
-                            if (i + j < filteredBasicInfo.length)
-                              TableCell(
-                                verticalAlignment: TableCellVerticalAlignment.middle,
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 17),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        filteredBasicInfo[i + j]['label'],
-                                        style: const TextStyle(fontSize: 11),
-                                      ),
-                                      Text(
-                                        filteredBasicInfo[i + j]['value'],
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 14),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              )
-                            else
-                              TableCell(
-                                child: Container(), // Empty cell
-                              ),
-                        ],
+                if (filteredBasicInfo.isNotEmpty) ...[
+                  const Row(
+                    children: [
+                      Text(
+                        'Basic Information',
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18),
                       ),
-                  ],
-                ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Table(
+                    border: TableBorder.all(color: Colors.grey.shade400),
+                    defaultColumnWidth: FixedColumnWidth(tableWidth),
+                    children: [
+                      for (int i = 0; i < filteredBasicInfo.length; i += 3)
+                        TableRow(
+                          children: [
+                            for (int j = 0; j < 3; j++)
+                              if (i + j < filteredBasicInfo.length)
+                                TableCell(
+                                  verticalAlignment: TableCellVerticalAlignment.middle,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 17),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          filteredBasicInfo[i + j]['label'],
+                                          style: const TextStyle(fontSize: 11),
+                                        ),
+                                        Text(
+                                          filteredBasicInfo[i + j]['value'],
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 14),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                )
+                              else
+                                TableCell(
+                                  child: Container(), // Empty cell
+                                ),
+                          ],
+                        ),
+                    ],
+                  ),
+                ],
               
                 // const SizedBox(height: 20),
-                Table(
-                  columnWidths: const {
-                    0: IntrinsicColumnWidth(),
-                    1: IntrinsicColumnWidth(),
-                    2: IntrinsicColumnWidth(),
-                  },
-                  children: [
-                    TableRow(
-                      children: [
-                        GestureDetector(
-                          onTap: () => _launchUrl(facebookUrl),
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 45),
-                            child: Icon(
-                              FontAwesomeIcons.facebook,
-                              size: 20,
-                              color: Colors.black,
+                if (facebookUrl.isNotEmpty || instagramUrl.isNotEmpty || tiktokUrl.isNotEmpty) ...[
+                  Table(
+                    columnWidths: const {
+                      0: IntrinsicColumnWidth(),
+                      1: IntrinsicColumnWidth(),
+                      2: IntrinsicColumnWidth(),
+                    },
+                    children: [
+                      TableRow(
+                        children: [
+                          GestureDetector(
+                            onTap: () => _launchUrl(facebookUrl),
+                            child: const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 45),
+                              child: Icon(
+                                FontAwesomeIcons.facebook,
+                                size: 20,
+                                color: Colors.black,
+                              ),
                             ),
                           ),
-                        ),
-                        GestureDetector(
-                          onTap: () => _launchUrl(instagramUrl),
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 53),
-                            child: Icon(
-                              FontAwesomeIcons.instagram,
-                              size: 20,
-                              color: Colors.black,
+                          GestureDetector(
+                            onTap: () => _launchUrl(instagramUrl),
+                            child: const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 53),
+                              child: Icon(
+                                FontAwesomeIcons.instagram,
+                                size: 20,
+                                color: Colors.black,
+                              ),
                             ),
                           ),
-                        ),
-                        GestureDetector(
-                          onTap: () => _launchUrl(tiktokUrl),
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 55),
-                            child: Icon(
-                              FontAwesomeIcons.tiktok,
-                              size: 20,
-                              color: Colors.black,
+                          GestureDetector(
+                            onTap: () => _launchUrl(tiktokUrl),
+                            child: const Padding(
+                              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 55),
+                              child: Icon(
+                                FontAwesomeIcons.tiktok,
+                                size: 20,
+                                color: Colors.black,
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
                 const SizedBox(height: 20),
-                  if ((getValue('Interest') ?? '').isNotEmpty) ...[
+                if ((getValue('Interest') ?? '').isNotEmpty) ...[
                   SizedBox(height: 30),
                   const Row(
                     children: [
@@ -517,7 +525,7 @@ class ProfileMainPage extends StatelessWidget {
                       )
                     ],
                   ),
-                    SizedBox(height: 10),
+                  SizedBox(height: 10),
                   Row(
                     children: [
                       Container(
@@ -530,9 +538,9 @@ class ProfileMainPage extends StatelessWidget {
                       )
                     ],
                   ),
-                  ],
-                   const SizedBox(height: 20),
-                  if ((getValue('Hobbies') ?? '').isNotEmpty) ...[
+                ],
+                const SizedBox(height: 20),
+                if ((getValue('Hobbies') ?? '').isNotEmpty) ...[
                   SizedBox(height: 30),
                   const Row(
                     children: [
@@ -545,7 +553,7 @@ class ProfileMainPage extends StatelessWidget {
                       )
                     ],
                   ),
-                    SizedBox(height: 10),
+                  SizedBox(height: 10),
                   Row(
                     children: [
                       Container(
@@ -558,9 +566,9 @@ class ProfileMainPage extends StatelessWidget {
                       )
                     ],
                   ),
-                  ],
-                   const SizedBox(height: 20),
-                  if ((getValue('Profession') ?? '').isNotEmpty) ...[
+                ],
+                const SizedBox(height: 20),
+                if ((getValue('Profession') ?? '').isNotEmpty) ...[
                   SizedBox(height: 30),
                   const Row(
                     children: [

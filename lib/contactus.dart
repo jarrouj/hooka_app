@@ -30,6 +30,7 @@ class ContactMainScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
+        surfaceTintColor: Colors.white,
         backgroundColor: Colors.white,
         title: Text('ContactUs', style: GoogleFonts.comfortaa(fontSize: 20)),
         leading: IconButton(
@@ -297,6 +298,9 @@ class ContactUsPage extends StatelessWidget {
                     height: 50,
                   ),
                      TextField(
+                       inputFormatters: [
+                  FilteringTextInputFormatter.deny(RegExp(r'^\s+')),
+                ],
                     decoration: InputDecoration(
                       labelText: 'Name',
                       labelStyle: TextStyle(color: Colors.black, fontSize: 12),
@@ -317,6 +321,7 @@ class ContactUsPage extends StatelessWidget {
                     height: 30,
                   ),
                  TextField(
+                  
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: InputDecoration(
@@ -339,6 +344,9 @@ class ContactUsPage extends StatelessWidget {
                     height: 30,
                   ),
                   TextField(
+                     inputFormatters: [
+                  FilteringTextInputFormatter.deny(RegExp(r'^\s+')),
+                ],
                     decoration: InputDecoration(
                       labelText: 'Email',
                       labelStyle: TextStyle(color: Colors.black, fontSize: 12),
@@ -361,6 +369,9 @@ class ContactUsPage extends StatelessWidget {
                     height: 30,
                   ),
                   TextField(
+                     inputFormatters: [
+                  FilteringTextInputFormatter.deny(RegExp(r'^\s+')),
+                ],
                     decoration: InputDecoration(
                       labelText: 'Your Message...',
                       labelStyle: TextStyle(color: Colors.black, fontSize: 12),

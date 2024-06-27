@@ -90,11 +90,15 @@ class OrderListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Sort orders by date in descending order
+    var sortedOrders = List<MapEntry<dynamic, dynamic>>.from(orders)
+      ..sort((a, b) => b.value['date'].compareTo(a.value['date']));
+
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 2),
-      itemCount: orders.length,
+      itemCount: sortedOrders.length,
       itemBuilder: (context, index) {
-        var order = orders[index].value;
+        var order = sortedOrders[index].value;
         return Padding(
           padding: const EdgeInsets.only(top: 0),
           child: GestureDetector(
@@ -103,7 +107,7 @@ class OrderListView extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) =>
-                      OrderDetailsPage(orderId: orders[index].key),
+                      OrderDetailsPage(orderId: sortedOrders[index].key),
                 ),
               );
             },
@@ -134,7 +138,7 @@ class OrderListView extends StatelessWidget {
                             shape: BoxShape.circle, color: Colors.yellow),
                         child: Center(
                           child: Text(
-                            '${orders[index].key.substring(10, 13)}',
+                            '${sortedOrders[index].key.substring(10, 13)}',
                             style: const TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.bold,
@@ -157,7 +161,7 @@ class OrderListView extends StatelessWidget {
                           ),
                           Text(
                             'Total: \$${order['totalAmount'].toStringAsFixed(0)}',
-                            style:  TextStyle(
+                            style: TextStyle(
                                 fontSize: 13, color: Colors.grey.shade700),
                           ),
                         ],
@@ -598,7 +602,7 @@ class OrderDetailsPage extends StatelessWidget {
                                     ),
                                   ),
                                   Text(
-                                    '(${product['price'].toStringAsFixed(2)}\$/Per Item)',
+                                    '(${product['price'].toStringAsFixed(0)}\$/Per Item)',
                                     style: const TextStyle(
                                       fontSize: 9,
                                       fontWeight: FontWeight.w500,
@@ -608,7 +612,7 @@ class OrderDetailsPage extends StatelessWidget {
                                 ],
                               ),
                               trailing: Text(
-                                'Price: \$${(product['price'] * product['quantity']).toStringAsFixed(2)}',
+                                'Price: \$${(product['price'] * product['quantity']).toStringAsFixed(0)}',
                                 overflow: TextOverflow.visible,
                               ),
                               subtitle: Column(

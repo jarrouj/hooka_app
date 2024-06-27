@@ -29,14 +29,15 @@ class _EducationTabState extends State<EducationTab> {
 
   void _addEducation(Map<String, dynamic> newEducation) async {
     setState(() {
-      educations.add(newEducation);
+      educations.insert(0, newEducation);
     });
     var box = await Hive.openBox('userBox');
-    int index = educations.length - 1;
-    await box.put('university$index', newEducation['university']);
-    await box.put('degree$index', newEducation['degree']);
-    await box.put('educationFrom$index', newEducation['from']);
-    await box.put('educationTo$index', newEducation['to']);
+    for (int index = 0; index < educations.length; index++) {
+      await box.put('university$index', educations[index]['university']);
+      await box.put('degree$index', educations[index]['degree']);
+      await box.put('educationFrom$index', educations[index]['from']);
+      await box.put('educationTo$index', educations[index]['to']);
+    }
     widget.onAdd(newEducation);
   }
 
@@ -325,6 +326,8 @@ class _AddEducationPageState extends State<AddEducationPage> {
                     maximumDate: lastDate,
                     onDateTimeChanged: (DateTime date) {
                       selectedDate = date;
+                      controller.text =
+                          "${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}";
                     },
                   ),
                 ),
@@ -344,10 +347,8 @@ class _AddEducationPageState extends State<AddEducationPage> {
   }
 
   Future<void> _selectFromList(
-      BuildContext context,
-      TextEditingController controller,
-      List<String> items,
-      String selectedItem) async {
+      BuildContext context, TextEditingController controller, List<String> items, String initialValue) async {
+    String selectedItem = initialValue;
     await showModalBottomSheet<String>(
       context: context,
       isDismissible: true,
@@ -364,9 +365,13 @@ class _AddEducationPageState extends State<AddEducationPage> {
                 Expanded(
                   child: CupertinoPicker(
                     itemExtent: 32.0,
+                    scrollController: FixedExtentScrollController(
+                      initialItem: items.indexOf(selectedItem),
+                    ),
                     onSelectedItemChanged: (int index) {
+                      selectedItem = items[index];
                       setState(() {
-                        selectedItem = items[index];
+                        controller.text = selectedItem;
                       });
                     },
                     children: items.map((item) {
@@ -379,13 +384,11 @@ class _AddEducationPageState extends State<AddEducationPage> {
           ),
         );
       },
-    ).then((pickedItem) {
-      if (pickedItem != null) {
-        setState(() {
-          controller.text = pickedItem;
-        });
-      }
-    });
+    );
+
+    if (selectedItem.isNotEmpty) {
+      controller.text = selectedItem;
+    }
   }
 
   @override
@@ -401,8 +404,7 @@ class _AddEducationPageState extends State<AddEducationPage> {
           child: Column(
             children: [
               GestureDetector(
-                onTap: () => _selectFromList(context, _universityController,
-                    universities, _selectedUniversity),
+                onTap: () => _selectFromList(context, _universityController, universities, _universityController.text.isNotEmpty ? _universityController.text : universities[0]),
                 child: AbsorbPointer(
                   child: TextFormField(
                     controller: _universityController,
@@ -424,8 +426,7 @@ class _AddEducationPageState extends State<AddEducationPage> {
               ),
               SizedBox(height: 16),
               GestureDetector(
-                onTap: () => _selectFromList(
-                    context, _degreeController, degrees, _selectedDegree),
+                onTap: () => _selectFromList(context, _degreeController, degrees, _degreeController.text.isNotEmpty ? _degreeController.text : degrees[0]),
                 child: AbsorbPointer(
                   child: TextFormField(
                     controller: _degreeController,
@@ -503,6 +504,19 @@ class _AddEducationPageState extends State<AddEducationPage> {
               GestureDetector(
                 onTap: () {
                   if (_formKey.currentState!.validate()) {
+                    DateTime fromDate = DateTime.parse(_fromDateController.text);
+                    DateTime toDate = DateTime.parse(_toDateController.text);
+
+                    if (toDate.isBefore(fromDate)) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('The To date must be greater than From date'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                      return;
+                    }
+
                     final newEducation = {
                       'university': _universityController.text,
                       'degree': _degreeController.text,

@@ -134,18 +134,18 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
       favoriteIds = savedFavorites.cast<int>();
     });
   }
+void _toggleFavorite(int placeId) {
+  setState(() {
+    if (favoriteIds.contains(placeId)) {
+      favoriteIds.remove(placeId);
+    } else {
+      favoriteIds.add(placeId);
+    }
+    mybox?.put('favoriteIds', favoriteIds);
+    _applyFilters();
+  });
+}
 
-  void _toggleFavorite(int placeId) {
-    setState(() {
-      if (favoriteIds.contains(placeId)) {
-        favoriteIds.remove(placeId);
-      } else {
-        favoriteIds.add(placeId);
-      }
-      mybox?.put('favoriteIds', favoriteIds);
-      _applyFilters();
-    });
-  }
 
   void _sortPlacesByRating() {
     setState(() {
@@ -298,18 +298,18 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
                 const SizedBox(width: 10),
                 ElevatedButton(
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all(Colors.white),
-                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                    backgroundColor: WidgetStateProperty.all(Colors.white),
+                    shape: WidgetStateProperty.all(RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5),
                       side: BorderSide(color: Colors.grey.shade500),
                     )),
-                    textStyle: MaterialStateProperty.all(const TextStyle(
+                    textStyle: WidgetStateProperty.all(const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
                     )),
-                    minimumSize: MaterialStateProperty.all(Size(80, 35)),
-                    padding: MaterialStateProperty.all(const EdgeInsets.symmetric(
+                    minimumSize: WidgetStateProperty.all(Size(80, 35)),
+                    padding: WidgetStateProperty.all(const EdgeInsets.symmetric(
                         horizontal: 10, vertical: 5)),
                   ),
                   onPressed: () {
@@ -323,15 +323,15 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
                 const SizedBox(width: 10),
                 ElevatedButton(
                   style: ButtonStyle(
-                    minimumSize: MaterialStateProperty.all(Size(90, 35)),
-                    padding: MaterialStateProperty.all(const EdgeInsets.symmetric(
+                    minimumSize: WidgetStateProperty.all(Size(90, 35)),
+                    padding: WidgetStateProperty.all(const EdgeInsets.symmetric(
                         horizontal: 10, vertical: 5)),
-                    backgroundColor: MaterialStateProperty.all(Colors.white),
-                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                    backgroundColor: WidgetStateProperty.all(Colors.white),
+                    shape: WidgetStateProperty.all(RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5),
                       side: BorderSide(color: Colors.grey.shade500),
                     )),
-                    textStyle: MaterialStateProperty.all(const TextStyle(
+                    textStyle: WidgetStateProperty.all(const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
@@ -354,15 +354,15 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
                 const SizedBox(width: 10),
                 ElevatedButton(
                   style: ButtonStyle(
-                    minimumSize: MaterialStateProperty.all(Size(80, 35)),
-                    padding: MaterialStateProperty.all(const EdgeInsets.symmetric(
+                    minimumSize: WidgetStateProperty.all(Size(80, 35)),
+                    padding: WidgetStateProperty.all(const EdgeInsets.symmetric(
                         horizontal: 10, vertical: 5)),
-                    backgroundColor: MaterialStateProperty.all(Colors.white),
-                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                    backgroundColor: WidgetStateProperty.all(Colors.white),
+                    shape: WidgetStateProperty.all(RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5),
                       side: BorderSide(color: Colors.grey.shade500),
                     )),
-                    textStyle: MaterialStateProperty.all(const TextStyle(
+                    textStyle: WidgetStateProperty.all(const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
@@ -438,7 +438,10 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
                                       context,
                                       MaterialPageRoute(
                                         builder: (context) =>
-                                            PlacesDetailPage(place: place),
+                                            PlacesDetailPage(place: place,
+                                                      onFavoriteToggle: _loadFavorites, // Pass the callback to refresh favorites
+
+                                            ),
                                       ),
                                     );
                                   },

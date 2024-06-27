@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
 
 class AddressTab extends StatefulWidget {
@@ -29,22 +30,24 @@ class _AddressTabState extends State<AddressTab> {
 
   void _addAddress(Map<String, dynamic> newAddress) async {
     setState(() {
-      addresses.add(newAddress);
+      addresses.insert(0, newAddress);
+      addresses.sort((a, b) => a['title'].compareTo(b['title']));
     });
     var box = await Hive.openBox('userBox');
-    int index = addresses.length - 1;
-    await box.put('addressTitle$index', newAddress['title']);
-    await box.put('addressCity$index', newAddress['city']);
-    await box.put('addressStreet$index', newAddress['street']);
-    await box.put('addressBuilding$index', newAddress['building']);
-    await box.put('addressAppartment$index', newAddress['appartment']);
+    for (int index = 0; index < addresses.length; index++) {
+      await box.put('addressTitle$index', addresses[index]['title']);
+      await box.put('addressCity$index', addresses[index]['city']);
+      await box.put('addressStreet$index', addresses[index]['street']);
+      await box.put('addressBuilding$index', addresses[index]['building']);
+      await box.put('addressAppartment$index', addresses[index]['appartment']);
+    }
     widget.onAdd(newAddress);
   }
 
   void _removeAddress(int index) async {
     if (index >= 0 && index < addresses.length) {
       var box = await Hive.openBox('userBox');
-      
+
       // Remove the specified address
       await box.delete('addressTitle$index');
       await box.delete('addressCity$index');
@@ -315,10 +318,11 @@ class _AddAddressPageState extends State<AddAddressPage> {
   final TextEditingController _buildingController = TextEditingController();
   final TextEditingController _appartmentController = TextEditingController();
 
-    List<String> cities = ['Zahle', 'Beirut', 'Byblos'];
+  List<String> cities = ['Zahle', 'Beirut', 'Byblos'];
 
-    Future<void> _selectFromList(
-      BuildContext context, TextEditingController controller, List<String> items, String selectedItem) async {
+  Future<void> _selectFromList(
+      BuildContext context, TextEditingController controller, List<String> items, String initialValue) async {
+    String selectedItem = initialValue;
     await showModalBottomSheet<String>(
       context: context,
       isDismissible: true,
@@ -338,6 +342,7 @@ class _AddAddressPageState extends State<AddAddressPage> {
                     onSelectedItemChanged: (int index) {
                       setState(() {
                         selectedItem = items[index];
+                        controller.text = selectedItem;
                       });
                     },
                     children: items.map((item) {
@@ -350,15 +355,12 @@ class _AddAddressPageState extends State<AddAddressPage> {
           ),
         );
       },
-    ).then((pickedItem) {
-      if (pickedItem != null) {
-        setState(() {
-          controller.text = pickedItem;
-        });
-      }
-    });
-  }
+    );
 
+    if (selectedItem.isNotEmpty) {
+      controller.text = selectedItem;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -386,10 +388,13 @@ class _AddAddressPageState extends State<AddAddressPage> {
                   }
                   return null;
                 },
+                inputFormatters: [
+                  FilteringTextInputFormatter.deny(RegExp(r'^\s+')),
+                ],
               ),
               SizedBox(height: 16),
               GestureDetector(
-                onTap: () => _selectFromList(context, _cityController, cities, cities[0]),
+                onTap: () => _selectFromList(context, _cityController, cities, _cityController.text.isNotEmpty ? _cityController.text : cities[0]),
                 child: AbsorbPointer(
                   child: TextFormField(
                     controller: _cityController,
@@ -424,6 +429,9 @@ class _AddAddressPageState extends State<AddAddressPage> {
                   }
                   return null;
                 },
+                inputFormatters: [
+                  FilteringTextInputFormatter.deny(RegExp(r'^\s+')),
+                ],
               ),
               SizedBox(height: 16),
               TextFormField(
@@ -440,6 +448,9 @@ class _AddAddressPageState extends State<AddAddressPage> {
                   }
                   return null;
                 },
+                inputFormatters: [
+                  FilteringTextInputFormatter.deny(RegExp(r'^\s+')),
+                ],
               ),
               SizedBox(height: 16),
               TextFormField(
@@ -456,6 +467,9 @@ class _AddAddressPageState extends State<AddAddressPage> {
                   }
                   return null;
                 },
+                inputFormatters: [
+                  FilteringTextInputFormatter.deny(RegExp(r'^\s+')),
+                ],
               ),
               SizedBox(height: 16),
               SizedBox(height: 20),

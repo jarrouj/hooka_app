@@ -29,14 +29,15 @@ class _ExperienceTabState extends State<ExperienceTab> {
 
   void _addExperience(Map<String, dynamic> newExperience) async {
     setState(() {
-      experiences.add(newExperience);
+      experiences.insert(0, newExperience);
     });
     var box = await Hive.openBox('userBox');
-    int index = experiences.length - 1;
-    await box.put('experienceTitle$index', newExperience['title']);
-    await box.put('experiencePosition$index', newExperience['position']);
-    await box.put('experienceFrom$index', newExperience['from']);
-    await box.put('experienceTo$index', newExperience['to']);
+    for (int index = 0; index < experiences.length; index++) {
+      await box.put('experienceTitle$index', experiences[index]['title']);
+      await box.put('experiencePosition$index', experiences[index]['position']);
+      await box.put('experienceFrom$index', experiences[index]['from']);
+      await box.put('experienceTo$index', experiences[index]['to']);
+    }
     widget.onAdd(newExperience);
   }
 
@@ -299,44 +300,46 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
       context: context,
       builder: (BuildContext context) {
         DateTime selectedDate = initialDate;
-        return Container(
-          height: 250,
-          color: Colors.transparent,
-          child: Column(
-            children: [
-              Expanded(
-                child: CupertinoDatePicker(
-                  mode: CupertinoDatePickerMode.date,
-                  initialDateTime: initialDate,
-                  minimumDate: firstDate,
-                  maximumDate: lastDate,
-                  onDateTimeChanged: (DateTime date) {
-                    selectedDate = date;
-                  },
+        return GestureDetector(
+          onTap: () {
+            Navigator.pop(context, selectedDate);
+          },
+          child: Container(
+            height: 250,
+            color: Colors.transparent,
+            child: Column(
+              children: [
+                Expanded(
+                  child: CupertinoDatePicker(
+                    mode: CupertinoDatePickerMode.date,
+                    initialDateTime: initialDate,
+                    minimumDate: firstDate,
+                    maximumDate: lastDate,
+                    onDateTimeChanged: (DateTime date) {
+                      setState(() {
+                        selectedDate = date;
+                        controller.text =
+                            "${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}";
+                      });
+                    },
+                  ),
                 ),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context, selectedDate);
-                },
-                child: Text('Done'),
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },
     );
 
-    if (pickedDate != null && pickedDate != initialDate) {
-      setState(() {
-        controller.text =
-            "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
-      });
+    if (pickedDate != null) {
+      controller.text =
+          "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
     }
   }
 
   Future<void> _selectFromList(
-      BuildContext context, TextEditingController controller, List<String> items, String selectedItem) async {
+      BuildContext context, TextEditingController controller, List<String> items, String initialValue) async {
+    String selectedItem = initialValue;
     await showModalBottomSheet<String>(
       context: context,
       isDismissible: true,
@@ -356,6 +359,7 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
                     onSelectedItemChanged: (int index) {
                       setState(() {
                         selectedItem = items[index];
+                        controller.text = selectedItem;
                       });
                     },
                     children: items.map((item) {
@@ -368,13 +372,11 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
           ),
         );
       },
-    ).then((pickedItem) {
-      if (pickedItem != null) {
-        setState(() {
-          controller.text = pickedItem;
-        });
-      }
-    });
+    );
+
+    if (selectedItem.isNotEmpty) {
+      controller.text = selectedItem;
+    }
   }
 
   @override
@@ -390,7 +392,7 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
           child: Column(
             children: [
               GestureDetector(
-                onTap: () => _selectFromList(context, _positionController, positions, positions[0]),
+                onTap: () => _selectFromList(context, _positionController, positions, _positionController.text.isNotEmpty ? _positionController.text : positions[0]),
                 child: AbsorbPointer(
                   child: TextFormField(
                     controller: _positionController,
@@ -412,7 +414,7 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
               ),
               SizedBox(height: 16),
               GestureDetector(
-                onTap: () => _selectFromList(context, _titleController, cities, cities[0]),
+                onTap: () => _selectFromList(context, _titleController, cities, _titleController.text.isNotEmpty ? _titleController.text : cities[0]),
                 child: AbsorbPointer(
                   child: TextFormField(
                     controller: _titleController,
@@ -490,6 +492,19 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
               GestureDetector(
                 onTap: () {
                   if (_formKey.currentState!.validate()) {
+                    DateTime fromDate = DateTime.parse(_fromDateController.text);
+                    DateTime toDate = DateTime.parse(_toDateController.text);
+
+                    if (toDate.isBefore(fromDate)) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('The To date must be greater than From date'),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                      return;
+                    }
+
                     final newExperience = {
                       'title': _titleController.text,
                       'position': _positionController.text,

@@ -10,6 +10,7 @@ class NotificationsPage extends StatelessWidget {
     final Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
+        surfaceTintColor: Colors.white,
         backgroundColor: Colors.white,
         title: Center(
           child: Text(
@@ -59,7 +60,7 @@ class NotificationsPage extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            const Text('Salim Salim reacted to'),
+                            const Text('Salim Salim reacted to\nyour invite!'),
                             Spacer(),
                             Container(
                               width: 7,
@@ -72,13 +73,8 @@ class NotificationsPage extends StatelessWidget {
                             SizedBox(width: size.width * 0.06,)
                           ],
                         ),
-                        const Text('your invite!'),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              subtitle: const Row(
+                        // const Text('your invite!'),
+                        const Row(
                 children: [
                   Text('Invite has been accepted', style: TextStyle(
                     color: Colors.grey,
@@ -91,6 +87,26 @@ class NotificationsPage extends StatelessWidget {
                   ),),
                 ],
               ),
+              SizedBox(height: 10,),
+                      ],
+
+                    ),
+                  ),
+                ],
+              ),
+              // subtitle: const Row(
+              //   children: [
+              //     Text('Invite has been accepted', style: TextStyle(
+              //       color: Colors.grey,
+              //       fontSize: 12,
+              //     ),),
+              //     Spacer(),
+              //     Text('2023-10-25', style: TextStyle(
+              //       color: Colors.grey,
+              //       fontSize: 10,
+              //     ),),
+              //   ],
+              // ),
             ),
           );
         },

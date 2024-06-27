@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:flutter/cupertino.dart';
@@ -363,7 +364,7 @@ class _AddNewAddressFormState extends State<AddNewAddressForm> {
 
   void _getLocation() {
     setState(() {
-      location = 'Location: Zahle';
+      location = 'Location: ';
     });
   }
 
@@ -374,6 +375,9 @@ class _AddNewAddressFormState extends State<AddNewAddressForm> {
       child: Column(
         children: [
           TextFormField(
+              inputFormatters: [
+                  FilteringTextInputFormatter.deny(RegExp(r'^\s+')),
+                ],
             controller: _titleController,
             decoration: InputDecoration(
               labelText: 'Title',
@@ -394,6 +398,7 @@ class _AddNewAddressFormState extends State<AddNewAddressForm> {
                 _selectFromList(context, _cityController, cities, cities[0]),
             child: AbsorbPointer(
               child: TextFormField(
+               
                 controller: _cityController,
                 decoration: InputDecoration(
                   labelText: 'City',
@@ -413,6 +418,9 @@ class _AddNewAddressFormState extends State<AddNewAddressForm> {
           ),
           SizedBox(height: 16),
           TextFormField(
+              inputFormatters: [
+                  FilteringTextInputFormatter.deny(RegExp(r'^\s+')),
+                ],
             controller: _streetController,
             decoration: InputDecoration(
               labelText: 'Street',
@@ -429,6 +437,9 @@ class _AddNewAddressFormState extends State<AddNewAddressForm> {
           ),
           SizedBox(height: 16),
           TextFormField(
+              inputFormatters: [
+                  FilteringTextInputFormatter.deny(RegExp(r'^\s+')),
+                ],
             controller: _buildingController,
             decoration: InputDecoration(
               labelText: 'Building',
@@ -445,6 +456,9 @@ class _AddNewAddressFormState extends State<AddNewAddressForm> {
           ),
           SizedBox(height: 16),
           TextFormField(
+              inputFormatters: [
+                  FilteringTextInputFormatter.deny(RegExp(r'^\s+')),
+                ],
             controller: _appartmentController,
             decoration: InputDecoration(
               labelText: 'Appartment',
@@ -460,16 +474,30 @@ class _AddNewAddressFormState extends State<AddNewAddressForm> {
             },
           ),
           SizedBox(height: 16),
+
+             if (location != null)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  location!,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                SizedBox(width: 8),
+                Icon(Icons.check, color: Colors.black),
+              ],
+            ),
+            SizedBox(height: 15,),
           GestureDetector(
             onTap: _getLocation,
             child: Container(
-              width: double.infinity,
+              width: 150,
               padding: EdgeInsets.all(13.0),
               decoration: BoxDecoration(
                 color: Colors.black,
                 borderRadius: BorderRadius.circular(13),
               ),
-              child: Center(
+              child: const Center(
                 child: Text(
                   'Get Location',
                   style: TextStyle(
@@ -480,18 +508,8 @@ class _AddNewAddressFormState extends State<AddNewAddressForm> {
               ),
             ),
           ),
-          SizedBox(height: 16),
-          if (location != null)
-            Row(
-              children: [
-                Text(
-                  location!,
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(width: 8),
-                Icon(Icons.check, color: Colors.black),
-              ],
-            ),
+          const SizedBox(height: 16),
+       
           SizedBox(height: 16),
           GestureDetector(
             onTap: () {

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hooka_app/buddies.dart';
 import 'package:hooka_app/login.dart';
 import 'package:hooka_app/main.dart';
 import 'package:hooka_app/places.dart';
@@ -7,8 +8,11 @@ import 'package:url_launcher/url_launcher.dart';
 
 class PlacesDetailPage extends StatefulWidget {
   final Place place;
+  final VoidCallback onFavoriteToggle;
 
-  PlacesDetailPage({Key? key, required this.place}) : super(key: key);
+  PlacesDetailPage(
+      {Key? key, required this.place, required this.onFavoriteToggle})
+      : super(key: key);
 
   @override
   _PlacesDetailPageState createState() => _PlacesDetailPageState();
@@ -41,6 +45,9 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
       mybox?.put('favoriteIds', savedFavorites);
       isFavorite = !isFavorite;
     });
+
+    // Call the callback to refresh the main page
+    widget.onFavoriteToggle();
   }
 
   void _openPhoneDialer(String phoneNumber) async {
@@ -171,9 +178,12 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
                         ),
                       ),
                       const Spacer(),
-                      const Icon(
-                        Icons.location_on_outlined,
-                        size: 15,
+                      GestureDetector(
+                        onTap: () => _openMap(widget.place.location),
+                        child: const Icon(
+                          Icons.location_on_outlined,
+                          size: 15,
+                        ),
                       ),
                       const SizedBox(
                         width: 5,
@@ -353,14 +363,20 @@ class _PlacesDetailPageState extends State<PlacesDetailPage> {
                           size: 25,
                         ),
                         const SizedBox(width: 5),
-                        const Text(
-                          'Invite buddy',
-                          style: TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                            decoration: TextDecoration.underline,
-                            decorationThickness: 0.5,
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => BuddiesPage()));
+                          },
+                          child: const Text(
+                            'Invite buddy',
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                              decoration: TextDecoration.underline,
+                              decorationThickness: 0.5,
+                            ),
                           ),
                         ),
                       ],

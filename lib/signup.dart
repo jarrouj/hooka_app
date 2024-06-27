@@ -272,10 +272,7 @@ class _SignUpState extends State<SignUp> {
                         child:  Text(
                           'SIGN UP',
                           style: GoogleFonts.poppins(color: Colors.black , fontSize: 18),
-                          // style: TextStyle(
-                          //   color: Colors.black,
-                          //   fontSize: 18,
-                          
+                       
                         ),
                       ),
                       const SizedBox(height: 50),

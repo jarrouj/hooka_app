@@ -100,7 +100,7 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(12),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.grey.withOpacity(0.5),
@@ -114,21 +114,24 @@ class _LoginPageState extends State<LoginPage> {
                 key: _formKey,
                 child: Column(
                   children: [
-                    Row(
-                      children: [
-                        Text(
-                          'Login',
-                          style: GoogleFonts.lato(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 25,
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8),
+                      child: Row(
+                        children: [
+                          Text(
+                            'Login',
+                            style: GoogleFonts.lato(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 25,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                     const SizedBox(height: 10),
                     const Padding(
-                      padding: EdgeInsets.only(left: 10),
+                      padding: EdgeInsets.only(left: 10 , top: 2),
                       child: Divider(
                         thickness: 5,
                         color: Colors.black,
