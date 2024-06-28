@@ -43,6 +43,8 @@ Future<void> main() async {
     await Hive.openBox('interestBox');
   await Hive.openBox<Product>('cartBox2');
   mybox = await openHiveBox('Favorite');
+    await Hive.openBox('InvitationFavorites');
+
 
   runApp(MyApp());
 }

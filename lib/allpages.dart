@@ -169,10 +169,11 @@ class OffersPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         title: Center(
-            child: Text(
-          'Offers',
-          style: GoogleFonts.comfortaa(fontSize: 20),
-        )),
+          child: Text(
+            'Offers',
+            style: GoogleFonts.comfortaa(fontSize: 20),
+          ),
+        ),
         actions: const [
           SizedBox(
             width: 55,
@@ -188,7 +189,18 @@ class OffersPage extends StatelessWidget {
           },
         ),
       ),
-      body: LoadingAllpages(),
+      body: FutureBuilder(
+        future: Future.delayed(const Duration(seconds: 2)),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: LoadingAllpages());
+          } else {
+            return const Scaffold(
+              backgroundColor: Colors.white,
+            );
+          }
+        },
+      ),
     );
   }
 }
@@ -311,7 +323,7 @@ class _SettingMainPageState extends State<SettingMainPage> {
               ),
             ],
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Row(
@@ -336,7 +348,7 @@ class _SettingMainPageState extends State<SettingMainPage> {
               )
             ],
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 30),
           GestureDetector(
             onTap: (){
               Navigator.of(context).push(MaterialPageRoute(builder: (context) => BuddiesPage()));

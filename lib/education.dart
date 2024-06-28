@@ -347,7 +347,10 @@ class _AddEducationPageState extends State<AddEducationPage> {
   }
 
   Future<void> _selectFromList(
-      BuildContext context, TextEditingController controller, List<String> items, String initialValue) async {
+      BuildContext context,
+      TextEditingController controller,
+      List<String> items,
+      String initialValue) async {
     String selectedItem = initialValue;
     await showModalBottomSheet<String>(
       context: context,
@@ -404,11 +407,21 @@ class _AddEducationPageState extends State<AddEducationPage> {
           child: Column(
             children: [
               GestureDetector(
-                onTap: () => _selectFromList(context, _universityController, universities, _universityController.text.isNotEmpty ? _universityController.text : universities[0]),
+                onTap: () => _selectFromList(
+                    context,
+                    _universityController,
+                    universities,
+                    _universityController.text.isNotEmpty
+                        ? _universityController.text
+                        : universities[0]),
                 child: AbsorbPointer(
                   child: TextFormField(
                     controller: _universityController,
                     decoration: InputDecoration(
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.black),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                       labelText: 'University',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -426,11 +439,21 @@ class _AddEducationPageState extends State<AddEducationPage> {
               ),
               SizedBox(height: 16),
               GestureDetector(
-                onTap: () => _selectFromList(context, _degreeController, degrees, _degreeController.text.isNotEmpty ? _degreeController.text : degrees[0]),
+                onTap: () => _selectFromList(
+                    context,
+                    _degreeController,
+                    degrees,
+                    _degreeController.text.isNotEmpty
+                        ? _degreeController.text
+                        : degrees[0]),
                 child: AbsorbPointer(
                   child: TextFormField(
                     controller: _degreeController,
                     decoration: InputDecoration(
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.black),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                       labelText: 'Degree',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -460,6 +483,11 @@ class _AddEducationPageState extends State<AddEducationPage> {
                 readOnly: true,
                 onTap: () => _selectDate(context, _fromDateController),
                 decoration: InputDecoration(
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.black),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  labelStyle: TextStyle(color: Colors.black),
                   labelText: 'From Date',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -487,6 +515,11 @@ class _AddEducationPageState extends State<AddEducationPage> {
                 readOnly: true,
                 onTap: () => _selectDate(context, _toDateController),
                 decoration: InputDecoration(
+                   focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.black),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  labelStyle: TextStyle(color: Colors.black),
                   labelText: 'To Date',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -504,13 +537,15 @@ class _AddEducationPageState extends State<AddEducationPage> {
               GestureDetector(
                 onTap: () {
                   if (_formKey.currentState!.validate()) {
-                    DateTime fromDate = DateTime.parse(_fromDateController.text);
+                    DateTime fromDate =
+                        DateTime.parse(_fromDateController.text);
                     DateTime toDate = DateTime.parse(_toDateController.text);
 
                     if (toDate.isBefore(fromDate)) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('The To date must be greater than From date'),
+                          content: Text(
+                              'The To date must be greater than From date'),
                           backgroundColor: Colors.red,
                         ),
                       );

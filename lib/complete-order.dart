@@ -5,10 +5,8 @@ import 'package:hive/hive.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hooka_app/main.dart';
 import 'package:hooka_app/order-page-drawer.dart';
-import 'package:intl/intl.dart'; 
+import 'package:intl/intl.dart';
 import 'package:hooka_app/products.dart';
-
-
 
 class CompleteOrder extends StatefulWidget {
   const CompleteOrder({super.key});
@@ -34,7 +32,7 @@ class _CompleteOrderState extends State<CompleteOrder> {
     var box = await Hive.openBox('userBox');
     setState(() {
       addresses = [];
-      for (int i = 0; i < box.length ~/ 5; i++) { 
+      for (int i = 0; i < box.length ~/ 5; i++) {
         final address = {
           'title': box.get('addressTitle$i'),
           'city': box.get('addressCity$i'),
@@ -78,7 +76,7 @@ class _CompleteOrderState extends State<CompleteOrder> {
       selectedAddress = addresses[index];
     });
   }
-  
+
   void _showPicker() {
     showModalBottomSheet(
       context: context,
@@ -233,8 +231,8 @@ class _CompleteOrderState extends State<CompleteOrder> {
                   ),
                   SizedBox(height: 30),
                   Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 60, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 60, vertical: 16),
                     child: GestureDetector(
                       onTap: _confirmOrder,
                       child: Container(
@@ -375,11 +373,16 @@ class _AddNewAddressFormState extends State<AddNewAddressForm> {
       child: Column(
         children: [
           TextFormField(
-              inputFormatters: [
-                  FilteringTextInputFormatter.deny(RegExp(r'^\s+')),
-                ],
+            inputFormatters: [
+              FilteringTextInputFormatter.deny(RegExp(r'^\s+')),
+            ],
             controller: _titleController,
             decoration: InputDecoration(
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              labelStyle: TextStyle(color: Colors.black),
               labelText: 'Title',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10.0),
@@ -398,9 +401,13 @@ class _AddNewAddressFormState extends State<AddNewAddressForm> {
                 _selectFromList(context, _cityController, cities, cities[0]),
             child: AbsorbPointer(
               child: TextFormField(
-               
                 controller: _cityController,
                 decoration: InputDecoration(
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.black),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  labelStyle: TextStyle(color: Colors.black),
                   labelText: 'City',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -418,11 +425,16 @@ class _AddNewAddressFormState extends State<AddNewAddressForm> {
           ),
           SizedBox(height: 16),
           TextFormField(
-              inputFormatters: [
-                  FilteringTextInputFormatter.deny(RegExp(r'^\s+')),
-                ],
+            inputFormatters: [
+              FilteringTextInputFormatter.deny(RegExp(r'^\s+')),
+            ],
             controller: _streetController,
             decoration: InputDecoration(
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              labelStyle: TextStyle(color: Colors.black),
               labelText: 'Street',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10.0),
@@ -437,11 +449,16 @@ class _AddNewAddressFormState extends State<AddNewAddressForm> {
           ),
           SizedBox(height: 16),
           TextFormField(
-              inputFormatters: [
-                  FilteringTextInputFormatter.deny(RegExp(r'^\s+')),
-                ],
+            inputFormatters: [
+              FilteringTextInputFormatter.deny(RegExp(r'^\s+')),
+            ],
             controller: _buildingController,
             decoration: InputDecoration(
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              labelStyle: TextStyle(color: Colors.black),
               labelText: 'Building',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10.0),
@@ -456,11 +473,16 @@ class _AddNewAddressFormState extends State<AddNewAddressForm> {
           ),
           SizedBox(height: 16),
           TextFormField(
-              inputFormatters: [
-                  FilteringTextInputFormatter.deny(RegExp(r'^\s+')),
-                ],
+            inputFormatters: [
+              FilteringTextInputFormatter.deny(RegExp(r'^\s+')),
+            ],
             controller: _appartmentController,
             decoration: InputDecoration(
+              focusedBorder: OutlineInputBorder(
+                borderSide: const BorderSide(color: Colors.black),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              labelStyle: TextStyle(color: Colors.black),
               labelText: 'Appartment',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10.0),
@@ -474,8 +496,7 @@ class _AddNewAddressFormState extends State<AddNewAddressForm> {
             },
           ),
           SizedBox(height: 16),
-
-             if (location != null)
+          if (location != null)
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -487,7 +508,9 @@ class _AddNewAddressFormState extends State<AddNewAddressForm> {
                 Icon(Icons.check, color: Colors.black),
               ],
             ),
-            SizedBox(height: 15,),
+          SizedBox(
+            height: 15,
+          ),
           GestureDetector(
             onTap: _getLocation,
             child: Container(
@@ -509,7 +532,6 @@ class _AddNewAddressFormState extends State<AddNewAddressForm> {
             ),
           ),
           const SizedBox(height: 16),
-       
           SizedBox(height: 16),
           GestureDetector(
             onTap: () {
@@ -548,11 +570,21 @@ class _AddNewAddressFormState extends State<AddNewAddressForm> {
   }
 }
 
-
 class OrderPageLogged extends StatelessWidget {
   Future<void> _clearAllData(BuildContext context) async {
     var cartBox = await Hive.openBox<Product>('cartBox2');
+    var productsBox = await Hive.openBox<Product>('productsBox');
+
+    // Clear cartBox2
     await cartBox.clear();
+
+    // Reset the quantity in productsBox
+    for (var key in productsBox.keys) {
+      var product = productsBox.get(key) as Product;
+      product.quantity = 0;
+      await productsBox.put(key, product);
+    }
+
     Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => MyHomePage()),
@@ -585,12 +617,26 @@ class OrderPageLogged extends StatelessWidget {
                 ),
                 bottom: TabBar(
                   unselectedLabelColor: Colors.grey,
+                  padding: EdgeInsets.only(top: 15),
+                  indicatorPadding: const EdgeInsets.symmetric(horizontal: 20),
                   labelColor: Colors.black,
                   indicatorSize: TabBarIndicatorSize.tab,
                   indicatorColor: Colors.black,
                   tabs: [
-                    Tab(text: "Current"),
-                    Tab(text: "All"),
+                    Tab(
+                      child: Text(
+                        'Current',
+                        style:
+                            GoogleFonts.comfortaa(fontWeight: FontWeight.w800),
+                      ),
+                    ),
+                    Tab(
+                      child: Text(
+                        'All',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
+                    ),
                   ],
                 ),
               ),

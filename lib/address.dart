@@ -377,6 +377,11 @@ class _AddAddressPageState extends State<AddAddressPage> {
               TextFormField(
                 controller: _titleController,
                 decoration: InputDecoration(
+                   focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.black),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  labelStyle: TextStyle(color: Colors.black),
                   labelText: 'Address title *',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -397,8 +402,14 @@ class _AddAddressPageState extends State<AddAddressPage> {
                 onTap: () => _selectFromList(context, _cityController, cities, _cityController.text.isNotEmpty ? _cityController.text : cities[0]),
                 child: AbsorbPointer(
                   child: TextFormField(
+                    
                     controller: _cityController,
                     decoration: InputDecoration(
+                       focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.black),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  labelStyle: TextStyle(color: Colors.black),
                       labelText: 'City',
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
@@ -418,6 +429,11 @@ class _AddAddressPageState extends State<AddAddressPage> {
               TextFormField(
                 controller: _streetController,
                 decoration: InputDecoration(
+                   focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.black),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  labelStyle: TextStyle(color: Colors.black),
                   labelText: 'Street *',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -437,6 +453,11 @@ class _AddAddressPageState extends State<AddAddressPage> {
               TextFormField(
                 controller: _buildingController,
                 decoration: InputDecoration(
+                   focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.black),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  labelStyle: TextStyle(color: Colors.black),
                   labelText: 'Building *',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -456,6 +477,11 @@ class _AddAddressPageState extends State<AddAddressPage> {
               TextFormField(
                 controller: _appartmentController,
                 decoration: InputDecoration(
+                   focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.black),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  labelStyle: TextStyle(color: Colors.black),
                   labelText: 'Appartment *',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),

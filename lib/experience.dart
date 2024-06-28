@@ -448,6 +448,11 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
                 readOnly: true,
                 onTap: () => _selectDate(context, _fromDateController),
                 decoration: InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.black),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  labelStyle: TextStyle(color: Colors.black),
                   labelText: 'From Date',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -475,6 +480,11 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
                 readOnly: true,
                 onTap: () => _selectDate(context, _toDateController),
                 decoration: InputDecoration(
+                    focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.black),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  labelStyle: TextStyle(color: Colors.black),
                   labelText: 'To Date',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),

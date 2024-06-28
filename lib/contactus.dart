@@ -318,7 +318,7 @@ class ContactUsPage extends StatelessWidget {
                     ),
                   ),
                   SizedBox(
-                    height: 30,
+                    height: 25,
                   ),
                  TextField(
                   
@@ -341,7 +341,7 @@ class ContactUsPage extends StatelessWidget {
                 ),
               ),
                   SizedBox(
-                    height: 30,
+                    height: 25,
                   ),
                   TextField(
                      inputFormatters: [
@@ -366,7 +366,7 @@ class ContactUsPage extends StatelessWidget {
                     ),
                   ),
                   SizedBox(
-                    height: 30,
+                    height: 25,
                   ),
                   TextField(
                      inputFormatters: [

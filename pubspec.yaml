@@ -54,6 +54,7 @@ dependencies:
   intrinsic_size_overflow_box: ^0.1.1
   intl: ^0.19.0
   image_picker: ^1.1.2
+  flutter_rating_bar: ^4.0.1
 
 dev_dependencies:
   flutter_test:
