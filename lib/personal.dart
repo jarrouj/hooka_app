@@ -274,6 +274,7 @@ class _PersonalTabState extends State<PersonalTab> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   labelText: 'First Name',
+                  labelStyle: TextStyle(color: Colors.black),
                 
                 ),
               ),
@@ -282,6 +283,7 @@ class _PersonalTabState extends State<PersonalTab> {
                 controller: _lastNameController,
                 decoration: InputDecoration(
                   labelText: 'Last Name',
+                  labelStyle: TextStyle(color: Colors.black),
                     border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -296,6 +298,7 @@ class _PersonalTabState extends State<PersonalTab> {
                 controller: _emailController,
                 decoration: InputDecoration(
                   labelText: 'Email',
+                  labelStyle: TextStyle(color: Colors.black),
                     border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -311,6 +314,7 @@ class _PersonalTabState extends State<PersonalTab> {
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: InputDecoration(
                   labelText: 'Mobile',
+                  labelStyle: TextStyle(color: Colors.black),
                     border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -327,6 +331,7 @@ class _PersonalTabState extends State<PersonalTab> {
                 onTap: () => _selectDate(context),
                 decoration: InputDecoration(
                   labelText: 'Date of Birth',
+                  labelStyle: TextStyle(color: Colors.black),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -352,6 +357,7 @@ class _PersonalTabState extends State<PersonalTab> {
                   child: TextFormField(
                     decoration: InputDecoration(
                       labelText: _hairType ?? 'Hair Type',
+                      labelStyle: TextStyle(color: Colors.black),
                          border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -376,7 +382,9 @@ class _PersonalTabState extends State<PersonalTab> {
                 },
                 child: AbsorbPointer(
                   child: TextFormField(
+                    
                     decoration: InputDecoration(
+                      labelStyle: TextStyle(color: Colors.black),
                       labelText: _eyeColor ?? 'Eye Color',
                        border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -402,7 +410,9 @@ class _PersonalTabState extends State<PersonalTab> {
                 },
                 child: AbsorbPointer(
                   child: TextFormField(
+                    
                     decoration: InputDecoration(
+                      labelStyle: TextStyle(color: Colors.black),
                       labelText: _gender ?? 'Gender',
                         border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -429,6 +439,7 @@ class _PersonalTabState extends State<PersonalTab> {
                 child: AbsorbPointer(
                   child: TextFormField(
                     decoration: InputDecoration(
+                      labelStyle: TextStyle(color: Colors.black),
                       labelText: _maritalStatus ?? 'Marital Status',
                         border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -446,6 +457,7 @@ class _PersonalTabState extends State<PersonalTab> {
               TextFormField(
                 controller: _bioController,
                 decoration: InputDecoration(
+                  labelStyle: TextStyle(color: Colors.black),
                   labelText: 'Bio',
                     border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -461,6 +473,7 @@ class _PersonalTabState extends State<PersonalTab> {
                 controller: _weightController,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: InputDecoration(
+                  labelStyle: TextStyle(color: Colors.black),
                   labelText: 'Weight (kg)',
                      border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -476,6 +489,7 @@ class _PersonalTabState extends State<PersonalTab> {
                 controller: _heightController,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: InputDecoration(
+                  labelStyle: TextStyle(color: Colors.black),
                   labelText: 'Height (cm)',
                    border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -490,6 +504,7 @@ class _PersonalTabState extends State<PersonalTab> {
               TextFormField(
                 controller: _interestController,
                 decoration: InputDecoration(
+                  labelStyle: TextStyle(color: Colors.black),
                   labelText: 'Interest',
                      border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -504,6 +519,7 @@ class _PersonalTabState extends State<PersonalTab> {
               TextFormField(
                 controller: _professionController,
                 decoration: InputDecoration(
+                  labelStyle: TextStyle(color: Colors.black),
                   labelText: 'Profession',
                      border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -518,6 +534,7 @@ class _PersonalTabState extends State<PersonalTab> {
               TextFormField(
                 controller: _hobbiesController,
                 decoration: InputDecoration(
+                  labelStyle: TextStyle(color: Colors.black),
                   labelText: 'Hobbies',
                     border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -545,6 +562,7 @@ class _PersonalTabState extends State<PersonalTab> {
               TextFormField(
                 controller: _facebookController,
                 decoration: InputDecoration(
+                  labelStyle: TextStyle(color: Colors.black),
                   labelText: 'Facebook Url',
                     border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -559,6 +577,7 @@ class _PersonalTabState extends State<PersonalTab> {
               TextFormField(
                 controller: _instagramController,
                 decoration: InputDecoration(
+                  labelStyle: TextStyle(color: Colors.black),
                   labelText: 'Instagram Url',
                     border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -573,6 +592,7 @@ class _PersonalTabState extends State<PersonalTab> {
               TextFormField(
                 controller: _tiktokController,
                 decoration: InputDecoration(
+                  labelStyle: TextStyle(color: Colors.black),
                   labelText: 'Tiktok Url',
                     border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),

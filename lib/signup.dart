@@ -128,7 +128,7 @@ class _SignUpState extends State<SignUp> {
                           errorBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                                 color: Color.fromARGB(255, 172, 32, 22)),
-                            borderRadius: BorderRadius.circular(5),
+                            borderRadius: BorderRadius.circular(10),
                           ),
                           focusedErrorBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
@@ -137,7 +137,7 @@ class _SignUpState extends State<SignUp> {
                           ),
                           labelText: 'First Name',
                           labelStyle:
-                              TextStyle(color: Colors.black, fontSize: 15),
+                              TextStyle(color: Colors.black, fontSize: 14),
                           hintText: 'First Name',
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -163,7 +163,7 @@ class _SignUpState extends State<SignUp> {
                           errorBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                                 color: Color.fromARGB(255, 172, 32, 22)),
-                            borderRadius: BorderRadius.circular(5),
+                            borderRadius: BorderRadius.circular(10),
                           ),
                           focusedErrorBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
@@ -172,7 +172,7 @@ class _SignUpState extends State<SignUp> {
                           ),
                           labelText: 'Last Name',
                           labelStyle:
-                              TextStyle(color: Colors.black, fontSize: 15),
+                              TextStyle(color: Colors.black, fontSize: 14),
                           hintText: 'Last Name',
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -198,7 +198,7 @@ class _SignUpState extends State<SignUp> {
                           errorBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
                                 color: Color.fromARGB(255, 172, 32, 22)),
-                            borderRadius: BorderRadius.circular(5),
+                            borderRadius: BorderRadius.circular(10),
                           ),
                           focusedErrorBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
@@ -207,7 +207,7 @@ class _SignUpState extends State<SignUp> {
                           ),
                           labelText: 'Email',
                           labelStyle:
-                              TextStyle(color: Colors.black, fontSize: 15),
+                              TextStyle(color: Colors.black, fontSize: 14),
                           hintText: 'Email',
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -228,7 +228,7 @@ class _SignUpState extends State<SignUp> {
                           errorBorder: OutlineInputBorder(
                             borderSide: BorderSide(
                                 color: Color.fromARGB(255, 172, 32, 22)),
-                            borderRadius: BorderRadius.circular(5),
+                            borderRadius: BorderRadius.circular(10),
                           ),
                           focusedErrorBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
@@ -236,7 +236,7 @@ class _SignUpState extends State<SignUp> {
                             borderRadius: BorderRadius.circular(5),
                           ),
                           labelText: 'Password',
-                          labelStyle: TextStyle(color: Colors.black),
+                          labelStyle: TextStyle(color: Colors.black , fontSize: 14),
                           hintText: 'Password',
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -265,7 +265,7 @@ class _SignUpState extends State<SignUp> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.yellow.shade600,
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(13),
                           ),
                           minimumSize: const Size(double.infinity, 50),
                         ),
@@ -299,7 +299,7 @@ class _SignUpState extends State<SignUp> {
                           ),
                         ],
                       ),
-                      SizedBox(height: screenHeight *0.05,)
+                      SizedBox(height: screenHeight *0.05 - 3,)
                     ],
                   ),
                 ),

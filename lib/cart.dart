@@ -80,12 +80,15 @@ class _CartPageState extends State<CartPage> {
         body: Column(
           children: [
             SizedBox(
-              height: screenHeight - 270,
+              height: screenHeight - 280,
               child: widget.cartItems.isEmpty
                   ? const Column(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Center(child: Text('Your Cart is empty')),
+                        Center(child: Text('Your Cart is empty' , style: TextStyle(
+                         
+                          fontSize: 16,
+                        ),)),
                       ],
                     )
                   : ListView.builder(
@@ -191,18 +194,21 @@ class _CartPageState extends State<CartPage> {
                   thickness: 2,
                   color: Colors.black,
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Text(
-                      'Total:             \$${totalAmount.toStringAsFixed(0)}',
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        'Total:             \$${totalAmount.toStringAsFixed(0)}',
+                        style: const TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    SizedBox(width: 10,)
-                  ],
+                      SizedBox(width: 10,)
+                    ],
+                  ),
                 ),
                 const SizedBox(height: 25),
                 GestureDetector(

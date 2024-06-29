@@ -52,6 +52,7 @@ class _BuddiesPageState extends State<BuddiesPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        surfaceTintColor: Colors.white,
         title: Text('Buddies', style: GoogleFonts.comfortaa(fontSize: 20)),
         centerTitle: true,
         actions: [

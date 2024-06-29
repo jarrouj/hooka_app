@@ -97,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
             Container(
               width: screenWidth * 0.9,
               transform: Matrix4.translationValues(0, -screenHeight * 0.1, 0),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
+              padding: const EdgeInsets.symmetric(horizontal: 23, vertical: 25),
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
@@ -115,7 +115,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(left: 8),
+                      padding: const EdgeInsets.only(left: 8 ),
                       child: Row(
                         children: [
                           Text(
@@ -264,7 +264,7 @@ class _LoginPageState extends State<LoginPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(15),
                         ),
-                        minimumSize: const Size(double.infinity, 50),
+                        minimumSize: const Size(350, 50),
                       ),
                       child: Text(
                         'Login',
