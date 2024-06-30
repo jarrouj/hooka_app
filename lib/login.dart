@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hooka_app/otp-verification-page.dart';
 import 'package:hooka_app/signup.dart';
 
 class LoginPage extends StatefulWidget {
@@ -14,6 +15,7 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _scrollController = ScrollController();
   bool _isKeyboardVisible = false;
+  final _emailController = TextEditingController();
 
   @override
   void initState() {
@@ -39,6 +41,8 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _emailController.dispose();
+
     super.dispose();
   }
 
@@ -59,7 +63,9 @@ class _LoginPageState extends State<LoginPage> {
       ),
       body: SingleChildScrollView(
         controller: _scrollController,
-        physics: _isKeyboardVisible ? AlwaysScrollableScrollPhysics() : NeverScrollableScrollPhysics(),
+        physics: _isKeyboardVisible
+            ? AlwaysScrollableScrollPhysics()
+            : NeverScrollableScrollPhysics(),
         child: Column(
           children: [
             Container(
@@ -115,7 +121,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(left: 8 ),
+                      padding: const EdgeInsets.only(left: 8),
                       child: Row(
                         children: [
                           Text(
@@ -131,7 +137,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 10),
                     const Padding(
-                      padding: EdgeInsets.only(left: 10 , top: 2),
+                      padding: EdgeInsets.only(left: 10, top: 2),
                       child: Divider(
                         thickness: 5,
                         color: Colors.black,
@@ -140,6 +146,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     SizedBox(height: 20),
                     TextFormField(
+                      controller: _emailController,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Email Required *';
@@ -236,11 +243,19 @@ class _LoginPageState extends State<LoginPage> {
                         children: [
                           GestureDetector(
                             onTap: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text('Please Fill the email  you forget it\'s password in the email section'),
-                                ),
-                              );
+                              if (_emailController.text.isEmpty) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                        'Please Fill the email you forget it\'s password in the email section'),
+                                  ),
+                                );
+                              } else {
+                                Navigator.of(context).push(MaterialPageRoute(
+                                  builder: (context) => OTPVerificationPage(
+                                      email: _emailController.text),
+                                ));
+                              }
                             },
                             child: const Text(
                               'Forgot Password?',

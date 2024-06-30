@@ -307,15 +307,14 @@ class _DetailsState extends State<Details> with TickerProviderStateMixin {
 
   void _toggle(int index) {
     final controller = _controllers[index];
-    if (controller.isCompleted) {
-      controller.reverse();
+    if (_counters[index] == 0) {
+      _updateQuantity(index, 1);
     } else {
-      setState(() {
-        if (_counters[index] == 0) {
-          _counters[index] = 1;
-        }
-      });
-      controller.forward();
+      if (controller.isCompleted) {
+        controller.reverse();
+      } else {
+        controller.forward();
+      }
     }
   }
 
@@ -401,7 +400,7 @@ class _DetailsState extends State<Details> with TickerProviderStateMixin {
                         child: Column(
                           children: [
                             ClipRRect(
-                              borderRadius: BorderRadius.only(
+                              borderRadius: const BorderRadius.only(
                                 bottomRight: Radius.circular(20),
                               ),
                               child: Image.asset(product.image),

@@ -107,21 +107,30 @@ class _PersonalTabState extends State<PersonalTab> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
-    DateTime initialDate = DateTime.now();
-    DateTime firstDate = DateTime(1900);
-    DateTime lastDate = DateTime(2025);
+  DateTime firstDate = DateTime(1970);
+  DateTime lastDate = DateTime(2015, 12, 31);
+  DateTime initialDate = DateTime(2015, 1, 1); // Set this to any date within the valid range
 
-    DateTime pickedDate = initialDate;
+  DateTime? pickedDate;
 
-    await showCupertinoModalPopup<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return Container(
-          height: 250,
-          color: Colors.white,
-          child: Column(
-            children: [
-              Expanded(
+  await showCupertinoModalPopup<void>(
+    context: context,
+    builder: (BuildContext context) {
+      return Container(
+        height: 250,
+        color: Colors.white,
+        child: Column(
+          children: [
+            Expanded(
+              child: CupertinoTheme(
+                data: CupertinoThemeData(
+                  textTheme: CupertinoTextThemeData(
+                    dateTimePickerTextStyle: TextStyle(
+                      color: Colors.black,
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
                 child: CupertinoDatePicker(
                   mode: CupertinoDatePickerMode.date,
                   initialDateTime: initialDate,
@@ -132,20 +141,22 @@ class _PersonalTabState extends State<PersonalTab> {
                   },
                 ),
               ),
-            ],
-          ),
-        );
-      },
-    );
+            ),
+          ],
+        ),
+      );
+    },
+  );
 
-    if (pickedDate != initialDate) {
-      setState(() {
-        _dateController.text =
-            "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
-      });
-      // _saveData();
-    }
+  if (pickedDate != null && pickedDate != initialDate) {
+    setState(() {
+      _dateController.text =
+          "${pickedDate!.year}-${pickedDate!.month.toString().padLeft(2, '0')}-${pickedDate!.day.toString().padLeft(2, '0')}";
+    });
+    // _saveData();
   }
+}
+
 
   void _showPicker(BuildContext context, List<String> options, String title,
       String? initialValue, ValueChanged<String> onSelected) {

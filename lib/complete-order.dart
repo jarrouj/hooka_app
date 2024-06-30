@@ -189,27 +189,39 @@ class _CompleteOrderState extends State<CompleteOrder> {
                   SizedBox(height: 40),
                   Row(
                     children: [
-                      const Padding(
+                   
+                      if (addresses.isEmpty)
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Text(
+                            'No Addresses yet..',
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          ),
+                        )
+                      else ...[
+                          const Padding(
                         padding: EdgeInsets.only(left: 16.0),
                         child: Text('Your Addresses:'),
                       ),
-                      GestureDetector(
-                        onTap: _showPicker,
-                        child: Container(
-                          margin: const EdgeInsets.all(16.0),
-                          padding: const EdgeInsets.all(8.0),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade300,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Text(
-                            selectedAddress != null
-                                ? '${selectedAddress!['title']}'
-                                : '',
-                            style: TextStyle(fontSize: 18),
+                        GestureDetector(
+                          onTap: _showPicker,
+                          child: Container(
+                            margin: const EdgeInsets.all(16.0),
+                            padding: const EdgeInsets.all(8.0),
+                            decoration: BoxDecoration(
+                              color: Colors.grey.shade300,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Text(
+                              selectedAddress != null
+                                  ? '${selectedAddress!['title']}'
+                                  : '',
+                              style: TextStyle(fontSize: 18),
+                            ),
                           ),
                         ),
-                      ),
+                      ],
+
                       Spacer(),
                       Padding(
                         padding: const EdgeInsets.all(16.0),
@@ -230,31 +242,32 @@ class _CompleteOrderState extends State<CompleteOrder> {
                     ],
                   ),
                   SizedBox(height: 30),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 60, vertical: 16),
-                    child: GestureDetector(
-                      onTap: _confirmOrder,
-                      child: Container(
-                        width: double.infinity,
-                        padding: const EdgeInsets.all(13.0),
-                        decoration: BoxDecoration(
-                          color: Colors.yellow.shade600,
-                          borderRadius: BorderRadius.circular(13),
-                        ),
-                        child: Center(
-                          child: Text(
-                            isLoading ? 'Loading...' : 'Confirm Order',
-                            style: GoogleFonts.comfortaa(
-                              color: Colors.black,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                  if (addresses.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 60, vertical: 16),
+                      child: GestureDetector(
+                        onTap: _confirmOrder,
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(13.0),
+                          decoration: BoxDecoration(
+                            color: Colors.yellow.shade600,
+                            borderRadius: BorderRadius.circular(13),
+                          ),
+                          child: Center(
+                            child: Text(
+                              isLoading ? 'Loading...' : 'Confirm Order',
+                              style: GoogleFonts.comfortaa(
+                                color: Colors.black,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ),
                 ],
               ),
             if (showAddAddressOverlay)
@@ -309,7 +322,7 @@ class _AddNewAddressFormState extends State<AddNewAddressForm> {
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _streetController = TextEditingController();
   final TextEditingController _buildingController = TextEditingController();
-  final TextEditingController _appartmentController = TextEditingController();
+  final TextEditingController _apartmentController = TextEditingController();
   String? location;
 
   List<String> cities = ['Zahle', 'Beirut', 'Byblos'];
@@ -476,21 +489,21 @@ class _AddNewAddressFormState extends State<AddNewAddressForm> {
             inputFormatters: [
               FilteringTextInputFormatter.deny(RegExp(r'^\s+')),
             ],
-            controller: _appartmentController,
+            controller: _apartmentController,
             decoration: InputDecoration(
               focusedBorder: OutlineInputBorder(
                 borderSide: const BorderSide(color: Colors.black),
                 borderRadius: BorderRadius.circular(10),
               ),
               labelStyle: TextStyle(color: Colors.black),
-              labelText: 'Appartment',
+              labelText: 'Apartment',
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(10.0),
               ),
             ),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter appartment';
+                return 'Please enter apartment';
               }
               return null;
             },
@@ -532,7 +545,6 @@ class _AddNewAddressFormState extends State<AddNewAddressForm> {
             ),
           ),
           const SizedBox(height: 16),
-          SizedBox(height: 16),
           GestureDetector(
             onTap: () {
               if (_formKey.currentState!.validate()) {
@@ -541,7 +553,7 @@ class _AddNewAddressFormState extends State<AddNewAddressForm> {
                   'city': _cityController.text,
                   'street': _streetController.text,
                   'building': _buildingController.text,
-                  'appartment': _appartmentController.text,
+                  'apartment': _apartmentController.text,
                 };
                 widget.onAddAddress(newAddress);
               }
@@ -569,7 +581,6 @@ class _AddNewAddressFormState extends State<AddNewAddressForm> {
     );
   }
 }
-
 class OrderPageLogged extends StatelessWidget {
   Future<void> _clearAllData(BuildContext context) async {
     var cartBox = await Hive.openBox<Product>('cartBox2');

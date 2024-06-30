@@ -1390,7 +1390,7 @@ class _PlacePickerState extends State<PlacePicker> {
       children: [
         SizedBox(height: 20),
         Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 8),
           child: TextField(
             controller: _searchController,
             decoration: InputDecoration(

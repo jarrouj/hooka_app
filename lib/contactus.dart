@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
@@ -228,8 +230,28 @@ class MenuScreen extends StatelessWidget {
   }
 }
 
-class ContactUsPage extends StatelessWidget {
+class ContactUsPage extends StatefulWidget {
   const ContactUsPage({super.key});
+
+  @override
+  State<ContactUsPage> createState() => _ContactUsPageState();
+}
+
+class _ContactUsPageState extends State<ContactUsPage> {
+
+   bool isLoading = false;
+
+  void _handleSend() {
+    setState(() {
+      isLoading = true;
+    });
+
+    Timer(Duration(seconds: 3), () {
+      setState(() {
+        isLoading = false;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -391,22 +413,41 @@ class ContactUsPage extends StatelessWidget {
                   const SizedBox(
                     height: 60,
                   ),
-                  Container(
-                    width: 328,
-                    height: 50,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        color: Colors.yellow.shade600),
-                    child: const Center(
-                      child: Text(
-                        'Send',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 20,
-                        ),
+               Container(
+      width: 331,
+      height: 50,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: Colors.yellow.shade600,
+      ),
+      child: TextButton(
+        onPressed: _handleSend,
+        child: Center(
+          child: isLoading
+              ? Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                   
+                    SizedBox(width: 10),
+                    Text(
+                      'Loading...',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
                       ),
                     ),
+                  ],
+                )
+              : Text(
+                  'Send',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
                   ),
+                ),
+        ),
+      ),
+    ),
                   SizedBox(
                     height: 45,
                   ),

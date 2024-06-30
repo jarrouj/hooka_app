@@ -462,7 +462,7 @@ class ProfileMainPage extends StatelessWidget {
                   ),
                 ],
               
-                // const SizedBox(height: 20),
+                const SizedBox(height: 5),
                 if (facebookUrl.isNotEmpty || instagramUrl.isNotEmpty || tiktokUrl.isNotEmpty) ...[
                   Table(
                     columnWidths: const {
@@ -531,7 +531,7 @@ class ProfileMainPage extends StatelessWidget {
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         decoration: BoxDecoration(
-                          color: Colors.blue.shade200,
+                          color: Colors.blue.shade100,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Center(child: Text(getValue('Interest'))),
@@ -559,7 +559,7 @@ class ProfileMainPage extends StatelessWidget {
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         decoration: BoxDecoration(
-                          color: Colors.blue.shade200,
+                          color: Colors.blue.shade100,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Center(child: Text(getValue('Hobbies'))),
@@ -587,7 +587,7 @@ class ProfileMainPage extends StatelessWidget {
                       Container(
                         padding: EdgeInsets.symmetric(horizontal: 10),
                         decoration: BoxDecoration(
-                          color: Colors.blue.shade200,
+                          color: Colors.blue.shade100,
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Center(child: Text(getValue('Profession'))),
@@ -596,420 +596,448 @@ class ProfileMainPage extends StatelessWidget {
                   ),
                 ],
                 if (educations.isNotEmpty) ...[
-                  SizedBox(
-                    height: 40,
-                  ),
-                  const Row(
-                    children: [
-                      Text(
-                        'Educations',
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 30,
-                  ),
-                  SizedBox(
-                    height: 150,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: educations.map((edu) {
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 20),
-                          child: Table(
-                            border: TableBorder.all(color: Colors.grey.shade400),
-                            defaultColumnWidth: const IntrinsicColumnWidth(),
-                            children: [
-                              TableRow(
-                                children: [
-                                  TableCell(
-                                    verticalAlignment: TableCellVerticalAlignment.middle,
-                                    child: Padding(
-                                      padding: EdgeInsets.only(
-                                          left: 20,
-                                          right: 60,
-                                          top: 15,
-                                          bottom: 15),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text('University'),
-                                          Text(
-                                            edu['university'],
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  TableCell(
-                                    verticalAlignment: TableCellVerticalAlignment.middle,
-                                    child: Padding(
-                                      padding: EdgeInsets.only(
-                                          left: 20,
-                                          right: 60,
-                                          top: 15,
-                                          bottom: 15),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text('From'),
-                                          Text(
-                                            edu['from'],
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              TableRow(
-                                children: [
-                                  TableCell(
-                                    verticalAlignment: TableCellVerticalAlignment.middle,
-                                    child: Padding(
-                                      padding: EdgeInsets.only(
-                                          left: 20,
-                                          right: 60,
-                                          top: 15,
-                                          bottom: 15),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text('Degree'),
-                                          Text(
-                                            edu['degree'],
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  TableCell(
-                                    verticalAlignment: TableCellVerticalAlignment.middle,
-                                    child: Padding(
-                                      padding: EdgeInsets.only(
-                                          left: 20,
-                                          right: 60,
-                                          top: 15,
-                                          bottom: 15),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Text('To'),
-                                          Text(
-                                            edu['to'],
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ],
-                if (experiences.isNotEmpty) ...[
-                  SizedBox(
-                    height: 40,
-                  ),
-                  const Row(
-                    children: [
-                      Text(
-                        'Experiences',
-                        style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: 30,
-                  ),
-                  SizedBox(
-                    height: 150,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: experiences.map((exp) {
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 20),
-                          child: Table(
-                            border: TableBorder.all(color: Colors.grey.shade400),
-                            defaultColumnWidth: const IntrinsicColumnWidth(),
-                            children: [
-                              TableRow(
-                                children: [
-                                  TableCell(
-                                    verticalAlignment:
-                                        TableCellVerticalAlignment.middle,
-                                    child: Padding(
-                                      padding: EdgeInsets.only(
-                                          left: 20,
-                                          right: 60,
-                                          top: 15,
-                                          bottom: 15),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text('Title'),
-                                          Text(
-                                            exp['title'],
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  TableCell(
-                                    verticalAlignment:
-                                        TableCellVerticalAlignment.middle,
-                                    child: Padding(
-                                      padding: EdgeInsets.only(
-                                          left: 20,
-                                          right: 60,
-                                          top: 15,
-                                          bottom: 15),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text('From'),
-                                          Text(
-                                            exp['from'],
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              TableRow(
-                                children: [
-                                  TableCell(
-                                    verticalAlignment:
-                                        TableCellVerticalAlignment.middle,
-                                    child: Padding(
-                                      padding: EdgeInsets.only(
-                                          left: 20,
-                                          right: 60,
-                                          top: 15,
-                                          bottom: 15),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text('Position'),
-                                          Text(
-                                            exp['position'],
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  TableCell(
-                                    verticalAlignment:
-                                        TableCellVerticalAlignment.middle,
-                                    child: Padding(
-                                      padding: EdgeInsets.only(
-                                          left: 20,
-                                          right: 60,
-                                          top: 15,
-                                          bottom: 15),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text('To'),
-                                          Text(
-                                            exp['to'],
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ],
-                if (addresses.isNotEmpty) ...[
-                  SizedBox(height: 30),
-                  const Row(
-                    children: [
-                      Text(
-                        'Addresses',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  SizedBox(
-                    height: 150,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                      children: addresses.map((addr) {
-                        return Padding(
-                          padding: const EdgeInsets.only(right: 20),
-                          child: Table(
-                            border: TableBorder.all(color: Colors.grey.shade400),
-                            defaultColumnWidth: const IntrinsicColumnWidth(),
-                            children: [
-                              TableRow(
-                                children: [
-                                  TableCell(
-                                    verticalAlignment:
-                                        TableCellVerticalAlignment.middle,
-                                    child: Padding(
-                                      padding: EdgeInsets.only(
-                                          left: 20,
-                                          right: 80,
-                                          top: 15,
-                                          bottom: 15),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text('Title'),
-                                          Text(
-                                            addr['title'],
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  TableCell(
-                                    verticalAlignment:
-                                        TableCellVerticalAlignment.middle,
-                                    child: Padding(
-                                      padding: EdgeInsets.only(
-                                          left: 20,
-                                          right: 100,
-                                          top: 15,
-                                          bottom: 15),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text('City'),
-                                          Text(
-                                            addr['city'],
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              TableRow(
-                                children: [
-                                  TableCell(
-                                    verticalAlignment:
-                                        TableCellVerticalAlignment.middle,
-                                    child: Padding(
-                                      padding: EdgeInsets.only(
-                                          left: 20,
-                                          right: 60,
-                                          top: 15,
-                                          bottom: 15),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text('Street'),
-                                          Text(
-                                            addr['street'],
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  TableCell(
-                                    verticalAlignment:
-                                        TableCellVerticalAlignment.middle,
-                                    child: Padding(
-                                      padding: EdgeInsets.only(
-                                          left: 20,
-                                          right: 100,
-                                          top: 15,
-                                          bottom: 15),
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text('Building'),
-                                          Text(
-                                            addr['building'],
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ),
-                ],
-                SizedBox(height: 100),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                SizedBox(height: 40),
+                const Row(
                   children: [
-                    Container(
-                      width: 130,
-                      height: 38,
-                      decoration: BoxDecoration(
-                        color: Colors.yellow.shade600,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Center(
-                        child: Text(
-                          'Delete account',
-                          style: TextStyle(fontWeight: FontWeight.w500),
-                        ),
-                      ),
+                    Text(
+                      'Educations',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18),
                     ),
                   ],
                 ),
+                SizedBox(height: 30),
+                SizedBox(
+                  height: 150,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: educations.map((edu) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 20),
+                        child: Table(
+                          border: TableBorder.all(color: Colors.grey.shade400),
+                          defaultColumnWidth: const IntrinsicColumnWidth(),
+                          children: [
+                            TableRow(
+                              children: [
+                                TableCell(
+                                  verticalAlignment: TableCellVerticalAlignment.middle,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                        left: 20,
+                                        right: 60,
+                                        top: 15,
+                                        bottom: 15),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('University'),
+                                        Text(
+                                          edu['university']!,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                TableCell(
+                                  verticalAlignment: TableCellVerticalAlignment.middle,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                        left: 20,
+                                        right: 60,
+                                        top: 15,
+                                        bottom: 15),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('From'),
+                                        Text(
+                                          edu['from']!,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            TableRow(
+                              children: [
+                                TableCell(
+                                  verticalAlignment: TableCellVerticalAlignment.middle,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                        left: 20,
+                                        right: 60,
+                                        top: 15,
+                                        bottom: 15),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('Degree'),
+                                        Text(
+                                          edu['degree']!,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                TableCell(
+                                  verticalAlignment: TableCellVerticalAlignment.middle,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                        left: 20,
+                                        right: 60,
+                                        top: 15,
+                                        bottom: 15),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('To'),
+                                        Text(
+                                          edu['to']!,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ] else ...[
                 SizedBox(height: 40),
+                const Row(
+                  children: [
+                    Text(
+                      'Educations',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18),
+                    ),
+                  ],
+                ),
+                  SizedBox(height: 5),
+                Padding(
+                  padding: const EdgeInsets.only(left:15),
+                  child: Text('No Educations...' , style: TextStyle(fontWeight: FontWeight.bold),),
+                ),
+              ],
+              if (experiences.isNotEmpty) ...[
+                SizedBox(height: 40),
+                const Row(
+                  children: [
+                    Text(
+                      'Experiences',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 30),
+                SizedBox(
+                  height: 150,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: experiences.map((exp) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 20),
+                        child: Table(
+                          border: TableBorder.all(color: Colors.grey.shade400),
+                          defaultColumnWidth: const IntrinsicColumnWidth(),
+                          children: [
+                            TableRow(
+                              children: [
+                                TableCell(
+                                  verticalAlignment: TableCellVerticalAlignment.middle,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                        left: 20,
+                                        right: 60,
+                                        top: 15,
+                                        bottom: 15),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('Title'),
+                                        Text(
+                                          exp['title']!,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                TableCell(
+                                  verticalAlignment: TableCellVerticalAlignment.middle,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                        left: 20,
+                                        right: 60,
+                                        top: 15,
+                                        bottom: 15),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('From'),
+                                        Text(
+                                          exp['from']!,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            TableRow(
+                              children: [
+                                TableCell(
+                                  verticalAlignment: TableCellVerticalAlignment.middle,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                        left: 20,
+                                        right: 60,
+                                        top: 15,
+                                        bottom: 15),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('Position'),
+                                        Text(
+                                          exp['position']!,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                TableCell(
+                                  verticalAlignment: TableCellVerticalAlignment.middle,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                        left: 20,
+                                        right: 60,
+                                        top: 15,
+                                        bottom: 15),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('To'),
+                                        Text(
+                                          exp['to']!,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ] else ...[
+                SizedBox(height: 40),
+                const Row(
+                  children: [
+                    Text(
+                      'Experiences',
+                      style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 5),
+                Padding(
+                  padding: const EdgeInsets.only(left:15),
+                  child: Text('No Experiences...' , style: TextStyle(fontWeight: FontWeight.bold),),
+                ),
+              ],
+              if (addresses.isNotEmpty) ...[
+                SizedBox(height: 30),
+                const Row(
+                  children: [
+                    Text(
+                      'Addresses',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  height: 150,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: addresses.map((addr) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 20),
+                        child: Table(
+                          border: TableBorder.all(color: Colors.grey.shade400),
+                          defaultColumnWidth: const IntrinsicColumnWidth(),
+                          children: [
+                            TableRow(
+                              children: [
+                                TableCell(
+                                  verticalAlignment: TableCellVerticalAlignment.middle,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                        left: 20,
+                                        right: 80,
+                                        top: 15,
+                                        bottom: 15),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('Title'),
+                                        Text(
+                                          addr['title']!,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                TableCell(
+                                  verticalAlignment: TableCellVerticalAlignment.middle,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                        left: 20,
+                                        right: 100,
+                                        top: 15,
+                                        bottom: 15),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('City'),
+                                        Text(
+                                          addr['city']!,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            TableRow(
+                              children: [
+                                TableCell(
+                                  verticalAlignment: TableCellVerticalAlignment.middle,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                        left: 20,
+                                        right: 60,
+                                        top: 15,
+                                        bottom: 15),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('Street'),
+                                        Text(
+                                          addr['street']!,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                TableCell(
+                                  verticalAlignment: TableCellVerticalAlignment.middle,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(
+                                        left: 20,
+                                        right: 100,
+                                        top: 15,
+                                        bottom: 15),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text('Building'),
+                                        Text(
+                                          addr['building']!,
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.bold),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ] else ...[
+                SizedBox(height: 30),
+                const Row(
+                  children: [
+                    Text(
+                      'Addresses',
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 20),
+                    ),
+                  ],
+                ),
+                  SizedBox(height: 5),
+                Padding(
+                  padding: const EdgeInsets.only(left:15),
+                  child: Text('No Addresses...' , style: TextStyle(fontWeight: FontWeight.bold),),
+                ),
+              ],
+              SizedBox(height: 100),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 130,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      color: Colors.yellow.shade600,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Center(
+                      child: Text(
+                        'Delete account',
+                        style: TextStyle(fontWeight: FontWeight.w500),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 40),
               ],
             ),
           ),

@@ -52,6 +52,43 @@ class _CartPageState extends State<CartPage> {
     });
   }
 
+  void _showCustomSnackBar(BuildContext context, String message) {
+    final overlay = Overlay.of(context);
+    final overlayEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        top: MediaQuery.of(context).size.height / 2 - 30,
+        left: MediaQuery.of(context).size.width / 4,
+        right: MediaQuery.of(context).size.width / 4,
+        child: Material(
+          color: Colors.transparent,
+          child: Container(
+            margin: EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Center(
+              child: Text(
+                message,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    overlay?.insert(overlayEntry);
+    Future.delayed(const Duration(seconds: 2), () {
+      overlayEntry.remove();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
@@ -86,7 +123,6 @@ class _CartPageState extends State<CartPage> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Center(child: Text('Your Cart is empty' , style: TextStyle(
-                         
                           fontSize: 16,
                         ),)),
                       ],
@@ -101,7 +137,7 @@ class _CartPageState extends State<CartPage> {
                             width: double.infinity,
                             height: 105,
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
+                              borderRadius: BorderRadius.circular(8),
                               color: Colors.white,
                               boxShadow: [
                                 BoxShadow(
@@ -213,12 +249,16 @@ class _CartPageState extends State<CartPage> {
                 const SizedBox(height: 25),
                 GestureDetector(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => CheckoutPage(),
-                      ),
-                    );
+                    if (widget.cartItems.isEmpty) {
+                      _showCustomSnackBar(context, 'Your Cart is Empty');
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CheckoutPage(),
+                        ),
+                      );
+                    }
                   },
                   child: Container(
                     width: double.infinity,

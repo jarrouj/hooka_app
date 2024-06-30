@@ -110,7 +110,7 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
             .map((json) => Cuisine.fromJson(json))
             .toList();
         if (cuisines.isNotEmpty) {
-          cuisines.insert(0, Cuisine(name: 'All Cuisines'));
+          cuisines.insert(0, Cuisine(name: 'Cuisines'));
           selectedCuisine = cuisines.first.name;
         } else {
           selectedCuisine = null;
@@ -169,7 +169,7 @@ void _toggleFavorite(int placeId) {
           tempPlaces.where((place) => favoriteIds.contains(place.id)).toList();
     }
 
-    if (selectedCuisine != null && selectedCuisine != 'All Cuisines') {
+    if (selectedCuisine != null && selectedCuisine != 'Cuisines') {
       tempPlaces = tempPlaces.where((place) {
         return place.cuisine.toLowerCase() == selectedCuisine!.toLowerCase();
       }).toList();
