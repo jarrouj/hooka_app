@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:hooka_app/otp-verification-page.dart';
+import 'package:hooka_app/otp-verification-loginpage.dart';
 import 'package:hooka_app/signup.dart';
 
 class LoginPage extends StatefulWidget {
@@ -16,6 +16,9 @@ class _LoginPageState extends State<LoginPage> {
   final _scrollController = ScrollController();
   bool _isKeyboardVisible = false;
   final _emailController = TextEditingController();
+    final GlobalKey<FormFieldState> _emailFieldKey = GlobalKey<FormFieldState>();
+
+
 
   @override
   void initState() {
@@ -37,6 +40,73 @@ class _LoginPageState extends State<LoginPage> {
       });
     });
   }
+
+  bool isValidEmail(String email) {
+    // Use a regular expression to validate the email format
+    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
+  }
+
+void _validateEmailAndNavigate() {
+  final emailField = _emailFieldKey.currentState;
+
+  // Check if email field is empty
+  if (_emailController.text.isEmpty) {
+    _showOverlaySnackBar(
+      context,
+      'Please fill the email you forget its password in the email section',
+    );
+    return;
+  }
+
+  // Validate the email field
+  if (emailField == null || !emailField.validate()) {
+    return;
+  }
+
+  // Navigate to OTP Verification Page if email is valid
+  Navigator.of(context).push(MaterialPageRoute(
+    builder: (context) => OTPVerificationPage(email: _emailController.text),
+  ));
+}
+
+void _showOverlaySnackBar(BuildContext context, String message) {
+  final overlay = Overlay.of(context);
+  final overlayEntry = OverlayEntry(
+    builder: (context) => Positioned(
+      bottom: 40,
+      left: MediaQuery.of(context).size.width * 0.1,
+      right: MediaQuery.of(context).size.width * 0.1,
+      child: Material(
+        color: Colors.transparent,
+        child: Center(
+          child: Container(
+            width: 280,
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+            decoration: BoxDecoration(
+              color: Colors.black,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              message,
+              // textAlign: TextAlign.center,
+              style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 15),
+            ),
+          ),
+        ),
+      ),
+    ),
+  );
+
+  overlay?.insert(overlayEntry);
+
+  Future.delayed(const Duration(seconds: 2), () {
+    overlayEntry.remove();
+  });
+}
+
 
   @override
   void dispose() {
@@ -147,9 +217,14 @@ class _LoginPageState extends State<LoginPage> {
                     SizedBox(height: 20),
                     TextFormField(
                       controller: _emailController,
+                      key: _emailFieldKey,
+
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Email Required *';
+                          return 'Email Required*';
+                        }
+                        if (!isValidEmail(value)) {
+                          return 'Please enter a valid email address';
                         }
                         return null;
                       },
@@ -236,27 +311,13 @@ class _LoginPageState extends State<LoginPage> {
                       },
                     ),
                     const SizedBox(height: 30),
-                    Padding(
+                 Padding(
                       padding: EdgeInsets.only(right: 16),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
                           GestureDetector(
-                            onTap: () {
-                              if (_emailController.text.isEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                        'Please Fill the email you forget it\'s password in the email section'),
-                                  ),
-                                );
-                              } else {
-                                Navigator.of(context).push(MaterialPageRoute(
-                                  builder: (context) => OTPVerificationPage(
-                                      email: _emailController.text),
-                                ));
-                              }
-                            },
+                            onTap: _validateEmailAndNavigate,
                             child: const Text(
                               'Forgot Password?',
                               style: TextStyle(

@@ -3,8 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:hooka_app/allpages.dart';
 import 'package:hooka_app/buddies.dart';
-import 'package:hooka_app/checkout.dart';
-import 'package:hooka_app/complete-order.dart';
+
 import 'package:hooka_app/contactus.dart';
 import 'package:hooka_app/invitation.dart';
 import 'package:hooka_app/login.dart';
@@ -17,7 +16,6 @@ import 'package:hooka_app/splash.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
 import 'package:path_provider/path_provider.dart';
-import 'products.dart';
 import 'cart.dart';
 
 

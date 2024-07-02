@@ -57,6 +57,7 @@ dependencies:
   flutter_rating_bar: ^4.0.1
   dropdown_search_list: ^0.0.3
   dropdown_search: ^2.0.1
+  google_maps_flutter: ^2.7.0
 
 
 dev_dependencies:

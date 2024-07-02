@@ -309,13 +309,22 @@ class _DetailsState extends State<Details> with TickerProviderStateMixin {
     final controller = _controllers[index];
     if (_counters[index] == 0) {
       _updateQuantity(index, 1);
-    } else {
-      if (controller.isCompleted) {
-        controller.reverse();
-      } else {
-        controller.forward();
-      }
     }
+    if (controller.isCompleted) {
+      controller.reverse();
+    } else {
+      controller.forward();
+    }
+  }
+
+  void _setQuantityToOne(int index) {
+    setState(() {
+      if (_counters[index] == 0) {
+        _counters[index] = 1;
+        widget.products[index].quantity = _counters[index];
+        _saveProduct(widget.products[index]);
+      }
+    });
   }
 
   void _updateQuantity(int index, int quantity) {
@@ -343,7 +352,7 @@ class _DetailsState extends State<Details> with TickerProviderStateMixin {
     var box = Hive.box<Product>('cartBox2');
     await box.clear();
     for (var item in cartItems) {
-      box.put(item.name, item);
+      await box.put(item.name, item);
     }
 
     final result = await Navigator.push(
@@ -362,6 +371,14 @@ class _DetailsState extends State<Details> with TickerProviderStateMixin {
     }
   }
 
+  void _handleTap(int index) {
+    if (_controllers[index].isCompleted) {
+      _controllers[index].reverse();
+    } else {
+      _setQuantityToOne(index);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final double screenHeight = MediaQuery.of(context).size.height;
@@ -369,142 +386,155 @@ class _DetailsState extends State<Details> with TickerProviderStateMixin {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Column(
-        children: [
-          const Padding(
-            padding: EdgeInsets.only(left: 20),
-            child: Row(
-              children: [
-                Text('Choose Your Flavor', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: screenHeight - 223,
-            child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.8,
+      body: GestureDetector(
+        onTap: () {
+          // Close all open buttons when tapping outside
+          for (int i = 0; i < _controllers.length; i++) {
+            if (_controllers[i].isCompleted) {
+              _controllers[i].reverse();
+            }
+          }
+        },
+        child: Column(
+          children: [
+            const Padding(
+              padding: EdgeInsets.only(left: 20),
+              child: Row(
+                children: [
+                  Text('Choose Your Flavor', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                ],
               ),
-              itemCount: widget.products.length,
-              itemBuilder: (context, index) {
-                final product = widget.products[index];
-                final animation = _widthAnimations[index];
-                return GestureDetector(
-                  onTap: () => _toggle(index),
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(15.0),
-                        child: Column(
-                          children: [
-                            ClipRRect(
-                              borderRadius: const BorderRadius.only(
-                                bottomRight: Radius.circular(20),
+            ),
+            SizedBox(
+              height: screenHeight - 223,
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.8,
+                ),
+                itemCount: widget.products.length,
+                itemBuilder: (context, index) {
+                  final product = widget.products[index];
+                  final animation = _widthAnimations[index];
+                  return GestureDetector(
+                    onTap: () => _handleTap(index),
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(15.0),
+                          child: Column(
+                            children: [
+                              ClipRRect(
+                                borderRadius: const BorderRadius.only(
+                                  bottomRight: Radius.circular(20),
+                                ),
+                                child: Image.asset(product.image),
                               ),
-                              child: Image.asset(product.image),
-                            ),
-                            const SizedBox(height: 10),
-                            Text('USD ${product.price.toStringAsFixed(0)}', textAlign: TextAlign.center, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15)),
-                            Text(product.name, textAlign: TextAlign.center, style: GoogleFonts.comfortaa(color: Colors.black, fontSize: 15, fontWeight: FontWeight.w500)),
-                          ],
-                        ),
-                      ),
-                      if (!_controllers[index].isCompleted && !_controllers[index].isAnimating)
-                        Positioned(
-                          right: 1,
-                          top: 15,
-                          child: Container(
-                            width: 45,
-                            height: 45,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(30),
-                              color: Colors.white,
-                            ),
+                              const SizedBox(height: 10),
+                              Text('USD ${product.price.toStringAsFixed(0)}', textAlign: TextAlign.center, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15)),
+                              Text(product.name, textAlign: TextAlign.center, style: GoogleFonts.comfortaa(color: Colors.black, fontSize: 15, fontWeight: FontWeight.w500)),
+                            ],
                           ),
                         ),
-                      Positioned(
-                        right: 3,
-                        top: 18,
-                        child: AnimatedBuilder(
-                          animation: animation,
-                          builder: (context, child) {
-                            return ConstrainedBox(
-                              constraints: BoxConstraints(
-                                maxWidth: screenWidth / 2 - 30,
+                        if (!_controllers[index].isCompleted && !_controllers[index].isAnimating)
+                          Positioned(
+                            right: 1,
+                            top: 15,
+                            child: Container(
+                              width: 45,
+                              height: 45,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30),
+                                color: Colors.white,
                               ),
-                              child: Container(
-                                width: animation.value,
-                                height: 38.0,
-                                decoration: BoxDecoration(
-                                  color: (!_controllers[index].isAnimating && !_controllers[index].isCompleted && _counters[index] > 0) ? Colors.yellow : Colors.white,
-                                  borderRadius: BorderRadius.circular(50),
-                                  border: Border.all(
-                                    color: Colors.grey.withOpacity(0.5),
-                                    width: 0.5,
+                            ),
+                          ),
+                        Positioned(
+                          right: 3,
+                          top: 18,
+                          child: AnimatedBuilder(
+                            animation: animation,
+                            builder: (context, child) {
+                              return ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  maxWidth: screenWidth / 2 - 30,
+                                ),
+                                child: GestureDetector(
+                                  onTap: () => _toggle(index),
+                                  child: Container(
+                                    width: animation.value,
+                                    height: 38.0,
+                                    decoration: BoxDecoration(
+                                      color: (!_controllers[index].isAnimating && !_controllers[index].isCompleted && _counters[index] > 0) ? Colors.yellow : Colors.white,
+                                      borderRadius: BorderRadius.circular(50),
+                                      border: Border.all(
+                                        color: Colors.grey.withOpacity(0.5),
+                                        width: 0.5,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      children: <Widget>[
+                                        if (_controllers[index].isCompleted)
+                                          IconButton(
+                                            icon: _counters[index] == 1
+                                                ? Icon(Icons.delete_outline, color: Colors.yellow.shade700)
+                                                : Icon(Icons.remove, color: Colors.yellow.shade700),
+                                            onPressed: () {
+                                              _updateQuantity(index, _counters[index] - 1);
+                                              if (_counters[index] == 0) {
+                                                _controllers[index].reverse();
+                                              }
+                                            },
+                                          ),
+                                        if (_controllers[index].isCompleted && _counters[index] > 0)
+                                          Text('${_counters[index]}', style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20)),
+                                        if (!_controllers[index].isCompleted && _counters[index] > 0)
+                                          Text('${_counters[index]}', style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20)),
+                                        if (!_controllers[index].isCompleted && _counters[index] == 0)
+                                          Icon(Icons.add, color: Colors.yellow.shade700),
+                                        if (_controllers[index].isCompleted && _counters[index] == 0)
+                                          IconButton(
+                                            icon: const Icon(Icons.add, color: Colors.black),
+                                            onPressed: () {
+                                              _updateQuantity(index, _counters[index] + 1);
+                                            },
+                                          ),
+                                        if (_controllers[index].isCompleted && _counters[index] > 0)
+                                          IconButton(
+                                            icon: Icon(Icons.add, color: Colors.yellow.shade700),
+                                            onPressed: () {
+                                              _updateQuantity(index, _counters[index] + 1);
+                                            },
+                                          ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                  children: <Widget>[
-                                    if (_controllers[index].isCompleted)
-                                      IconButton(
-                                        icon: _counters[index] == 1
-                                            ? Icon(Icons.delete_outline, color: Colors.yellow.shade700)
-                                            : Icon(Icons.remove, color: Colors.yellow.shade700),
-                                        onPressed: () {
-                                          _updateQuantity(index, _counters[index] - 1);
-                                          if (_counters[index] == 0) {
-                                            _controllers[index].reverse();
-                                          }
-                                        },
-                                      ),
-                                    if (_controllers[index].isCompleted && _counters[index] > 0)
-                                      Text('${_counters[index]}', style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20)),
-                                    if (!_controllers[index].isCompleted && _counters[index] > 0)
-                                      Text('${_counters[index]}', style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20)),
-                                    if (!_controllers[index].isCompleted && _counters[index] == 0)
-                                      Icon(Icons.add, color: Colors.yellow.shade700),
-                                    if (_controllers[index].isCompleted && _counters[index] == 0)
-                                      IconButton(
-                                        icon: const Icon(Icons.add, color: Colors.black),
-                                        onPressed: () {
-                                          _updateQuantity(index, _counters[index] + 1);
-                                        },
-                                      ),
-                                    if (_controllers[index].isCompleted && _counters[index] > 0)
-                                      IconButton(
-                                        icon: Icon(Icons.add, color: Colors.yellow.shade700),
-                                        onPressed: () {
-                                          _updateQuantity(index, _counters[index] + 1);
-                                        },
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ),
-          GestureDetector(
-            onTap: _goToCart,
-            child: Container(
-              width: double.infinity,
-              height: 65,
-              color: Colors.yellow.shade600,
-              child: const Center(
-                child: Text('Go to Cart', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                      ],
+                    ),
+                  );
+                },
               ),
             ),
-          ),
-        ],
+            GestureDetector(
+              onTap: _goToCart,
+              child: Container(
+                width: double.infinity,
+                height: 65,
+                color: Colors.yellow.shade600,
+                child: const Center(
+                  child: Text('Go to Cart', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

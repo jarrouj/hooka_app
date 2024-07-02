@@ -18,7 +18,18 @@ class _InvitationsPageState extends State<InvitationsPage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
-  final List<Map<String, dynamic>> sentInvitations = [
+  final List<Map<String, dynamic>> receivedInvitations = [
+    {
+      'name': 'Salim Salim',
+      'details': 'You Will Pay For Your Own Hooka & Food',
+      'place': 'Test',
+      'date': '2023-10-25',
+      'time': '16:11',
+      'notes': 'join',
+    },
+  ];
+
+ final List<Map<String, dynamic>> sentInvitations = [
     {
       'image': 'assets/images/resta.avif',
       'title': 'Test',
@@ -82,9 +93,7 @@ class _InvitationsPageState extends State<InvitationsPage>
           ),
         ),
         actions: const [
-          SizedBox(
-            width: 55,
-          ),
+          SizedBox(width: 55),
         ],
         leading: IconButton(
           icon: Icon(Icons.menu),
@@ -118,24 +127,31 @@ class _InvitationsPageState extends State<InvitationsPage>
         controller: _tabController,
         children: [
           ListView.builder(
-            itemCount: 1,
+            itemCount: receivedInvitations.length,
             itemBuilder: (context, index) {
+              final invitation = receivedInvitations[index];
               return GestureDetector(
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => InvProfile()),
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          RecievedInvitation(invitation: invitation),
+                    ),
                   );
                 },
                 child: Container(
-                  decoration: BoxDecoration(color: Colors.white, boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.2),
-                      spreadRadius: 1,
-                      blurRadius: 1,
-                      offset: const Offset(0, 1), // changes position of shadow
-                    ),
-                  ]),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        spreadRadius: 1,
+                        blurRadius: 1,
+                        offset: const Offset(0, 1),
+                      ),
+                    ],
+                  ),
                   margin: EdgeInsets.all(8.0),
                   child: ListTile(
                     leading: CircleAvatar(
@@ -152,9 +168,7 @@ class _InvitationsPageState extends State<InvitationsPage>
                         ),
                         Spacer(),
                         Icon(Icons.check),
-                        SizedBox(
-                          width: 45,
-                        )
+                        SizedBox(width: 45),
                       ],
                     ),
                     subtitle: Column(
@@ -175,9 +189,7 @@ class _InvitationsPageState extends State<InvitationsPage>
                           style: TextStyle(
                               fontSize: 11, color: Colors.grey.shade600),
                         ),
-                        SizedBox(
-                          height: 20,
-                        ),
+                        SizedBox(height: 20),
                       ],
                     ),
                   ),
@@ -194,9 +206,8 @@ class _InvitationsPageState extends State<InvitationsPage>
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => InvitationDetailsPage(
-                        invitation: invitation,
-                      ),
+                      builder: (context) =>
+                          InvitationDetailsPage(invitation: invitation),
                     ),
                   );
                 },
@@ -218,9 +229,7 @@ class _InvitationsPageState extends State<InvitationsPage>
                   ),
                   child: Row(
                     children: [
-                      SizedBox(
-                        width: 20,
-                      ),
+                      SizedBox(width: 20),
                       Container(
                         width: 70,
                         height: 70,
@@ -267,21 +276,15 @@ class _InvitationsPageState extends State<InvitationsPage>
                                       ),
                                     ),
                                   ),
-                                  SizedBox(
-                                    width: 20,
-                                  ),
+                                  SizedBox(width: 20),
                                 ],
                               ),
                             ),
                             Text(
                               invitation['buddies'],
-                              style: TextStyle(
-                                fontStyle: FontStyle.italic,
-                              ),
+                              style: TextStyle(fontStyle: FontStyle.italic),
                             ),
-                            SizedBox(
-                              height: 20,
-                            )
+                            SizedBox(height: 20),
                           ],
                         ),
                       ),
@@ -297,67 +300,175 @@ class _InvitationsPageState extends State<InvitationsPage>
   }
 }
 
-class InvProfile extends StatelessWidget {
-  const InvProfile({super.key});
+class RecievedInvitation extends StatelessWidget {
+  final Map<String, dynamic> invitation;
+
+  const RecievedInvitation({required this.invitation, Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(backgroundColor: Colors.white, title: Text('Profile')),
-      body: Column(
-        children: [
-          SizedBox(
-            height: 40,
-          ),
-          Container(
-            width: double.infinity,
-            height: 300,
-            decoration: BoxDecoration(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        title: Text('Received Invitation',
+            style: GoogleFonts.comfortaa(color: Colors.black)),
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizedBox(height: 20),
+            Container(
+              width: 200,
+              height: 200,
+              decoration: BoxDecoration(
                 color: Colors.grey.shade300,
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(30),
-                  bottomRight: Radius.circular(30),
-                )),
-            child: Image.asset('assets/images/profile-img.png'),
-          ),
-          SizedBox(
-            height: 40,
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
+                borderRadius: BorderRadius.circular(200),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(200),
+                child: Image.asset('assets/images/profile-img.png',
+                    fit: BoxFit.cover),
+              ),
+            ),
+            SizedBox(height: 20),
+            Text(
+              invitation['name'],
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 20,
+                color: Colors.black,
+              ),
+            ),
+            SizedBox(height: 20),
+            const Row(
+              children: [
+                Text('Invitation Option',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16))
+              ],
+            ),
+            buildInfoContainer(invitation['details'], Icons.info),
+            const Row(
+              children: [
+                Text('Place',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16))
+              ],
+            ),
+            buildInfoContainer(invitation['place'], Icons.place),
+            const Row(
+              children: [
+                Text('Date & Time',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16))
+              ],
+            ),
+            Row(
+              children: [
+                buildDateContainer(invitation['date']),
+                SizedBox(width: 20,),
+                buildTimeContainer(invitation['time']),
+              ],
+            ),
+            const Row(
+              children: [
+                Text('Notes',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16))
+              ],
+            ),
+            buildInfoContainer(invitation['notes'], Icons.description),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildInfoContainer(String value, IconData icon) {
+  return Container(
+    margin: const EdgeInsets.symmetric(vertical: 10.0),
+    padding: const EdgeInsets.all(15.0),
+    decoration: BoxDecoration(
+      color: Colors.grey.shade200,
+      borderRadius: BorderRadius.circular(10),
+    ),
+    child: Row(
+      children: [
+        Icon(icon, color: Colors.black),
+        SizedBox(width: 10),
+        Expanded(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Salim Salim',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
+                  value,
+                  style: const TextStyle(
                     color: Colors.black,
+                    fontSize: 16,
                   ),
-                ),
-                Spacer(),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => InvitePage(),
-                      ),
-                    );
-                  },
-                  child: Container(
-                    width: 70,
-                    height: 30,
-                    decoration: BoxDecoration(color: Colors.yellow.shade600),
-                    child: Center(
-                      child: Text('invite'),
-                    ),
-                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ],
             ),
-          )
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+  Widget buildDateContainer(String date) {
+    return Container(
+      width: 160,
+      margin: const EdgeInsets.symmetric(vertical: 10.0),
+      padding: const EdgeInsets.all(15.0),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.calendar_today, color: Colors.black),
+          SizedBox(width: 10),
+          Text(
+            date,
+            style: TextStyle(
+              color: Colors.black,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildTimeContainer(String time) {
+    return Container(
+      width: 173,
+      margin: const EdgeInsets.symmetric(vertical: 10.0),
+      padding: const EdgeInsets.all(15.0),
+      decoration: BoxDecoration(
+        color: Colors.grey.shade200,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.timer, color: Colors.black),
+          SizedBox(width: 10),
+          Text(
+            time,
+            style: TextStyle(
+              color: Colors.black,
+            ),
+          ),
         ],
       ),
     );
@@ -1065,364 +1176,6 @@ class _InvitationDetailsPageState extends State<InvitationDetailsPage> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class InvitePage extends StatefulWidget {
-  const InvitePage({super.key});
-
-  @override
-  State<InvitePage> createState() => _InvitePageState();
-}
-
-class _InvitePageState extends State<InvitePage> {
-  bool _isPayForHookapp = false;
-  bool _isPayForFood = false;
-  bool _isPayYourOwn = false;
-
-  String _selectedPlace = 'Elysee Palace Cafe';
-  DateTime _selectedDate = DateTime.now();
-  TimeOfDay _selectedTime = TimeOfDay.now();
-  TextEditingController _messageController = TextEditingController();
-
-  List<String> _places = [
-    'Elysee Palace Cafe',
-    'Mazaj Restaurant',
-    'Chillax Cafe',
-    'Shisha & Grill',
-    'Aroma',
-    'Hollywood Cafe Zahle',
-    'Elie\'s Yard',
-    'Cafe Najjar',
-  ];
-
-  void _selectCheckbox(int index) {
-    setState(() {
-      _isPayForHookapp = index == 0;
-      _isPayForFood = index == 1;
-      _isPayYourOwn = index == 2;
-    });
-  }
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: _selectedDate,
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2101),
-    );
-    if (picked != null && picked != _selectedDate) {
-      setState(() {
-        _selectedDate = picked;
-      });
-    }
-  }
-
-  Future<void> _selectTime(BuildContext context) async {
-    final TimeOfDay? picked = await showTimePicker(
-      context: context,
-      initialTime: _selectedTime,
-    );
-    if (picked != null && picked != _selectedTime) {
-      setState(() {
-        _selectedTime = picked;
-      });
-    }
-  }
-
-  void _showPlacePicker(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return PlacePicker(
-          places: _places,
-          onPlaceSelected: (String place) {
-            setState(() {
-              _selectedPlace = place;
-            });
-            Navigator.pop(context);
-          },
-        );
-      },
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey.shade200,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Text(
-          'invite',
-          style: GoogleFonts.comfortaa(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            SizedBox(height: 20),
-            Row(
-              children: [
-                const Text(
-                  'I Will Pay For Hookapp',
-                  style: TextStyle(fontSize: 17),
-                ),
-                const Spacer(),
-                Checkbox(
-                  activeColor: Colors.black,
-                  value: _isPayForHookapp,
-                  onChanged: (bool? value) {
-                    _selectCheckbox(0);
-                  },
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                const Text(
-                  'I Will Pay For Food',
-                  style: TextStyle(fontSize: 17),
-                ),
-                Spacer(),
-                Checkbox(
-                  activeColor: Colors.black,
-                  value: _isPayForFood,
-                  onChanged: (bool? value) {
-                    _selectCheckbox(1);
-                  },
-                ),
-              ],
-            ),
-            Row(
-              children: [
-               const Text(
-                  'You Will Pay For Your Own Hooka &\nFood',
-                  style: TextStyle(fontSize: 17),
-                ),
-                Spacer(),
-                Checkbox(
-                  activeColor: Colors.black,
-                  value: _isPayYourOwn,
-                  onChanged: (bool? value) {
-                    _selectCheckbox(2);
-                  },
-                ),
-              ],
-            ),
-            SizedBox(height: 40),
-            const Padding(
-              padding: EdgeInsets.only(left: 10),
-              child: Row(
-                children: [
-                  Text('Choose a place' , style: TextStyle(fontWeight: FontWeight.bold , fontSize: 15),),
-                ],
-              ),
-            ),
-            SizedBox(height: 10,),
-            GestureDetector(
-              onTap: () => _showPlacePicker(context),
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                decoration: BoxDecoration(
-                  // color: Colors.grey.shade200,
-                  borderRadius: BorderRadius.circular(5),
-                  border: Border.all(color: Colors.grey.shade600),
-                ),
-                child: Row(
-                  children: [
-                    Text(
-                      '$_selectedPlace',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                    Spacer(),
-                    Icon(Icons.arrow_drop_down, color: Colors.grey.shade600),
-                  ],
-                ),
-              ),
-            ),
-           const SizedBox(height: 30),
-             const Padding(
-              padding: const EdgeInsets.only(left: 10),
-              child: Row(
-                children: [
-                  Text('Choose date time' , style: TextStyle(fontWeight: FontWeight.bold , fontSize: 15),),
-                ],
-              ),
-            ),
-           const SizedBox(height: 20),
-
-            GestureDetector(
-              onTap: () => _selectDate(context),
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.calendar_month, color: Colors.black),
-                    SizedBox(width: 20),
-                    Text(
-                      '${_selectedDate.toLocal()}'.split(' ')[0],
-                      style: TextStyle(color: Colors.black),
-                    ),
-                    Spacer(),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-            GestureDetector(
-              onTap: () => _selectTime(context),
-              child: Container(
-                padding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.timer, color: Colors.black),
-                    SizedBox(width: 20),
-                    Text(
-                      '${_selectedTime.format(context)}',
-                      style: TextStyle(color: Colors.black),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(height: 20),
-            TextField(
-              controller: _messageController,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  borderSide: BorderSide.none,
-                ),
-                hintText: 'write message',
-                hintStyle: TextStyle(color: Colors.black , fontSize: 13),
-                filled: true,
-                fillColor: Colors.grey.shade300,
-              ),
-              maxLines: 3,
-            ),
-            SizedBox(height: 20),
-           GestureDetector(
-              onTap: (){
-                  Navigator.of(context).push(
-                      MaterialPageRoute(builder: (context) => BuddiesPage()));
-              },
-              child: Container(
-                width: double.infinity,
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Colors.yellow.shade600,
-                  borderRadius: BorderRadius.circular(10)
-                ),
-             
-                child: Center(
-                  child: Text(
-                    'Send',
-                    style: GoogleFonts.comfortaa(
-                      color: Colors.black,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 18
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class PlacePicker extends StatefulWidget {
-  final List<String> places;
-  final ValueChanged<String> onPlaceSelected;
-
-  const PlacePicker(
-      {required this.places, required this.onPlaceSelected, Key? key})
-      : super(key: key);
-
-  @override
-  _PlacePickerState createState() => _PlacePickerState();
-}
-
-class _PlacePickerState extends State<PlacePicker> {
-  List<String> _filteredPlaces = [];
-  TextEditingController _searchController = TextEditingController();
-
-  @override
-  void initState() {
-    super.initState();
-    _filteredPlaces = widget.places;
-    _searchController.addListener(_filterPlaces);
-  }
-
-  void _filterPlaces() {
-    setState(() {
-      _filteredPlaces = widget.places
-          .where((place) => place
-              .toLowerCase()
-              .contains(_searchController.text.toLowerCase()))
-          .toList();
-    });
-  }
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(height: 20),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: TextField(
-            controller: _searchController,
-            decoration: InputDecoration(
-              fillColor: Colors.grey,
-              focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: Colors.black),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              labelStyle: TextStyle(color: Colors.black),
-              labelText: 'Search places',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(7),
-              ),
-            ),
-          ),
-        ),
-        Expanded(
-          child: _filteredPlaces.isEmpty
-              ? Center(child: Text('No data found'))
-              : ListView.builder(
-                  itemCount: _filteredPlaces.length,
-                  itemBuilder: (context, index) {
-                    return ListTile(
-                      title: Text(_filteredPlaces[index]),
-                      onTap: () {
-                        widget.onPlaceSelected(_filteredPlaces[index]);
-                      },
-                    );
-                  },
-                ),
-        ),
-      ],
     );
   }
 }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hooka_app/otp-verification-signuppage.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class SignUp extends StatefulWidget {
   const SignUp({Key? key}) : super(key: key);
@@ -11,11 +14,82 @@ class SignUp extends StatefulWidget {
 class _SignUpState extends State<SignUp> {
   bool _isObscure = true;
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _isLoading = false;
+
+Future<void> _signUp() async {
+  if (_formKey.currentState!.validate()) {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final String firstName = _firstNameController.text;
+    final String lastName = _lastNameController.text;
+    final String email = _emailController.text;
+    final String password = _passwordController.text;
+
+    final String formData = 'FirstName=${Uri.encodeComponent(firstName)}&'
+                            'LastName=${Uri.encodeComponent(lastName)}&'
+                            'Email=${Uri.encodeComponent(email)}&'
+                            'Password=${Uri.encodeComponent(password)}';
+
+    final response = await http.post(
+      Uri.parse('https://api.hookatimes.com/api/Accounts/SignUp'),
+      headers: <String, String>{
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: formData,
+    );
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    // Debugging information
+    print('FirstName: $firstName');
+    print('LastName: $lastName');
+    print('Email: $email');
+    print('Password: $password');
+
+    print('Status code: ${response.statusCode}');
+    print('Response body: ${response.body}');
+
+    final responseData = jsonDecode(response.body);
+
+    if (response.statusCode == 200) {
+      await http.post(
+      Uri.parse('https://api.hookatimes.com/api/Accounts/GenerateOtp'),
+      headers: <String, String>{
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: 'Email=${Uri.encodeComponent(email)}',
+      );
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => OTPVerificationSignupPage(
+          email: email,
+        )
+        ),
+      );
+      
+    } else {
+      final String errorMessage = responseData['errorMessage'] ?? 'Sign up failed';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage)),
+      );
+    }
+  }
+}
+
+
+
 
   @override
   Widget build(BuildContext context) {
-        final double screenHeight = MediaQuery.of(context).size.height;
-        final double screenWidth = MediaQuery.of(context).size.width;
+    final double screenHeight = MediaQuery.of(context).size.height;
+    final double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       appBar: AppBar(
@@ -32,11 +106,10 @@ class _SignUpState extends State<SignUp> {
           child: Column(
             children: [
               Container(
-                // height: 240,
                 height: screenHeight * 0.27,
                 width: double.infinity,
                 color: Colors.black,
-                child:  Padding(
+                child: Padding(
                   padding: EdgeInsets.only(left: 5, top: 0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,35 +117,26 @@ class _SignUpState extends State<SignUp> {
                       Text(
                         'Let\'s Get Started',
                         style: GoogleFonts.comfortaa(
-                               color: Colors.white,
+                          color: Colors.white,
                           fontSize: 40,
-                          fontWeight: FontWeight.bold
+                          fontWeight: FontWeight.bold,
                         ),
-                        // style: TextStyle(
-                        //   color: Colors.white,
-                        //   fontSize: 40,
-                        // ),
                       ),
                       SizedBox(height: 15),
                       Text(
                         'Please enter your email and password to\nsignup to HookaApp.',
-                          style: GoogleFonts.openSans(
-                               color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w500
-                          ),
-                        // style: TextStyle(
-                        //     color: Colors.white,
-                        //     fontSize: 18,
-                        //     fontWeight: FontWeight.w500),
+                        style: GoogleFonts.openSans(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ],
                   ),
                 ),
               ),
               Container(
-                // width: 330,
-                width: screenWidth*0.852,
+                width: screenWidth * 0.852,
                 transform: Matrix4.translationValues(0, -80, 0),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
@@ -92,21 +156,15 @@ class _SignUpState extends State<SignUp> {
                   key: _formKey,
                   child: Column(
                     children: [
-                       Row(
+                      Row(
                         children: [
-                           Text(
+                          Text(
                             'Sign up',
                             style: GoogleFonts.lato(
                               color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 25,
-                              
-                                ),
-                            // style: TextStyle(
-                            //     color: Colors.black,
-                            //     fontWeight: FontWeight.bold,
-                            //     fontSize: 25,
-                            //     letterSpacing: 1.5),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 25,
+                            ),
                           ),
                         ],
                       ),
@@ -118,6 +176,7 @@ class _SignUpState extends State<SignUp> {
                       ),
                       const SizedBox(height: 30),
                       TextFormField(
+                        controller: _firstNameController,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'First name Required *';
@@ -153,6 +212,7 @@ class _SignUpState extends State<SignUp> {
                       ),
                       const SizedBox(height: 30),
                       TextFormField(
+                        controller: _lastNameController,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your last name';
@@ -188,9 +248,10 @@ class _SignUpState extends State<SignUp> {
                       ),
                       const SizedBox(height: 30),
                       TextFormField(
+                        controller: _emailController,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Last name Required *';
+                            return 'Email Required *';
                           }
                           return null;
                         },
@@ -223,6 +284,7 @@ class _SignUpState extends State<SignUp> {
                       ),
                       const SizedBox(height: 30),
                       TextFormField(
+                        controller: _passwordController,
                         obscureText: _isObscure,
                         decoration: InputDecoration(
                           errorBorder: OutlineInputBorder(
@@ -236,7 +298,8 @@ class _SignUpState extends State<SignUp> {
                             borderRadius: BorderRadius.circular(5),
                           ),
                           labelText: 'Password',
-                          labelStyle: TextStyle(color: Colors.black , fontSize: 14),
+                          labelStyle:
+                              TextStyle(color: Colors.black, fontSize: 14),
                           hintText: 'Password',
                           enabledBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -259,9 +322,7 @@ class _SignUpState extends State<SignUp> {
                       ),
                       const SizedBox(height: 60),
                       ElevatedButton(
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {}
-                        },
+                        onPressed:_signUp,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.yellow.shade600,
                           shape: RoundedRectangleBorder(
@@ -269,11 +330,15 @@ class _SignUpState extends State<SignUp> {
                           ),
                           minimumSize: const Size(double.infinity, 50),
                         ),
-                        child:  Text(
-                          'SIGN UP',
-                          style: GoogleFonts.poppins(color: Colors.black , fontSize: 18),
-                       
-                        ),
+                        child: _isLoading
+                            ? CircularProgressIndicator(
+                                color: Colors.black,
+                              )
+                            : Text(
+                                'SIGN UP',
+                                style: GoogleFonts.poppins(
+                                    color: Colors.black, fontSize: 18),
+                              ),
                       ),
                       const SizedBox(height: 50),
                       Row(
@@ -299,12 +364,11 @@ class _SignUpState extends State<SignUp> {
                           ),
                         ],
                       ),
-                      SizedBox(height: screenHeight *0.05 - 3,)
+                      SizedBox(height: screenHeight * 0.05 - 3),
                     ],
                   ),
                 ),
               ),
-              
             ],
           ),
         ),
@@ -312,3 +376,4 @@ class _SignUpState extends State<SignUp> {
     );
   }
 }
+

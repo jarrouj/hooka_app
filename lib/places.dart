@@ -8,37 +8,61 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class Cuisine {
-  final String name;
+  final int id;
+  final String title;
 
-  Cuisine({required this.name});
+  Cuisine({
+    required this.id,
+    required this.title,
+  });
 
   factory Cuisine.fromJson(Map<String, dynamic> json) {
-    return Cuisine(name: json['strArea']);
+    return Cuisine(
+      id: json['id'],
+      title: json['title'],
+    );
   }
 }
 
 class Place {
   final int id;
   final String imageUrl;
-  final String title;
+  final String name;
   final String cuisine;
   final String location;
   final double rating;
-  final String description;
-  final String phoneNumber;
-  final String openingHours;
+  final bool isInFavorite;
+  final String longitude;
+  final String latitude;
+  final int distance;
 
   Place({
     required this.id,
     required this.imageUrl,
-    required this.title,
+    required this.name,
     required this.cuisine,
     required this.location,
     required this.rating,
-    required this.description,
-    required this.phoneNumber,
-    required this.openingHours,
+    required this.isInFavorite,
+    required this.longitude,
+    required this.latitude,
+    required this.distance,
   });
+
+  factory Place.fromJson(Map<String, dynamic> json) {
+    return Place(
+      id: json['id'] ?? 0,
+      imageUrl: json['image'] ?? '',
+      name: json['name'] ?? '',
+      cuisine: json['cuisine'] ?? '',
+      location: json['location'] ?? '',
+      rating: (json['rating'] ?? 0).toDouble(),
+      isInFavorite: json['isInFavorite'] ?? false,
+      longitude: json['longitude'] ?? '',
+      latitude: json['latitude'] ?? '',
+      distance: json['distance'] ?? 0,
+    );
+  }
 }
 
 class MainPlacesPage extends StatefulWidget {
@@ -51,40 +75,7 @@ class MainPlacesPage extends StatefulWidget {
 class _MainPlacesPageState extends State<MainPlacesPage> {
   List<Cuisine> cuisines = [];
   String? selectedCuisine;
-
-  List<Place> places = [
-    Place(
-        id: 1,
-        imageUrl: 'assets/images/resta.avif',
-        title: 'Place 1',
-        cuisine: 'Italian',
-        location: 'New York, NY',
-        rating: 2,
-        description: 'The Place Where you Can Chill and Relax',
-        phoneNumber: '76974972',
-        openingHours: '12:00am - 12:00pm'),
-    Place(
-        id: 2,
-        imageUrl: 'assets/images/hookatimeslogo.png',
-        title: 'Place 2',
-        cuisine: 'Mexican',
-        location: 'Los Angeles, CA',
-        rating: 4.0,
-        description: 'The Place Where you Can Chill and Relax',
-        phoneNumber: '76974972',
-        openingHours: '12:00am - 12:00pm'),
-    Place(
-        id: 3,
-        imageUrl: 'assets/images/hookatimeslogo.png',
-        title: 'Place 3',
-        cuisine: 'Chinese',
-        location: 'San Francisco, CA',
-        rating: 2.9,
-        description: 'The Place Where you Can Chill and Relax',
-        phoneNumber: '76974972',
-        openingHours: '12:00am - 12:00pm'),
-  ];
-
+  List<Place> places = [];
   List<Place> filteredPlaces = [];
   List<int> favoriteIds = [];
   bool isLoading = false;
@@ -95,29 +86,52 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
   @override
   void initState() {
     super.initState();
-    filteredPlaces = List.from(places);
     _fetchCuisines();
+    _fetchPlaces();
     _loadFavorites();
   }
 
   Future<void> _fetchCuisines() async {
-    final response = await http.get(
-        Uri.parse('https://www.themealdb.com/api/json/v1/1/list.php?a=list'));
+    final response = await http.get(Uri.parse('https://api.hookatimes.com/api/Cuisines/GetCuisines'));
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
       setState(() {
-        cuisines = (data['meals'] as List)
+        cuisines = (data['data']['data'] as List)
             .map((json) => Cuisine.fromJson(json))
             .toList();
         if (cuisines.isNotEmpty) {
-          cuisines.insert(0, Cuisine(name: 'Cuisines'));
-          selectedCuisine = cuisines.first.name;
+          cuisines.insert(0, Cuisine(id: 0, title: 'Cuisines'));
+          selectedCuisine = cuisines.first.title;
         } else {
           selectedCuisine = null;
         }
       });
     } else {
       throw Exception('Failed to load cuisines');
+    }
+  }
+
+  Future<void> _fetchPlaces() async {
+    setState(() {
+      isLoading = true;
+    });
+    final response = await http.get(Uri.parse('https://api.hookatimes.com/api/Places/GetAllPlaces'));
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      print('Data fetched: $data'); // Debug print to check fetched data
+      setState(() {
+        places = (data['data']['data'] as List)
+            .map((json) => Place.fromJson(json))
+            .toList();
+        filteredPlaces = List.from(places);
+        isLoading = false;
+      });
+    } else {
+      setState(() {
+        isLoading = false;
+      });
+      print('Failed to load places: ${response.reasonPhrase}');
+      throw Exception('Failed to load places');
     }
   }
 
@@ -134,18 +148,18 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
       favoriteIds = savedFavorites.cast<int>();
     });
   }
-void _toggleFavorite(int placeId) {
-  setState(() {
-    if (favoriteIds.contains(placeId)) {
-      favoriteIds.remove(placeId);
-    } else {
-      favoriteIds.add(placeId);
-    }
-    mybox?.put('favoriteIds', favoriteIds);
-    _applyFilters();
-  });
-}
 
+  void _toggleFavorite(int placeId) {
+    setState(() {
+      if (favoriteIds.contains(placeId)) {
+        favoriteIds.remove(placeId);
+      } else {
+        favoriteIds.add(placeId);
+      }
+      mybox?.put('favoriteIds', favoriteIds);
+      _applyFilters();
+    });
+  }
 
   void _sortPlacesByRating() {
     setState(() {
@@ -159,14 +173,13 @@ void _toggleFavorite(int placeId) {
 
     if (searchQuery.isNotEmpty) {
       tempPlaces = tempPlaces.where((place) {
-        return place.title.toLowerCase().contains(searchQuery) ||
+        return place.name.toLowerCase().contains(searchQuery) ||
             place.location.toLowerCase().contains(searchQuery);
       }).toList();
     }
 
     if (showFavoritesOnly) {
-      tempPlaces =
-          tempPlaces.where((place) => favoriteIds.contains(place.id)).toList();
+      tempPlaces = tempPlaces.where((place) => favoriteIds.contains(place.id)).toList();
     }
 
     if (selectedCuisine != null && selectedCuisine != 'Cuisines') {
@@ -186,7 +199,7 @@ void _toggleFavorite(int placeId) {
 
   void _resetFilters() {
     setState(() {
-      selectedCuisine = cuisines.first.name;
+      selectedCuisine = cuisines.first.title;
       isRatingPressed = false;
       showFavoritesOnly = false;
       searchQuery = '';
@@ -215,32 +228,20 @@ void _toggleFavorite(int placeId) {
                 fillColor: Colors.grey.shade100,
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(7),
-                  borderSide: BorderSide(
-                    color: Colors.grey.shade500,
-                  ),
+                  borderSide: BorderSide(color: Colors.grey.shade500),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(7),
-                  borderSide: BorderSide(
-                    color: Colors.yellow.shade600,
-                  ),
+                  borderSide: BorderSide(color: Colors.yellow.shade600),
                 ),
-                prefixIcon: Icon(
-                  Icons.search,
-                  size: 32,
-                  color: Colors.grey.shade500,
-                ),
+                prefixIcon: Icon(Icons.search, size: 32, color: Colors.grey.shade500),
                 hintText: 'Restaurant name...',
-                hintStyle: TextStyle(
-                  color: Colors.grey.shade600,
-                ),
+                hintStyle: TextStyle(color: Colors.grey.shade600),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
-              style: TextStyle(
-                color: Colors.grey.shade800,
-              ),
+              style: TextStyle(color: Colors.grey.shade800),
               onChanged: _filterPlaces,
             ),
           ),
@@ -261,14 +262,9 @@ void _toggleFavorite(int placeId) {
                       });
                     },
                     decoration: InputDecoration(
-                      contentPadding: const EdgeInsets.symmetric(
-                          vertical: 5,
-                          horizontal:
-                              10), // Adjusted padding to center vertically
+                      contentPadding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
                       border: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.grey.shade500,
-                        ),
+                        borderSide: BorderSide(color: Colors.grey.shade500),
                         borderRadius: BorderRadius.circular(5),
                       ),
                       focusedBorder: OutlineInputBorder(
@@ -279,13 +275,10 @@ void _toggleFavorite(int placeId) {
                     items: [
                       for (var cuisine in cuisines)
                         DropdownMenuItem<String>(
-                          value: cuisine.name,
+                          value: cuisine.title,
                           child: Text(
-                            cuisine.name,
-                            style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.black),
+                            cuisine.title,
+                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w400, color: Colors.black),
                           ),
                         ),
                     ],
@@ -298,40 +291,35 @@ void _toggleFavorite(int placeId) {
                 const SizedBox(width: 10),
                 ElevatedButton(
                   style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all(Colors.white),
-                    shape: WidgetStateProperty.all(RoundedRectangleBorder(
+                    backgroundColor: MaterialStateProperty.all(Colors.white),
+                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5),
                       side: BorderSide(color: Colors.grey.shade500),
                     )),
-                    textStyle: WidgetStateProperty.all(const TextStyle(
+                    textStyle: MaterialStateProperty.all(const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
                     )),
-                    minimumSize: WidgetStateProperty.all(Size(80, 35)),
-                    padding: WidgetStateProperty.all(const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 5)),
+                    minimumSize: MaterialStateProperty.all(Size(80, 35)),
+                    padding: MaterialStateProperty.all(const EdgeInsets.symmetric(horizontal: 10, vertical: 5)),
                   ),
                   onPressed: () {
                     // Add your onPressed functionality here
                   },
-                  child: const Text(
-                    'Nearest',
-                    style: TextStyle(color: Colors.black),
-                  ),
+                  child: const Text('Nearest', style: TextStyle(color: Colors.black)),
                 ),
                 const SizedBox(width: 10),
                 ElevatedButton(
                   style: ButtonStyle(
-                    minimumSize: WidgetStateProperty.all(Size(90, 35)),
-                    padding: WidgetStateProperty.all(const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 5)),
-                    backgroundColor: WidgetStateProperty.all(Colors.white),
-                    shape: WidgetStateProperty.all(RoundedRectangleBorder(
+                    minimumSize: MaterialStateProperty.all(Size(90, 35)),
+                    padding: MaterialStateProperty.all(const EdgeInsets.symmetric(horizontal: 10, vertical: 5)),
+                    backgroundColor: MaterialStateProperty.all(Colors.white),
+                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5),
                       side: BorderSide(color: Colors.grey.shade500),
                     )),
-                    textStyle: WidgetStateProperty.all(const TextStyle(
+                    textStyle: MaterialStateProperty.all(const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
@@ -344,25 +332,21 @@ void _toggleFavorite(int placeId) {
                       if (showFavoritesOnly)
                         const Icon(Icons.check, color: Colors.black, size: 10),
                       if (showFavoritesOnly) const SizedBox(width: 5),
-                      const Text(
-                        'Favorites',
-                        style: TextStyle(color: Colors.black),
-                      ),
+                      const Text('Favorites', style: TextStyle(color: Colors.black)),
                     ],
                   ),
                 ),
                 const SizedBox(width: 10),
                 ElevatedButton(
                   style: ButtonStyle(
-                    minimumSize: WidgetStateProperty.all(Size(80, 35)),
-                    padding: WidgetStateProperty.all(const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 5)),
-                    backgroundColor: WidgetStateProperty.all(Colors.white),
-                    shape: WidgetStateProperty.all(RoundedRectangleBorder(
+                    minimumSize: MaterialStateProperty.all(Size(80, 35)),
+                    padding: MaterialStateProperty.all(const EdgeInsets.symmetric(horizontal: 10, vertical: 5)),
+                    backgroundColor: MaterialStateProperty.all(Colors.white),
+                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(5),
                       side: BorderSide(color: Colors.grey.shade500),
                     )),
-                    textStyle: WidgetStateProperty.all(const TextStyle(
+                    textStyle: MaterialStateProperty.all(const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.w600,
                       fontSize: 13,
@@ -375,10 +359,7 @@ void _toggleFavorite(int placeId) {
                       if (isRatingPressed)
                         const Icon(Icons.check, color: Colors.black, size: 10),
                       const SizedBox(width: 5),
-                      const Text(
-                        'Rating',
-                        style: TextStyle(color: Colors.black),
-                      ),
+                      const Text('Rating', style: TextStyle(color: Colors.black)),
                     ],
                   ),
                 ),
@@ -386,9 +367,7 @@ void _toggleFavorite(int placeId) {
               ],
             ),
           ),
-          const SizedBox(
-            height: 20,
-          ),
+          const SizedBox(height: 20),
           const Padding(
             padding: EdgeInsets.only(left: 10),
             child: Row(
@@ -406,10 +385,7 @@ void _toggleFavorite(int placeId) {
                 ? const Center(child: CircularProgressIndicator())
                 : filteredPlaces.isEmpty
                     ? const Center(
-                        child: Text(
-                          'No restaurants found',
-                          style: TextStyle(fontSize: 20),
-                        ),
+                        child: Text('No restaurants found', style: TextStyle(fontSize: 20)),
                       )
                     : ListView.builder(
                         itemCount: filteredPlaces.length,
@@ -437,22 +413,29 @@ void _toggleFavorite(int placeId) {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) =>
-                                            PlacesDetailPage(place: place,
-                                                      onFavoriteToggle: _loadFavorites, // Pass the callback to refresh favorites
-
-                                            ),
+                                        builder: (context) => PlacesDetailPage(
+                                          placeId: place.id,
+                                          onFavoriteToggle: _loadFavorites,
+                                        ),
                                       ),
                                     );
                                   },
                                   child: ClipRRect(
-                                    borderRadius: const BorderRadius.vertical(
-                                        top: Radius.circular(20)),
-                                    child: Image.asset(
-                                      place.imageUrl,
+                                    borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                                    child: FadeInImage.assetNetwork(
+                                      placeholder: 'assets/images/hookatimeslogo.png',
+                                      image: place.imageUrl,
                                       height: 200,
                                       width: double.infinity,
                                       fit: BoxFit.cover,
+                                      imageErrorBuilder: (context, error, stackTrace) {
+                                        return Image.asset(
+                                          'assets/images/hookatimeslogo.png',
+                                          height: 200,
+                                          width: double.infinity,
+                                          fit: BoxFit.cover,
+                                        );
+                                      },
                                     ),
                                   ),
                                 ),
@@ -464,21 +447,17 @@ void _toggleFavorite(int placeId) {
                                       Row(
                                         children: [
                                           Text(
-                                            place.title,
-                                            style: const TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.bold),
+                                            place.name,
+                                            style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                                           ),
                                           const Spacer(),
                                           Padding(
-                                            padding:
-                                                const EdgeInsets.only(right: 13),
+                                            padding: const EdgeInsets.only(right: 13),
                                             child: Container(
                                               width: 50,
                                               height: 25,
                                               decoration: BoxDecoration(
-                                                borderRadius:
-                                                    BorderRadius.circular(5),
+                                                borderRadius: BorderRadius.circular(5),
                                                 color: place.rating > 4
                                                     ? Colors.green.shade700
                                                     : place.rating >= 3
@@ -491,14 +470,9 @@ void _toggleFavorite(int placeId) {
                                                   const SizedBox(width: 5),
                                                   Text(
                                                     place.rating.toString(),
-                                                    style: const TextStyle(
-                                                        fontSize: 16,
-                                                        color: Colors.white),
+                                                    style: const TextStyle(fontSize: 16, color: Colors.white),
                                                   ),
-                                                  // const SizedBox(width: 5),
-                                                  const Icon(Icons.star,
-                                                      color: Colors.white,
-                                                      size: 10),
+                                                  const Icon(Icons.star, color: Colors.white, size: 10),
                                                 ],
                                               ),
                                             ),
@@ -510,16 +484,13 @@ void _toggleFavorite(int placeId) {
                                         children: [
                                           Text(
                                             place.cuisine,
-                                            style: TextStyle(
-                                                fontSize: 14,
-                                                color: Colors.grey.shade800),
+                                            style: TextStyle(fontSize: 14, color: Colors.grey.shade800),
                                           ),
                                           const Spacer(),
                                           GestureDetector(
                                             onTap: () => _toggleFavorite(place.id),
                                             child: Padding(
-                                              padding:
-                                                  const EdgeInsets.only(right: 22),
+                                              padding: const EdgeInsets.only(right: 22),
                                               child: Icon(
                                                 favoriteIds.contains(place.id)
                                                     ? Icons.favorite
@@ -533,10 +504,7 @@ void _toggleFavorite(int placeId) {
                                       ),
                                       Text(
                                         place.location,
-                                        style: const TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey,
-                                            fontStyle: FontStyle.italic),
+                                        style: const TextStyle(fontSize: 12, color: Colors.grey, fontStyle: FontStyle.italic),
                                       ),
                                       const SizedBox(height: 20),
                                     ],
@@ -553,6 +521,7 @@ void _toggleFavorite(int placeId) {
     );
   }
 }
+
 
 
 

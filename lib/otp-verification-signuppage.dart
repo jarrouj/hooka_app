@@ -2,22 +2,26 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hooka_app/main.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-class OTPVerificationPage extends StatefulWidget {
+class OTPVerificationSignupPage extends StatefulWidget {
   final String email;
 
-  OTPVerificationPage({required this.email});
+  OTPVerificationSignupPage({required this.email});
 
   @override
-  _OTPVerificationPageState createState() => _OTPVerificationPageState();
+  _OTPVerificationSignupPageState createState() => _OTPVerificationSignupPageState();
 }
 
-class _OTPVerificationPageState extends State<OTPVerificationPage> {
+class _OTPVerificationSignupPageState extends State<OTPVerificationSignupPage> {
   late List<FocusNode> _focusNodes;
   late List<TextEditingController> _controllers;
   late List<String> _otpValues;
   late List<bool> _hasFocus;
   bool _showError = false;
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -92,6 +96,42 @@ class _OTPVerificationPageState extends State<OTPVerificationPage> {
     }
   }
 
+  Future<void> _confirmOtp(String otp, String email) async {
+    setState(() {
+      _isLoading = true;
+    });
+
+    final response = await http.post(
+      Uri.parse('https://api.hookatimes.com/api/Accounts/ConfirmOtp'),
+      headers: <String, String>{
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: 'Email=$email&Otp=$otp',
+    );
+
+    setState(() {
+      _isLoading = false;
+    });
+
+    final responseData = jsonDecode(response.body);
+
+    // Debugging information
+    print('Otp: $otp');
+    print('Email: $email');
+    print('Response: ${response.body}');
+
+    if (responseData['statusCode'] == 200) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => MyHomePage()), // Replace with your desired page
+      );
+    } else {
+      final String errorMessage = responseData['data']['message'] ?? 'OTP verification failed';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage)),
+      );
+    }
+  }
+
   void _verifyOTP() {
     if (_otpValues.any((element) => element.isEmpty)) {
       setState(() {
@@ -101,10 +141,29 @@ class _OTPVerificationPageState extends State<OTPVerificationPage> {
       setState(() {
         _showError = false;
       });
-      // Add navigation to the new page here
-      Navigator.of(context).push(MaterialPageRoute(
-        builder: (context) => ForgotPasswordPage(),
-      ));
+      String otp = _otpValues.join('');
+      _confirmOtp(otp, widget.email);
+    }
+  }
+
+  Future<void> _resendOtp(String email) async {
+    final response = await http.post(
+      Uri.parse('https://api.hookatimes.com/api/Accounts/ResendOtp'),
+      headers: <String, String>{
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: 'Email=$email',
+    );
+
+    final responseData = jsonDecode(response.body);
+
+    if (responseData['statusCode'] == 200) {
+      _showOverlaySnackBar(context, 'Your code has been resent');
+    } else {
+      final String errorMessage = responseData['data']['message'] ?? 'Failed to resend OTP';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage)),
+      );
     }
   }
 
@@ -130,7 +189,7 @@ class _OTPVerificationPageState extends State<OTPVerificationPage> {
                 style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
-                    fontSize: 15),
+                    fontSize: 13),
               ),
             ),
           ),
@@ -204,10 +263,26 @@ class _OTPVerificationPageState extends State<OTPVerificationPage> {
                 ),
               ),
             SizedBox(height: 60),
+            ElevatedButton(
+              onPressed: _isLoading ? null : _verifyOTP,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.yellow.shade600,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                minimumSize: Size(double.infinity, 50),
+              ),
+              child: _isLoading
+                  ? CircularProgressIndicator(color: Colors.black)
+                  : Text(
+                      'VERIFY',
+                      style: TextStyle(color: Colors.black, fontSize: 18),
+                    ),
+            ),
+            SizedBox(height: 20),
             TextButton(
               onPressed: () {
-                // Resend OTP logic
-                _showOverlaySnackBar(context, 'Your code has been sent');
+                _resendOtp(widget.email);
               },
               child: RichText(
                 text: TextSpan(
@@ -227,24 +302,8 @@ class _OTPVerificationPageState extends State<OTPVerificationPage> {
               ),
             ),
             SizedBox(height: 30),
-            ElevatedButton(
-              onPressed: _verifyOTP,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.yellow.shade600,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                minimumSize: Size(double.infinity, 50),
-              ),
-              child: Text(
-                'VERIFY',
-                style: TextStyle(color: Colors.black, fontSize: 18),
-              ),
-            ),
-            SizedBox(height: 20),
             TextButton(
               onPressed: () {
-                // Clear OTP fields logic
                 _controllers.forEach((controller) => controller.clear());
                 _otpValues = List.generate(4, (index) => '');
                 FocusScope.of(context).requestFocus(_focusNodes[0]);
@@ -333,102 +392,4 @@ class _OTPVerificationPageState extends State<OTPVerificationPage> {
   }
 }
 
-class ForgotPasswordPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 245, 242, 242),
-      appBar: AppBar(
-        title: Text(
-          'Forgot Password',
-          style: GoogleFonts.comfortaa(),
-        ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(height: 20),
-            Row(
-              children: [
-                Text(
-                  'Enter Your New Password',
-                  style: GoogleFonts.comfortaa(
-                      fontSize: 20, fontWeight: FontWeight.w500),
-                ),
-              ],
-            ),
-            SizedBox(height: 50),
-            TextField(
-              decoration: InputDecoration(
-                filled: true, // Set the fill color
-                fillColor: Colors.white, // Set the fill color to white
-                labelText: 'New Password',
-                labelStyle: GoogleFonts.comfortaa(fontSize: 13 , color: Colors.black),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black, width: 2.0),
-                  borderRadius: BorderRadius.circular(12), 
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide:
-                      BorderSide.none, // Remove the border when not focused
-                  borderRadius: BorderRadius.circular(12), 
-                ),
-              ),
-              // obscureText: true,
-            ),
-            SizedBox(height: 20),
-            TextField(
-              decoration: InputDecoration(
-                filled: true, // Set the fill color
-                fillColor: Colors.white, // Set the fill color to white
-                labelText: 'Confirm Password',
-                labelStyle: GoogleFonts.comfortaa(fontSize: 13 , color: Colors.black),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black, width: 2.0),
-                  borderRadius: BorderRadius.circular(12), 
-                ),
-                enabledBorder: OutlineInputBorder(
-                  borderSide:
-                      BorderSide.none, // Remove the border when not focused
-                  borderRadius: BorderRadius.circular(12), 
-                ),
-              ),
-              // obscureText: true,
-            ),
-            SizedBox(height: 60),
-           Padding(
-             padding: const EdgeInsets.symmetric(horizontal: 10),
-             child: Container(
-              width: double.infinity,
-               decoration: BoxDecoration(
-                 color: Colors.yellow.shade600,
-                 borderRadius: BorderRadius.circular(10),
-               ),
-               child: InkWell(
-                 onTap: () {
-                   // Save password logic
-                 },
-                 child: Padding(
-                   padding: EdgeInsets.symmetric(vertical: 15),
-                   child: Center(
-                     child: Text(
-                       'Save Password',
-                       style: GoogleFonts.comfortaa(
-              color: Colors.black,
-              fontWeight: FontWeight.w600,
-              fontSize: 18
-                       ),
-                     ),
-                   ),
-                 ),
-               ),
-             ),
-           ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+
