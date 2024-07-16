@@ -28,6 +28,8 @@ Future<Box> openHiveBox(String boxName) async {
   return await Hive.openBox(boxName);
 }
 
+
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -36,13 +38,13 @@ Future<void> main() async {
   Hive.registerAdapter(ProductAdapter());
   await Hive.openBox<Product>('productsBox');
   await Hive.openBox('userBox');
-    await Hive.openBox('userInfoBox');
-    await Hive.openBox('aboutBox');
-    await Hive.openBox('interestBox');
+  await Hive.openBox('userInfoBox');
+  await Hive.openBox('aboutBox');
+  await Hive.openBox('interestBox');
   await Hive.openBox<Product>('cartBox2');
-  mybox = await openHiveBox('Favorite');
-    await Hive.openBox('InvitationFavorites');
-
+  await Hive.openBox('Favorite');
+  await Hive.openBox('InvitationFavorites');
+  await Hive.openBox('myBox');
 
   runApp(MyApp());
 }
@@ -183,6 +185,42 @@ class _MenuScreenState extends State<MenuScreen> {
     });
   }
 
+  Future<String?> _getToken() async {
+  var box = await Hive.openBox('myBox');
+  return box.get('token');
+}
+
+  
+void _showLogoutDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Are You Sure Do You Want To Logout?'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop(); // Close the dialog
+            },
+            child: Text('No'),
+          ),
+          TextButton(
+            onPressed: () async {
+              var box = await Hive.openBox('myBox');
+              await box.delete('token'); // Clear the token from Hive
+              Navigator.of(context).pop(); // Close the dialog
+              // Optionally, navigate to the login page or refresh the state
+            },
+            child: Text('Yes'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+
+
   @override
   void initState() {
     super.initState();
@@ -209,8 +247,8 @@ class _MenuScreenState extends State<MenuScreen> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => ProfilePage(
-                            onProfileUpdate: _loadUserName,
-                            data: [],
+                            // onProfileUpdate: _loadUserName,
+                            // data: [],
                           ),
                         ),
                       );
@@ -276,23 +314,44 @@ class _MenuScreenState extends State<MenuScreen> {
             const SizedBox(
               height: 30,
             ),
-            GestureDetector(
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const LoginPage()),
-              ),
-              child: ListTile(
-                leading: Icon(
-                  Icons.logout,
-                  color: Colors.yellow.shade600,
-                ),
-                title: Text(
-                  'Log in',
-                  style: TextStyle(
-                      color: Colors.white, fontWeight: FontWeight.bold),
-                ),
-              ),
-            ),
+           FutureBuilder<String?>(
+  future: _getToken(),
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return CircularProgressIndicator();
+    }
+
+    final token = snapshot.data;
+
+    return GestureDetector(
+      onTap: () {
+        if (token == null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginPage()),
+          );
+        } else {
+          _showLogoutDialog(context);
+        }
+      },
+      child: ListTile(
+        leading: Icon(
+          token == null ? Icons.login : Icons.logout,
+          color: Colors.yellow.shade600,
+        ),
+        title: Text(
+          token == null ? 'Log in' : 'Log out',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  },
+),
+
+
           ],
         ),
       ),
@@ -310,13 +369,12 @@ class ContentPage extends StatefulWidget {
 class _ContentPageState extends State<ContentPage> {
 
   Future<void> _goToCart(BuildContext context) async {
-    final box = await Hive.openBox<Product>('cartBox2');
-    List<Product> cartItems = box.values.toList();
+  
 
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CartPage(cartItems: cartItems),
+        builder: (context) => CartPage(productIds: [],),
       ),
     );
   }

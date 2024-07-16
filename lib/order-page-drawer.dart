@@ -3,23 +3,53 @@ import 'package:flutter/material.dart';
 import 'package:flutter_zoom_drawer/flutter_zoom_drawer.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
+import 'package:hooka_app/allpages.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'package:intl/intl.dart';
 
 class OrderPageDrawer extends StatelessWidget {
   const OrderPageDrawer({super.key});
 
+  Future<Map<String, dynamic>> fetchOrders() async {
+    var box = await Hive.openBox('myBox');
+    String? token = box.get('token');
+    final response = await http.get(
+      Uri.parse('https://api.hookatimes.com/api/Orders/GetOrders'),
+      headers: {
+        'Authorization': 'Bearer $token', 
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to load orders');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: Hive.openBox('orderBox3'),
+    return FutureBuilder<Map<String, dynamic>>(
+      future: fetchOrders(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          var orderBox = Hive.box('orderBox3');
-          var orders = orderBox.toMap().entries.toList();
-          var todayDate = DateFormat('dd MMMM yyyy').format(DateTime.now());
+          if (snapshot.hasError) {
+            return Scaffold(
+              body: Center(child: Text('Error: ${snapshot.error}')),
+            );
+          }
 
-          var currentOrders = orders.where((order) {
-            return order.value['date'] == todayDate;
+          var data = snapshot.data?['data']['data'];
+          var currentOrders = data['currentOrders'];
+          var allOrders = data['allOrders'];
+
+          // Filter current orders for "Pending" status and today's date
+          var today = DateFormat('d MMMM, yyyy').format(DateTime.now());
+          var filteredCurrentOrders = currentOrders.where((order) {
+            var orderDate = DateFormat('d MMMM, yyyy').parse(order['date']);
+            var todayDate = DateFormat('d MMMM, yyyy').parse(today);
+            return order['status'] == 'Pending' && orderDate == todayDate;
           }).toList();
 
           return DefaultTabController(
@@ -47,7 +77,7 @@ class OrderPageDrawer extends StatelessWidget {
                   preferredSize: const Size.fromHeight(kToolbarHeight),
                   child: Material(
                     color: Colors.grey.shade100,
-                    child:  TabBar(
+                    child: TabBar(
                       padding: const EdgeInsets.only(top: 15),
                       indicatorPadding: const EdgeInsets.symmetric(horizontal: 20),
                       unselectedLabelColor: Colors.grey,
@@ -55,9 +85,9 @@ class OrderPageDrawer extends StatelessWidget {
                       indicatorSize: TabBarIndicatorSize.tab,
                       indicatorColor: Colors.black,
                       labelStyle: GoogleFonts.comfortaa(
-                        fontWeight: FontWeight.w800
+                        fontWeight: FontWeight.w800,
                       ),
-                      tabs: [
+                      tabs: const [
                         Tab(text: "Current"),
                         Tab(text: "All"),
                       ],
@@ -67,15 +97,15 @@ class OrderPageDrawer extends StatelessWidget {
               ),
               body: TabBarView(
                 children: [
-                  OrderListView(orders: currentOrders),
-                  OrderListView(orders: orders),
+                  OrderListView(orders: filteredCurrentOrders),
+                  OrderListView(orders: allOrders, sortByDate: true),
                 ],
               ),
             ),
           );
         } else {
           return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+            body: Center(child: LoadingAllpages()),
           );
         }
       },
@@ -84,21 +114,28 @@ class OrderPageDrawer extends StatelessWidget {
 }
 
 class OrderListView extends StatelessWidget {
-  final List<MapEntry<dynamic, dynamic>> orders;
+  final List<dynamic> orders;
+  final bool sortByDate;
 
-  const OrderListView({super.key, required this.orders});
+  const OrderListView({super.key, required this.orders, this.sortByDate = false});
 
   @override
   Widget build(BuildContext context) {
-    // Sort orders by date in descending order
-    var sortedOrders = List<MapEntry<dynamic, dynamic>>.from(orders)
-      ..sort((a, b) => b.value['date'].compareTo(a.value['date']));
+    var sortedOrders = List<Map<String, dynamic>>.from(orders);
+    
+    if (sortByDate) {
+      sortedOrders.sort((a, b) {
+        var dateA = DateFormat('d MMMM, yyyy').parse(a['date']);
+        var dateB = DateFormat('d MMMM, yyyy').parse(b['date']);
+        return dateB.compareTo(dateA); // Descending order
+      });
+    }
 
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 5.0, vertical: 2),
       itemCount: sortedOrders.length,
       itemBuilder: (context, index) {
-        var order = sortedOrders[index].value;
+        var order = sortedOrders[index];
         return Padding(
           padding: const EdgeInsets.only(top: 0),
           child: GestureDetector(
@@ -107,7 +144,7 @@ class OrderListView extends StatelessWidget {
                 context,
                 MaterialPageRoute(
                   builder: (context) =>
-                      OrderDetailsPage(orderId: sortedOrders[index].key),
+                      OrderDetailsPage(orderId: order['id'].toString()),
                 ),
               );
             },
@@ -138,7 +175,7 @@ class OrderListView extends StatelessWidget {
                             shape: BoxShape.circle, color: Colors.yellow),
                         child: Center(
                           child: Text(
-                            '${sortedOrders[index].key.substring(10, 13)}',
+                            '${order['id']}',
                             style: const TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.bold,
@@ -160,7 +197,7 @@ class OrderListView extends StatelessWidget {
                                 fontSize: 15, fontWeight: FontWeight.w500),
                           ),
                           Text(
-                            'Total: \$${order['totalAmount'].toStringAsFixed(0)}',
+                            'Total: \$${order['total'].toStringAsFixed(2)}',
                             style: TextStyle(
                                 fontSize: 13, color: Colors.grey.shade700),
                           ),
@@ -193,15 +230,42 @@ class OrderDetailsPage extends StatelessWidget {
 
   const OrderDetailsPage({super.key, required this.orderId});
 
+  Future<Map<String, dynamic>> fetchOrderDetails() async {
+    var box = await Hive.openBox('myBox');
+    String? token = box.get('token');
+    final response = await http.get(
+      Uri.parse('https://api.hookatimes.com/api/Orders/GetOrder/$orderId'),
+      headers: {
+        'Authorization': 'Bearer $token', 
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to load order details');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
-    return FutureBuilder(
-      future: Hive.openBox('orderBox3'),
+    return FutureBuilder<Map<String, dynamic>>(
+      future: fetchOrderDetails(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
-          var orderBox = Hive.box('orderBox3');
-          var order = orderBox.get(orderId);
+          if (snapshot.hasError) {
+            return Scaffold(
+              appBar: AppBar(
+                title: const Text('Order Details'),
+              ),
+              body: const Center(
+                child: Text('Error loading order details'),
+              ),
+            );
+          }
+
+          var order = snapshot.data?['data']['data'];
 
           if (order == null) {
             return Scaffold(
@@ -278,7 +342,7 @@ class OrderDetailsPage extends StatelessWidget {
                                     ),
                                     child: Center(
                                       child: Text(
-                                        'Id: ${orderId.substring(10, 13)}',
+                                        'Id: $orderId',
                                         style: const TextStyle(
                                           fontSize: 10,
                                           fontWeight: FontWeight.bold,
@@ -330,7 +394,7 @@ class OrderDetailsPage extends StatelessWidget {
                                     ),
                                     child: Center(
                                       child: Text(
-                                        'Total Price: ${order['totalAmount'].toStringAsFixed(0)} \$',
+                                        'Total Price: ${order['total'].toStringAsFixed(2)} \$',
                                         style: const TextStyle(
                                           fontSize: 10,
                                           fontWeight: FontWeight.bold,
@@ -574,10 +638,10 @@ class OrderDetailsPage extends StatelessWidget {
                     const SizedBox(height: 10),
                     ListView.builder(
                       shrinkWrap: true,
-                      physics: NeverScrollableScrollPhysics(),
-                      itemCount: order['products'].length,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: order['items'].length,
                       itemBuilder: (context, index) {
-                        var product = order['products'][index];
+                        var product = order['items'][index];
                         return Padding(
                           padding: const EdgeInsets.only(top: 10),
                           child: Container(
@@ -589,20 +653,20 @@ class OrderDetailsPage extends StatelessWidget {
                               ),
                             ),
                             child: ListTile(
-                              leading: Image.asset(product['image'],
+                              leading: Image.network(product['productImage'],
                                   width: 50, height: 50),
                               title: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    product['name'],
+                                    product['productName'],
                                     style: const TextStyle(
                                       fontSize: 10,
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
                                   Text(
-                                    '(${product['price'].toStringAsFixed(0)}\$/Per Item)',
+                                    '(${product['productPrice'].toStringAsFixed(2)}\$/Per Item)',
                                     style: const TextStyle(
                                       fontSize: 9,
                                       fontWeight: FontWeight.w500,
@@ -612,7 +676,7 @@ class OrderDetailsPage extends StatelessWidget {
                                 ],
                               ),
                               trailing: Text(
-                                'Price: \$${(product['price'] * product['quantity']).toStringAsFixed(0)}',
+                                'Price: \$${(product['productPrice'] * product['quantity']).toStringAsFixed(2)}',
                                 overflow: TextOverflow.visible,
                               ),
                               subtitle: Column(
@@ -633,7 +697,7 @@ class OrderDetailsPage extends StatelessWidget {
           );
         } else {
           return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+            body: Center(child: LoadingAllpages()),
           );
         }
       },

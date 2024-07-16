@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooka_app/address.dart';
@@ -6,126 +7,84 @@ import 'package:hooka_app/education.dart';
 import 'package:hooka_app/experience.dart';
 import 'package:hooka_app/personal.dart';
 import 'package:hooka_app/tab-item.dart';
-import 'package:hive/hive.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:path/path.dart';
+import 'package:hive/hive.dart';
 
 class EditProfilePage extends StatefulWidget {
-  final List<Map<String, dynamic>> basicInfo;
-  final List<Map<String, dynamic>> educations;
-  final List<Map<String, dynamic>> experiences;
-  final List<Map<String, dynamic>> addresses;
+  final Map<String, dynamic> profileData;
 
   const EditProfilePage({
-    required this.basicInfo,
-    required this.educations,
-    required this.experiences,
-    required this.addresses,
-    super.key,
-  });
+    required this.profileData,
+    Key? key,
+  }) : super(key: key);
 
   @override
   _EditProfilePageState createState() => _EditProfilePageState();
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
-  late List<Map<String, dynamic>> basicInfo;
-  late List<Map<String, dynamic>> educations;
-  late List<Map<String, dynamic>> experiences;
-  late List<Map<String, dynamic>> addresses;
+  final _formKey = GlobalKey<FormState>();
+  final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _mobileController = TextEditingController();
+  final TextEditingController _bioController = TextEditingController();
+  final TextEditingController _weightController = TextEditingController();
+  final TextEditingController _heightController = TextEditingController();
+  final TextEditingController _interestController = TextEditingController();
+  final TextEditingController _professionController = TextEditingController();
+  final TextEditingController _hobbiesController = TextEditingController();
+  final TextEditingController _facebookController = TextEditingController();
+  final TextEditingController _instagramController = TextEditingController();
+  final TextEditingController _tiktokController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
+  int? _hairType;
+  int? _eyeColor;
+  int? _gender;
+  int? _maritalStatus;
+  String? _profileImagePath;
+  File? _profileImageFile;
+
+  List<Map<String, dynamic>> educationData = [];
+  List<Map<String, dynamic>> experienceData = [];
+  List<Map<String, dynamic>> addressData = [];
 
   @override
   void initState() {
-  super.initState();
-  basicInfo = List.from(widget.basicInfo);
-  educations = List.from(widget.educations);
-  experiences = List.from(widget.experiences);
-  addresses = List.from(widget.addresses);
-
-  var box = Hive.box('userBox');
-  final profileImageItem = basicInfo.firstWhere(
-    (item) => item['label'] == 'Profile Image',
-    orElse: () => {'label': 'Profile Image', 'value': box.get('profileImage', defaultValue: null)},
-  );
-  if (!basicInfo.contains(profileImageItem)) {
-    basicInfo.add(profileImageItem);
-  }
-}
-
-  void _saveProfile() async {
-    var box = Hive.box('userBox');
-    var userInfoBox = Hive.box('userInfoBox');
-    var aboutBox = Hive.box('aboutBox');
-    var interestBox = Hive.box('interestBox');
-
-    for (var item in basicInfo) {
-      if (item['label'] == 'Date Of Birth') {
-        userInfoBox.put('dateOfBirth', item['value']);
-      } else if (item['label'] == 'Gender') {
-        userInfoBox.put('gender', item['value']);
-      } else if (item['label'] == 'Status') {
-        userInfoBox.put('maritalStatus', item['value']);
-      } else if (item['label'] == 'Height') {
-        userInfoBox.put('height', item['value']);
-      } else if (item['label'] == 'Weight') {
-        userInfoBox.put('weight', item['value']);
-      } else if (item['label'] == 'Body Type') {
-        userInfoBox.put('bodyType', item['value']);
-      } else if (item['label'] == 'Hair') {
-        userInfoBox.put('hairType', item['value']);
-      } else if (item['label'] == 'Eyes') {
-        userInfoBox.put('eyeColor', item['value']);
-      } else if (item['label'] == 'Bio') {
-        aboutBox.put('bio', item['value']);
-      } else if (item['label'] == 'Profession') {
-        aboutBox.put('profession', item['value']);
-      } else if (item['label'] == 'Hobbies') {
-        aboutBox.put('hobbies', item['value']);
-      } else if (item['label'] == 'Interest') {
-        interestBox.put('interest', item['value']);
-      } else if (item['label'] == 'Profile Image') {
-        box.put('profileImage', item['value']);
-      }
-    }
-
-    for (var i = 0; i < educations.length; i++) {
-      box.put('university$i', educations[i]['university']);
-      box.put('educationFrom$i', educations[i]['from']);
-      box.put('educationTo$i', educations[i]['to']);
-      box.put('degree$i', educations[i]['degree']);
-    }
-
-    for (var i = 0; i < experiences.length; i++) {
-      box.put('experienceTitle$i', experiences[i]['title']);
-      box.put('experiencePosition$i', experiences[i]['position']);
-      box.put('experienceFrom$i', experiences[i]['from']);
-      box.put('experienceTo$i', experiences[i]['to']);
-    }
-
-    for (var i = 0; i < addresses.length; i++) {
-      box.put('addressTi$i', addresses[i]['title']);
-      box.put('addressCi$i', addresses[i]['city']);
-      box.put('addressSt$i', addresses[i]['street']);
-      box.put('addressBu$i', addresses[i]['building']);
-    }
-
-    final profileImageItem = basicInfo.firstWhere(
-      (item) => item['label'] == 'Profile Image',
-      orElse: () => {'label': 'Profile Image', 'value': null},
-    );
-
-    Navigator.pop(context, {
-      'basicInfo': basicInfo,
-      'educations': educations,
-      'experiences': experiences,
-      'addresses': addresses,
-      'profileImagePath': profileImageItem['value'],
-    });
+    super.initState();
+    _loadData();
   }
 
-  void _updateBasicInfo(List<Map<String, dynamic>> updatedBasicInfo) {
+  void _loadData() {
+    final data = widget.profileData;
+
     setState(() {
-      basicInfo = updatedBasicInfo;
+      _firstNameController.text = data['firstName'] ?? '';
+      _lastNameController.text = data['lastName'] ?? '';
+      _emailController.text = data['email'] ?? '';
+      _mobileController.text = data['phoneNumber'] ?? '';
+      _dateController.text = data['birthDate'] ?? '';
+      _hairType = 1;
+      _eyeColor = 1;
+      _gender = 1;
+      _maritalStatus = 1;
+      _bioController.text = data['aboutMe'] ?? '';
+      _weightController.text = data['weight']?.toString() ?? '';
+      _heightController.text = data['height']?.toString() ?? '';
+      _interestController.text = data['interests'] ?? '';
+      _professionController.text = data['profession'] ?? '';
+      _hobbiesController.text = data['hobbies'] ?? '';
+      _facebookController.text = data['socialMediaLink1'] ?? '';
+      _instagramController.text = data['socialMediaLink2'] ?? '';
+      _tiktokController.text = data['socialMediaLink3'] ?? '';
+      _profileImagePath = data['imageUrl'];
+      educationData = List<Map<String, dynamic>>.from(data['education'] ?? []);
+      experienceData = List<Map<String, dynamic>>.from(data['experience'] ?? []);
+      addressData = List<Map<String, dynamic>>.from(data['addresses'] ?? []);
     });
   }
 
@@ -133,18 +92,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final pickedFile = await _picker.pickImage(source: source);
 
     if (pickedFile != null) {
-      var box = Hive.box('userBox');
-      box.put('profileImage', pickedFile.path);
-
       setState(() {
-        final profileImageItem = basicInfo.firstWhere(
-          (item) => item['label'] == 'Profile Image',
-          orElse: () => {'label': 'Profile Image', 'value': null},
-        );
-        profileImageItem['value'] = pickedFile.path;
-        if (!basicInfo.contains(profileImageItem)) {
-          basicInfo.add(profileImageItem);
-        }
+        _profileImagePath = pickedFile.path;
+        _profileImageFile = File(pickedFile.path);
       });
     }
   }
@@ -203,41 +153,145 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final profileImageItem = basicInfo.firstWhere(
-      (item) => item['label'] == 'Profile Image',
-      orElse: () => {'label': 'Profile Image', 'value': null},
+  Future<void> _selectDate(BuildContext context) async {
+    DateTime firstDate = DateTime(1970);
+    DateTime lastDate = DateTime(2015, 12, 31);
+    DateTime initialDate = DateTime(2015, 1, 1);
+
+    DateTime? pickedDate;
+
+    await showCupertinoModalPopup<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 250,
+          color: Colors.white,
+          child: Column(
+            children: [
+              Expanded(
+                child: CupertinoTheme(
+                  data: const CupertinoThemeData(
+                    textTheme: CupertinoTextThemeData(
+                      dateTimePickerTextStyle: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
+                  child: CupertinoDatePicker(
+                    mode: CupertinoDatePickerMode.date,
+                    initialDateTime: initialDate,
+                    minimumDate: firstDate,
+                    maximumDate: lastDate,
+                    onDateTimeChanged: (DateTime date) {
+                      pickedDate = date;
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
 
+    if (pickedDate != null && pickedDate != initialDate) {
+      setState(() {
+        _dateController.text =
+            "${pickedDate?.year}-${pickedDate?.month.toString().padLeft(2, '0')}-${pickedDate?.day.toString().padLeft(2, '0')}";
+      });
+    }
+  }
+
+  Future<void> _saveData(BuildContext context) async {
+    Map<String, dynamic> updatedData = {
+      'firstName': _firstNameController.text,
+      'lastName': _lastNameController.text,
+      'email': _emailController.text,
+      'phoneNumber': _mobileController.text,
+      'birthDate': _dateController.text,
+      'hair': 1,
+      'eyes': 1,
+      'gender': 1,
+      'maritalStatus': 1,
+      'aboutMe': _bioController.text,
+      'weight': _weightController.text,
+      'height': _heightController.text,
+      'interests': _interestController.text,
+      'profession': _professionController.text,
+      'hobbies': _hobbiesController.text,
+      'socialMediaLink1': _facebookController.text,
+      'socialMediaLink2': _instagramController.text,
+      'socialMediaLink3': _tiktokController.text,
+    };
+
+    var response = await _updateProfile(updatedData);
+    final responseData = jsonDecode(response.body);
+
+    if (responseData['statusCode'] == 200) {
+      if (mounted) {
+        Navigator.of(context).pop(updatedData);
+      }
+    } else {
+      final String errorMessage = responseData['errorMessage'] ?? 'Failed to update';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage)),
+      );
+    }
+  }
+
+  Future<http.Response> _updateProfile(Map<String, dynamic> updatedData) async {
+    String url = 'https://api.hookatimes.com/api/Accounts/UpdateProfile';
+
+    var box = await Hive.openBox('myBox');
+    String? token = box.get('token');
+
+    if (token == null) {
+      throw Exception('Token is null');
+    }
+
+    var request = http.MultipartRequest('POST', Uri.parse(url));
+    request.fields.addAll(updatedData.map((key, value) => MapEntry(key, value.toString())));
+
+    if (_profileImageFile != null) {
+      request.files.add(await http.MultipartFile.fromPath(
+        'image',
+        _profileImageFile!.path,
+        filename: basename(_profileImageFile!.path),
+      ));
+    }
+
+    request.headers['Authorization'] = 'Bearer $token';
+
+    var response = await request.send();
+    return await http.Response.fromStream(response);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 4,
+      length: 4,  // Set the correct length for the tabs
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.white,
           title: Center(
-            child: Text('Edit Account',
-                style: GoogleFonts.comfortaa(fontSize: 20)),
+            child: Text('Edit Account', style: GoogleFonts.comfortaa(fontSize: 20)),
           ),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios),
             onPressed: () {
-              _saveProfile();
+              _saveData(context);
             },
           ),
           actions: const [
-            SizedBox(
-              width: 45,
-            ),
+            SizedBox(width: 45),
           ],
         ),
         body: Stack(
           children: [
             Column(
               children: [
-                const SizedBox(
-                  height: 20,
-                ),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -249,10 +303,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         borderRadius: BorderRadius.circular(100),
                       ),
                       child: ClipOval(
-                        child: profileImageItem['value'] != null &&
-                                File(profileImageItem['value']).existsSync()
+                        child: _profileImagePath != null
                             ? Image.file(
-                                File(profileImageItem['value']),
+                                File(_profileImagePath!),
                                 fit: BoxFit.cover,
                                 width: 200,
                                 height: 200,
@@ -267,9 +320,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ),
                   ],
                 ),
-                const SizedBox(
-                  height: 30,
-                ),
+                const SizedBox(height: 30),
                 PreferredSize(
                   preferredSize: const Size.fromHeight(40),
                   child: Container(
@@ -287,13 +338,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         dividerColor: Colors.transparent,
                         indicator: BoxDecoration(
                           color: Colors.yellow.shade600,
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(10)),
+                          borderRadius: const BorderRadius.all(Radius.circular(10)),
                         ),
                         labelColor: Colors.black,
                         unselectedLabelColor: Colors.black,
-                        labelPadding:
-                            const EdgeInsets.symmetric(horizontal: 12.0),
+                        labelPadding: const EdgeInsets.symmetric(horizontal: 12.0),
                         tabs: const [
                           TabItem(title: 'Personal'),
                           TabItem(title: 'Education'),
@@ -304,55 +353,59 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ),
                   ),
                 ),
-                const SizedBox(
-                  height: 10,
-                ),
+                const SizedBox(height: 10),
                 Expanded(
                   child: TabBarView(
                     children: [
                       SingleChildScrollView(
                         child: PersonalTab(
-                          data: basicInfo,
-                          onSave: _updateBasicInfo,
-                          saveProfile: _saveProfile,
+                          data: widget.profileData,
+                          onSave: (updatedData) {
+                            setState(() {
+                              widget.profileData.addAll(updatedData);
+                            });
+                          },
+                          saveProfile: (context) {
+                            _saveData(context);
+                          },
                         ),
                       ),
                       EducationTab(
-                        items: educations,
+                        items: educationData,
                         onAdd: (item) {
                           setState(() {
-                            educations.add(item);
+                            educationData.add(item);
                           });
                         },
                         onRemove: (index) {
                           setState(() {
-                            educations.removeAt(index);
+                            educationData.removeAt(index);
                           });
                         },
                       ),
                       ExperienceTab(
-                        items: experiences,
+                        items: experienceData,
                         onAdd: (item) {
                           setState(() {
-                            experiences.add(item);
+                            experienceData.add(item);
                           });
                         },
                         onRemove: (index) {
                           setState(() {
-                            experiences.removeAt(index);
+                            experienceData.removeAt(index);
                           });
                         },
                       ),
                       AddressTab(
-                        items: addresses,
+                        items: addressData,
                         onAdd: (item) {
                           setState(() {
-                            addresses.add(item);
+                            addressData.add(item);
                           });
                         },
                         onRemove: (index) {
                           setState(() {
-                            addresses.removeAt(index);
+                            addressData.removeAt(index);
                           });
                         },
                       ),

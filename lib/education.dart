@@ -1,5 +1,8 @@
+import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:hive/hive.dart';
 
 class EducationTab extends StatefulWidget {
@@ -20,6 +23,7 @@ class EducationTab extends StatefulWidget {
 
 class _EducationTabState extends State<EducationTab> {
   late List<Map<String, dynamic>> educations;
+  final Dio _dio = Dio();
 
   @override
   void initState() {
@@ -27,33 +31,85 @@ class _EducationTabState extends State<EducationTab> {
     educations = List.from(widget.items);
   }
 
-  void _addEducation(Map<String, dynamic> newEducation) async {
-    setState(() {
-      educations.insert(0, newEducation);
-    });
-    var box = await Hive.openBox('userBox');
-    for (int index = 0; index < educations.length; index++) {
-      await box.put('university$index', educations[index]['university']);
-      await box.put('degree$index', educations[index]['degree']);
-      await box.put('educationFrom$index', educations[index]['from']);
-      await box.put('educationTo$index', educations[index]['to']);
-    }
-    widget.onAdd(newEducation);
+ Future<void> _removeEducation(int educationId) async {
+  var box = await Hive.openBox('myBox');
+  String? token = box.get('token');
+
+  if (token == null) {
+    throw Exception('Token is null');
   }
 
-  void _removeEducation(int index) async {
-    if (index >= 0 && index < educations.length) {
+  String url = 'https://api.hookatimes.com/api/Accounts/DeleteEducation';
+
+  try {
+    print('Attempting to delete education with ID: $educationId');
+    print('Current educations: $educations');
+
+    Response response = await _dio.delete(
+      url,
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      ),
+      data: jsonEncode({
+        'EducationId': educationId,  
+      }),
+    );
+
+    if (response.statusCode == 200) {
       setState(() {
-        educations.removeAt(index);
+        final index = educations.indexWhere((item) => item['id'] == educationId);
+        if (index != -1) {
+          educations.removeAt(index);
+          widget.onRemove(educationId);
+        } else {
+          throw Exception('Education ID not found in the list');
+        }
       });
-      var box = await Hive.openBox('userBox');
-      await box.delete('university$index');
-      await box.delete('degree$index');
-      await box.delete('educationFrom$index');
-      await box.delete('educationTo$index');
-      widget.onRemove(index);
+    } else {
+      final errorMessage = response.data['errorMessage'];
+      print('Failed to delete education: $errorMessage');
+      throw Exception('Failed to delete education: $errorMessage');
     }
+  } on DioException catch (e) {
+    if (e.type == DioExceptionType.connectionError) {
+      print('Connection error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to delete education: Connection error'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } else if (e.response != null) {
+      print('Error response: ${e.response?.data}');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to delete education: ${e.response?.data}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } else {
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to delete education: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  } catch (error) {
+    print('Error: $error');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Failed to delete education: $error'),
+        backgroundColor: Colors.red,
+      ),
+    );
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -140,14 +196,14 @@ class _EducationTabState extends State<EducationTab> {
                                         flex: 1,
                                         child: Text(
                                           'Degree:',
-                                          style: const TextStyle(fontSize: 20),
+                                          style: TextStyle(fontSize: 20),
                                         ),
                                       ),
                                       Expanded(
                                         flex: 1,
                                         child: Text(
                                           '${item['degree']}',
-                                          style: const TextStyle(fontSize: 20),
+                                          style: TextStyle(fontSize: 20),
                                         ),
                                       ),
                                     ],
@@ -166,7 +222,7 @@ class _EducationTabState extends State<EducationTab> {
                                       color: Colors.grey.shade300,
                                       child: Center(
                                         child: Text(
-                                          'From : ${item['from']}',
+                                          'From : ${item['studiedFrom']}',
                                           style: TextStyle(
                                               fontSize: screenWidth * 0.042),
                                         ),
@@ -181,7 +237,7 @@ class _EducationTabState extends State<EducationTab> {
                                       color: Colors.grey.shade300,
                                       child: Center(
                                         child: Text(
-                                          'To : ${item['to']}',
+                                          'To : ${item['studiedTo']}',
                                           style: TextStyle(
                                               fontSize: screenWidth * 0.044),
                                         ),
@@ -204,7 +260,9 @@ class _EducationTabState extends State<EducationTab> {
                                     ),
                                     child: GestureDetector(
                                       onTap: () {
-                                        _removeEducation(index);
+                                        print(
+                                            'Education ID to be deleted: ${item['id']}');
+                                        _removeEducation(item['id']);
                                       },
                                       child: const Center(
                                         child: Padding(
@@ -253,7 +311,7 @@ class _EducationTabState extends State<EducationTab> {
               final result = await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => AddEducationPage(),
+                  builder: (context) => AddEducationPage(onAdd: _addEducation),
                 ),
               );
               if (result != null) {
@@ -279,9 +337,41 @@ class _EducationTabState extends State<EducationTab> {
       ],
     );
   }
+
+  Future<void> _addEducation(Map<String, dynamic> newEducation) async {
+  var box = await Hive.openBox('myBox');
+  String? token = box.get('token');
+
+  if (token == null) {
+    throw Exception('Token is null');
+  }
+
+  String url = 'https://api.hookatimes.com/api/Accounts/AddEducation';
+  var request = http.MultipartRequest('POST', Uri.parse(url));
+  request.headers['Authorization'] = 'Bearer $token';
+  request.fields['StudiedFrom'] = newEducation['studiedFrom'];
+  request.fields['Degree'] = newEducation['degree'];
+  request.fields['University'] = newEducation['university'];
+  request.fields['StudiedTo'] = newEducation['studiedTo'];
+
+  var response = await request.send();
+
+  if (response.statusCode == 200) {
+    setState(() {
+      educations.add(newEducation);
+    });
+    widget.onAdd(newEducation);
+  } else {
+    throw Exception('Failed to add education');
+  }
+}
 }
 
 class AddEducationPage extends StatefulWidget {
+  final Function(Map<String, dynamic>) onAdd;
+
+  const AddEducationPage({required this.onAdd});
+
   @override
   _AddEducationPageState createState() => _AddEducationPageState();
 }
@@ -292,11 +382,6 @@ class _AddEducationPageState extends State<AddEducationPage> {
   final TextEditingController _degreeController = TextEditingController();
   final TextEditingController _fromDateController = TextEditingController();
   final TextEditingController _toDateController = TextEditingController();
-
-  List<String> universities = ['Lau', 'Aul', 'Antonine'];
-  List<String> degrees = ['BA'];
-  String _selectedUniversity = 'Lau';
-  String _selectedDegree = 'BA';
 
   Future<void> _selectDate(
       BuildContext context, TextEditingController controller) async {
@@ -346,54 +431,6 @@ class _AddEducationPageState extends State<AddEducationPage> {
     });
   }
 
-  Future<void> _selectFromList(
-      BuildContext context,
-      TextEditingController controller,
-      List<String> items,
-      String initialValue) async {
-    String selectedItem = initialValue;
-    await showModalBottomSheet<String>(
-      context: context,
-      isDismissible: true,
-      builder: (BuildContext context) {
-        return GestureDetector(
-          onTap: () {
-            Navigator.pop(context, selectedItem);
-          },
-          child: Container(
-            height: 250,
-            color: Colors.transparent,
-            child: Column(
-              children: [
-                Expanded(
-                  child: CupertinoPicker(
-                    itemExtent: 32.0,
-                    scrollController: FixedExtentScrollController(
-                      initialItem: items.indexOf(selectedItem),
-                    ),
-                    onSelectedItemChanged: (int index) {
-                      selectedItem = items[index];
-                      setState(() {
-                        controller.text = selectedItem;
-                      });
-                    },
-                    children: items.map((item) {
-                      return Center(child: Text(item));
-                    }).toList(),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-
-    if (selectedItem.isNotEmpty) {
-      controller.text = selectedItem;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -406,68 +443,44 @@ class _AddEducationPageState extends State<AddEducationPage> {
           key: _formKey,
           child: Column(
             children: [
-              GestureDetector(
-                onTap: () => _selectFromList(
-                    context,
-                    _universityController,
-                    universities,
-                    _universityController.text.isNotEmpty
-                        ? _universityController.text
-                        : universities[0]),
-                child: AbsorbPointer(
-                  child: TextFormField(
-                    controller: _universityController,
-                    decoration: InputDecoration(
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.black),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      labelText: 'University',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      suffixIcon: Icon(Icons.arrow_drop_down),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please select university';
-                      }
-                      return null;
-                    },
+              TextFormField(
+                controller: _universityController,
+                decoration: InputDecoration(
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.black),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  labelText: 'University',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
                   ),
                 ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter university';
+                  }
+                  return null;
+                },
               ),
               SizedBox(height: 16),
-              GestureDetector(
-                onTap: () => _selectFromList(
-                    context,
-                    _degreeController,
-                    degrees,
-                    _degreeController.text.isNotEmpty
-                        ? _degreeController.text
-                        : degrees[0]),
-                child: AbsorbPointer(
-                  child: TextFormField(
-                    controller: _degreeController,
-                    decoration: InputDecoration(
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.black),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      labelText: 'Degree',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      suffixIcon: Icon(Icons.arrow_drop_down),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please select degree';
-                      }
-                      return null;
-                    },
+              TextFormField(
+                controller: _degreeController,
+                decoration: InputDecoration(
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.black),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  labelText: 'Degree',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
                   ),
                 ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter degree';
+                  }
+                  return null;
+                },
               ),
               SizedBox(height: 16),
               Row(
@@ -515,7 +528,7 @@ class _AddEducationPageState extends State<AddEducationPage> {
                 readOnly: true,
                 onTap: () => _selectDate(context, _toDateController),
                 decoration: InputDecoration(
-                   focusedBorder: OutlineInputBorder(
+                  focusedBorder: OutlineInputBorder(
                     borderSide: const BorderSide(color: Colors.black),
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -534,52 +547,53 @@ class _AddEducationPageState extends State<AddEducationPage> {
                 },
               ),
               const SizedBox(height: 25),
-              GestureDetector(
-                onTap: () {
-                  if (_formKey.currentState!.validate()) {
-                    DateTime fromDate =
-                        DateTime.parse(_fromDateController.text);
-                    DateTime toDate = DateTime.parse(_toDateController.text);
+             GestureDetector(
+  onTap: () {
+    if (_formKey.currentState!.validate()) {
+      DateTime fromDate = DateTime.parse(_fromDateController.text);
+      DateTime toDate = DateTime.parse(_toDateController.text);
 
-                    if (toDate.isBefore(fromDate)) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(
-                              'The To date must be greater than From date'),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                      return;
-                    }
+      if (toDate.isBefore(fromDate)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('The To date must be greater than From date'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
 
-                    final newEducation = {
-                      'university': _universityController.text,
-                      'degree': _degreeController.text,
-                      'from': _fromDateController.text,
-                      'to': _toDateController.text,
-                    };
-                    Navigator.pop(context, newEducation);
-                  }
-                },
-                child: Container(
-                  width: 100,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10.0),
-                    color: Colors.yellow.shade600,
-                  ),
-                  child: Center(
-                    child: Text(
-                      'Add',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                      ),
-                    ),
-                  ),
-                ),
-              )
+      final newEducation = {
+        'university': _universityController.text,
+        'degree': _degreeController.text,
+        'studiedFrom': _fromDateController.text,
+        'studiedTo': _toDateController.text,
+      };
+
+      widget.onAdd(newEducation);
+      Navigator.pop(context);
+    }
+  },
+  child: Container(
+    width: 100,
+    height: 40,
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(10.0),
+      color: Colors.yellow.shade600,
+    ),
+    child: const Center(
+      child: Text(
+        'Add',
+        style: TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+          fontSize: 20,
+        ),
+      ),
+    ),
+  ),
+),
+
             ],
           ),
         ),

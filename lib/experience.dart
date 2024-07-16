@@ -1,5 +1,8 @@
+import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:hive/hive.dart';
 
 class ExperienceTab extends StatefulWidget {
@@ -24,41 +27,61 @@ class _ExperienceTabState extends State<ExperienceTab> {
   @override
   void initState() {
     super.initState();
-    experiences = List.from(widget.items); // Ensure a copy is made
+    experiences = List.from(widget.items);
   }
 
-  void _addExperience(Map<String, dynamic> newExperience) async {
-    setState(() {
-      experiences.insert(0, newExperience);
-    });
-    var box = await Hive.openBox('userBox');
-    for (int index = 0; index < experiences.length; index++) {
-      await box.put('experienceTitle$index', experiences[index]['title']);
-      await box.put('experiencePosition$index', experiences[index]['position']);
-      await box.put('experienceFrom$index', experiences[index]['from']);
-      await box.put('experienceTo$index', experiences[index]['to']);
+  Future<void> _removeExperience(int index) async {
+  if (index >= 0 && index < experiences.length) {
+    var box = await Hive.openBox('myBox');
+    String? token = box.get('token');
+
+    if (token == null) {
+      throw Exception('Token is null');
     }
-    widget.onAdd(newExperience);
-  }
 
-  void _removeExperience(int index) async {
-    if (index >= 0 && index < experiences.length) {
-      setState(() {
-        experiences.removeAt(index);
+    Dio dio = Dio();
+
+    String url = 'https://api.hookatimes.com/api/Accounts/DeleteExperience';
+
+    try {
+      var formData = FormData.fromMap({
+        'ExperienceId': experiences[index]['id'],
       });
-      var box = await Hive.openBox('userBox');
-      await box.delete('experienceTitle$index');
-      await box.delete('experiencePosition$index');
-      await box.delete('experienceFrom$index');
-      await box.delete('experienceTo$index');
-      widget.onRemove(index);
+
+      var response = await dio.delete(
+        url,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'multipart/form-data',
+          },
+        ),
+        data: formData,
+      );
+
+      print('Experience Id: ${experiences[index]['id']}');
+      print('Response Status Code: ${response.statusCode}');
+      print('Response Data: ${response.data}');
+
+      if (response.data['statusCode'] == 200) {
+        setState(() {
+          experiences.removeAt(index);
+        });
+        widget.onRemove(index);
+      } else {
+        throw Exception('Failed to delete experience: ${response.data['errorMessage']}');
+      }
+    } catch (e) {
+      print('Exception: $e');
+      throw Exception('Failed to delete experience');
     }
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
     var screenWidth = MediaQuery.of(context).size.width;
-    var screenHeight = MediaQuery.of(context).size.height;
     return Stack(
       children: [
         Padding(
@@ -75,10 +98,11 @@ class _ExperienceTabState extends State<ExperienceTab> {
                       child: Card(
                         child: Container(
                           decoration: BoxDecoration(
-                              border: Border.all(
-                            color: Colors.black,
-                            width: 1,
-                          )),
+                            border: Border.all(
+                              color: Colors.black,
+                              width: 1,
+                            ),
+                          ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -96,68 +120,67 @@ class _ExperienceTabState extends State<ExperienceTab> {
                               ),
                               const SizedBox(height: 16),
                               Container(
-                                  width: double.infinity,
-                                  height: screenWidth * 0.07,
-                                  color: Colors.grey.shade300,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 0),
-                                    child: Center(
-                                      child: Row(
-                                        children: [
-                                          SizedBox(width: screenWidth * 0.2,),
-                                          Expanded(
-                                            flex: 1,
-                                            child: Text(
-                                              'Place:',
-                                              style: TextStyle(fontSize: screenWidth * 0.05),
-                                            ),
-                                          ),
-
-                                           Expanded(
-                                            flex: 1,
-                                             child: Text(
-                                              '${item['title']}',
-                                              style: TextStyle(fontSize: screenWidth * 0.05),
-                                                                                       ),
-                                           ),
-                                        ],
+                                width: double.infinity,
+                                height: screenWidth * 0.07,
+                                color: Colors.grey.shade300,
+                                child: Center(
+                                  child: Row(
+                                    children: [
+                                      SizedBox(
+                                        width: screenWidth * 0.2,
                                       ),
-                                    ),
-                                  )),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Text(
+                                          'Place:',
+                                          style: TextStyle(
+                                              fontSize: screenWidth * 0.05),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Text(
+                                          '${item['place']}',
+                                          style: TextStyle(
+                                              fontSize: screenWidth * 0.05),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                               SizedBox(height: 16),
                               Container(
-                                  width: double.infinity,
-                                  height: screenWidth * 0.07,
-                                  color: Colors.grey.shade300,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(left: 0),
-                                    child: Center(
-                                      child: Row(
-                                        children: [
-                                          SizedBox(width: screenWidth * 0.2,),
-                                      
-                                          Expanded(
-                                            flex: 1,
-                                            child: Text(
-                                              'Position:',
-                                              style: TextStyle(fontSize: screenWidth * 0.05),
-                                            ),
-                                          ),
-                                            Expanded(
-                                              flex: 1,
-                                              child: Text(
-                                              '${item['position']}',
-                                              style: TextStyle(fontSize: screenWidth * 0.05),
-                                                                                        ),
-                                            ),
-                                        ],
+                                width: double.infinity,
+                                height: screenWidth * 0.07,
+                                color: Colors.grey.shade300,
+                                child: Center(
+                                  child: Row(
+                                    children: [
+                                      SizedBox(
+                                        width: screenWidth * 0.2,
                                       ),
-                                    ),
-                                  )),
+                                      const Expanded(
+                                        flex: 1,
+                                        child: Text(
+                                          'Position:',
+                                          style: const TextStyle(fontSize: 20),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Text(
+                                          '${item['position']}',
+                                          style: const TextStyle(fontSize: 20),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                               SizedBox(height: 16),
                               Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
+                                padding: const EdgeInsets.symmetric(horizontal: 10),
                                 child: Row(
                                   children: [
                                     Container(
@@ -166,8 +189,9 @@ class _ExperienceTabState extends State<ExperienceTab> {
                                       color: Colors.grey.shade300,
                                       child: Center(
                                         child: Text(
-                                          'From : ${item['from']}',
-                                          style: TextStyle(fontSize: screenWidth * 0.044),
+                                          'From : ${item['workedFrom']}',
+                                          style: TextStyle(
+                                              fontSize: screenWidth * 0.042),
                                         ),
                                       ),
                                     ),
@@ -180,21 +204,22 @@ class _ExperienceTabState extends State<ExperienceTab> {
                                       color: Colors.grey.shade300,
                                       child: Center(
                                         child: Text(
-                                          'To : ${item['to']}',
-                                          style: TextStyle(fontSize: screenWidth * 0.044),
+                                          'To : ${item['workedTo']}',
+                                          style: TextStyle(
+                                              fontSize: screenWidth * 0.044),
                                         ),
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
-                              SizedBox(height: screenHeight * 0.035),
+                              SizedBox(height: 16),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Container(
                                     height: screenWidth * 0.09,
-                                    width: screenWidth * 0.38,
+                                    width: screenWidth * 0.36,
                                     decoration: BoxDecoration(
                                       color: Colors.black,
                                       border: Border.all(),
@@ -204,29 +229,33 @@ class _ExperienceTabState extends State<ExperienceTab> {
                                       onTap: () {
                                         _removeExperience(index);
                                       },
-                                      child:const Row(
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Icon(
-                                            Icons.delete,
-                                            color: Colors.white,
+                                      child: const Center(
+                                        child: Padding(
+                                          padding: EdgeInsets.all(6.0),
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.delete,
+                                                color: Colors.white,
+                                              ),
+                                              SizedBox(
+                                                width: 5,
+                                              ),
+                                              Text('Remove item',
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.w600)),
+                                            ],
                                           ),
-                                          SizedBox(
-                                            width: 5,
-                                          ),
-                                          Text('Remove item',
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight:
-                                                      FontWeight.w600)),
-                                        ],
+                                        ),
                                       ),
                                     ),
                                   )
                                 ],
                               ),
                               const SizedBox(
-                                height: 15,
+                                height: 30,
                               ),
                             ],
                           ),
@@ -247,7 +276,7 @@ class _ExperienceTabState extends State<ExperienceTab> {
               final result = await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => AddExperiencePage(),
+                  builder: (context) => AddExperiencePage(onAdd: _addExperience),
                 ),
               );
               if (result != null) {
@@ -273,22 +302,52 @@ class _ExperienceTabState extends State<ExperienceTab> {
       ],
     );
   }
+
+  Future<void> _addExperience(Map<String, dynamic> newExperience) async {
+    var box = await Hive.openBox('myBox');
+    String? token = box.get('token');
+
+    if (token == null) {
+      throw Exception('Token is null');
+    }
+
+    String url = 'https://api.hookatimes.com/api/Accounts/AddExperience';
+    var request = http.MultipartRequest('POST', Uri.parse(url));
+    request.headers['Authorization'] = 'Bearer $token';
+    request.fields['Place'] = newExperience['place'];
+    request.fields['Position'] = newExperience['position'];
+    request.fields['WorkedFrom'] = newExperience['workedFrom'];
+    request.fields['WorkedTo'] = newExperience['workedTo'];
+
+    var response = await request.send();
+
+    if (response.statusCode == 200) {
+      setState(() {
+        experiences.insert(0, newExperience);
+      });
+      widget.onAdd(newExperience);
+    } else {
+      final responseBody = await response.stream.bytesToString();
+      throw Exception('Failed to add experience: $responseBody');
+    }
+  }
 }
 
 class AddExperiencePage extends StatefulWidget {
+  final Function(Map<String, dynamic>) onAdd;
+
+  const AddExperiencePage({required this.onAdd});
+
   @override
   _AddExperiencePageState createState() => _AddExperiencePageState();
 }
 
 class _AddExperiencePageState extends State<AddExperiencePage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _placeController = TextEditingController();
   final TextEditingController _positionController = TextEditingController();
   final TextEditingController _fromDateController = TextEditingController();
   final TextEditingController _toDateController = TextEditingController();
-
-  List<String> positions = ['Professor', 'Developer'];
-  List<String> cities = ['Zahle', 'Beirut', 'Byblos'];
 
   Future<void> _selectDate(
       BuildContext context, TextEditingController controller) async {
@@ -296,10 +355,11 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
     DateTime firstDate = DateTime(1900);
     DateTime lastDate = DateTime(2100);
 
-    DateTime? pickedDate = await showModalBottomSheet<DateTime>(
+    DateTime selectedDate = initialDate;
+    await showModalBottomSheet<DateTime>(
       context: context,
+      isDismissible: true,
       builder: (BuildContext context) {
-        DateTime selectedDate = initialDate;
         return GestureDetector(
           onTap: () {
             Navigator.pop(context, selectedDate);
@@ -316,11 +376,9 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
                     minimumDate: firstDate,
                     maximumDate: lastDate,
                     onDateTimeChanged: (DateTime date) {
-                      setState(() {
-                        selectedDate = date;
-                        controller.text =
-                            "${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}";
-                      });
+                      selectedDate = date;
+                      controller.text =
+                          "${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}";
                     },
                   ),
                 ),
@@ -329,54 +387,14 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
           ),
         );
       },
-    );
-
-    if (pickedDate != null) {
-      controller.text =
-          "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
-    }
-  }
-
-  Future<void> _selectFromList(
-      BuildContext context, TextEditingController controller, List<String> items, String initialValue) async {
-    String selectedItem = initialValue;
-    await showModalBottomSheet<String>(
-      context: context,
-      isDismissible: true,
-      builder: (BuildContext context) {
-        return GestureDetector(
-          onTap: () {
-            Navigator.pop(context, selectedItem);
-          },
-          child: Container(
-            height: 250,
-            color: Colors.transparent,
-            child: Column(
-              children: [
-                Expanded(
-                  child: CupertinoPicker(
-                    itemExtent: 32.0,
-                    onSelectedItemChanged: (int index) {
-                      setState(() {
-                        selectedItem = items[index];
-                        controller.text = selectedItem;
-                      });
-                    },
-                    children: items.map((item) {
-                      return Center(child: Text(item));
-                    }).toList(),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-
-    if (selectedItem.isNotEmpty) {
-      controller.text = selectedItem;
-    }
+    ).then((pickedDate) {
+      if (pickedDate != null) {
+        setState(() {
+          controller.text =
+              "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
+        });
+      }
+    });
   }
 
   @override
@@ -391,48 +409,44 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
           key: _formKey,
           child: Column(
             children: [
-              GestureDetector(
-                onTap: () => _selectFromList(context, _positionController, positions, _positionController.text.isNotEmpty ? _positionController.text : positions[0]),
-                child: AbsorbPointer(
-                  child: TextFormField(
-                    controller: _positionController,
-                    decoration: InputDecoration(
-                      labelText: 'Position',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      suffixIcon: Icon(Icons.arrow_drop_down),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please select position';
-                      }
-                      return null;
-                    },
+              TextFormField(
+                controller: _placeController,
+                decoration: InputDecoration(
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.black),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  labelText: 'Place',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
                   ),
                 ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter place';
+                  }
+                  return null;
+                },
               ),
               SizedBox(height: 16),
-              GestureDetector(
-                onTap: () => _selectFromList(context, _titleController, cities, _titleController.text.isNotEmpty ? _titleController.text : cities[0]),
-                child: AbsorbPointer(
-                  child: TextFormField(
-                    controller: _titleController,
-                    decoration: InputDecoration(
-                      labelText: 'City',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      suffixIcon: Icon(Icons.arrow_drop_down),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please select city';
-                      }
-                      return null;
-                    },
+              TextFormField(
+                controller: _positionController,
+                decoration: InputDecoration(
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: const BorderSide(color: Colors.black),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  labelText: 'Position',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
                   ),
                 ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter position';
+                  }
+                  return null;
+                },
               ),
               SizedBox(height: 16),
               Row(
@@ -448,7 +462,7 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
                 readOnly: true,
                 onTap: () => _selectDate(context, _fromDateController),
                 decoration: InputDecoration(
-                    focusedBorder: OutlineInputBorder(
+                  focusedBorder: OutlineInputBorder(
                     borderSide: const BorderSide(color: Colors.black),
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -480,7 +494,7 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
                 readOnly: true,
                 onTap: () => _selectDate(context, _toDateController),
                 decoration: InputDecoration(
-                    focusedBorder: OutlineInputBorder(
+                   focusedBorder: OutlineInputBorder(
                     borderSide: const BorderSide(color: Colors.black),
                     borderRadius: BorderRadius.circular(10),
                   ),
@@ -498,17 +512,19 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
                   return null;
                 },
               ),
-              SizedBox(height: 20),
+              const SizedBox(height: 25),
               GestureDetector(
                 onTap: () {
                   if (_formKey.currentState!.validate()) {
-                    DateTime fromDate = DateTime.parse(_fromDateController.text);
+                    DateTime fromDate =
+                        DateTime.parse(_fromDateController.text);
                     DateTime toDate = DateTime.parse(_toDateController.text);
 
                     if (toDate.isBefore(fromDate)) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
-                          content: Text('The To date must be greater than From date'),
+                          content: Text(
+                              'The To date must be greater than From date'),
                           backgroundColor: Colors.red,
                         ),
                       );
@@ -516,12 +532,13 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
                     }
 
                     final newExperience = {
-                      'title': _titleController.text,
+                      'place': _placeController.text,
                       'position': _positionController.text,
-                      'from': _fromDateController.text,
-                      'to': _toDateController.text,
+                      'workedFrom': _fromDateController.text,
+                      'workedTo': _toDateController.text,
                     };
-                    Navigator.pop(context, newExperience);
+                    widget.onAdd(newExperience);
+                    Navigator.pop(context);
                   }
                 },
                 child: Container(
@@ -531,7 +548,7 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
                     borderRadius: BorderRadius.circular(10.0),
                     color: Colors.yellow.shade600,
                   ),
-                  child: const Center(
+                  child: Center(
                     child: Text(
                       'Add',
                       style: TextStyle(
@@ -542,7 +559,7 @@ class _AddExperiencePageState extends State<AddExperiencePage> {
                     ),
                   ),
                 ),
-              ),
+              )
             ],
           ),
         ),

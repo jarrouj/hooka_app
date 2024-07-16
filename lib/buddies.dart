@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:hooka_app/allpages.dart';
 import 'package:hooka_app/map.dart';
 import 'package:http/http.dart' as http;
+import 'package:hive/hive.dart';
 
 class Buddy {
   final int id;
@@ -112,7 +113,9 @@ class _BuddiesPageState extends State<BuddiesPage> {
     });
   }
 
-  void _navigateToInvitePage(Buddy buddy) {
+  void _navigateToInvitePage(Buddy buddy) async {
+   
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -149,7 +152,7 @@ class _BuddiesPageState extends State<BuddiesPage> {
       ),
       backgroundColor: Colors.white,
       body: isLoading
-          ? Center(child: LoadingAllpages())
+          ? Center(child: CircularProgressIndicator())
           : errorMessage.isNotEmpty
               ? Center(child: Text(errorMessage))
               : Column(
@@ -284,9 +287,6 @@ class _BuddiesPageState extends State<BuddiesPage> {
     );
   }
 }
-
-
-
 class InvitePage extends StatelessWidget {
   final Buddy buddy;
 
@@ -354,7 +354,7 @@ class InvitePage extends StatelessWidget {
                   GestureDetector(
                     onTap: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                          builder: (context) => InvitePageB()));
+                          builder: (context) => InvitePageB(buddy: buddy)));
                     },
                     child: Container(
                       width: 70,
@@ -378,9 +378,10 @@ class InvitePage extends StatelessWidget {
   }
 }
 
-
 class InvitePageB extends StatefulWidget {
-  const InvitePageB({super.key});
+  final Buddy buddy;
+
+  const InvitePageB({required this.buddy, Key? key}) : super(key: key);
 
   @override
   State<InvitePageB> createState() => _InvitePageBState();
@@ -577,17 +578,49 @@ class _InvitePageBState extends State<InvitePageB> {
     });
   }
 
-  void _sendInvite() {
+  Future<void> _sendInvite() async {
+     var box = await Hive.openBox('myBox');
+    String? token = box.get('token');
     if (_selectedPlace.isEmpty ||
         _messageController.text.isEmpty ||
         (!_isPayForHookapp && !_isPayForFood && !_isPayYourOwn)) {
       _showOverlaySnackBar(context, 'Please fill all fields');
-    } else {
-      _showOverlaySnackBar(context, 'Invite sent');
-      Future.delayed(const Duration(seconds: 0), () {
-        Navigator.of(context).pop();
-      });
+      return;
     }
+
+    try {
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('https://api.hookatimes.com/api/Buddies/InviteBuddy'),
+      );
+      request.headers['Authorization'] = 'Bearer ${token}';
+      request.fields['Date'] = _selectedDate.toIso8601String();
+      request.fields['Time'] = _selectedTime.format(context);
+      request.fields['OptionId'] = _getSelectedOptionId().toString();
+      request.fields['Description'] = _messageController.text;
+      request.fields['ToBuddyId'] = widget.buddy.id.toString();
+      request.fields['PlaceId'] = _selectedPlace;
+
+      var response = await request.send();
+
+      if (response.statusCode == 200) {
+        _showOverlaySnackBar(context, 'Invite sent');
+        Future.delayed(const Duration(seconds: 2), () {
+          Navigator.of(context).pop();
+        });
+      } else {
+        _showOverlaySnackBar(context, 'Failed to send invite');
+      }
+    } catch (e) {
+      _showOverlaySnackBar(context, 'An error occurred');
+    }
+  }
+
+  int _getSelectedOptionId() {
+    if (_isPayForHookapp) return 1;
+    if (_isPayForFood) return 2;
+    if (_isPayYourOwn) return 3;
+    return 0;
   }
 
   @override

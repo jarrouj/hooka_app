@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -280,27 +281,30 @@ class _OTPVerificationSignupPageState extends State<OTPVerificationSignupPage> {
                     ),
             ),
             SizedBox(height: 20),
-            TextButton(
-              onPressed: () {
-                _resendOtp(widget.email);
-              },
-              child: RichText(
-                text: TextSpan(
-                  text: 'Didn\'t receive the code?  ',
-                  style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
-                  children: <TextSpan>[
-                    TextSpan(
-                      text: 'RESEND',
-                      style: TextStyle(
-                          color: Colors.yellow.shade700,
-                          decoration: TextDecoration.underline,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 17),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+       Row(
+  mainAxisAlignment: MainAxisAlignment.center,
+  children: [
+    Text(
+      'Didn\'t receive the code?  ',
+      style: TextStyle(color: Colors.grey.shade600, fontSize: 16),
+    ),
+    GestureDetector(
+      onTap: () {
+        _resendOtp(widget.email);
+      },
+      child: Text(
+        'RESEND',
+        style: TextStyle(
+            color: Colors.yellow.shade700,
+            decoration: TextDecoration.underline,
+            decorationColor: Colors.yellow.shade700,
+            fontWeight: FontWeight.bold,
+            fontSize: 17),
+      ),
+    ),
+  ],
+),
+
             SizedBox(height: 30),
             TextButton(
               onPressed: () {

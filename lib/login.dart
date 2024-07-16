@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'package:hive/hive.dart';
+import 'package:hooka_app/main.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooka_app/otp-verification-loginpage.dart';
@@ -16,9 +20,8 @@ class _LoginPageState extends State<LoginPage> {
   final _scrollController = ScrollController();
   bool _isKeyboardVisible = false;
   final _emailController = TextEditingController();
-    final GlobalKey<FormFieldState> _emailFieldKey = GlobalKey<FormFieldState>();
-
-
+  final _passwordController = TextEditingController();
+  final GlobalKey<FormFieldState> _emailFieldKey = GlobalKey<FormFieldState>();
 
   @override
   void initState() {
@@ -41,72 +44,102 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
+  Future<void> _signIn() async {
+  final String email = _emailController.text;
+  final String password = _passwordController.text;
+
+  final response = await http.post(
+    Uri.parse('https://api.hookatimes.com/api/Accounts/SignIn'),
+    headers: <String, String>{
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: 'Email=$email&Password=$password',
+  );
+
+  final responseData = jsonDecode(response.body);
+  final token        = responseData['data']['data']['token'];
+  print('token  ' + token);
+
+    var box = Hive.box('myBox');
+    box.put('token', token);
+      
+  if (responseData['statusCode'] == 200) {
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => MyHomePage()),
+    );
+  } else {
+    final String errorMessage = responseData['errorMessage'] ?? 'Sign in failed';
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(errorMessage)),
+    );
+  }
+}
+
+
   bool isValidEmail(String email) {
-    // Use a regular expression to validate the email format
     return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
   }
 
-void _validateEmailAndNavigate() {
-  final emailField = _emailFieldKey.currentState;
+  void _validateEmailAndNavigate() {
+    final emailField = _emailFieldKey.currentState;
 
-  // Check if email field is empty
-  if (_emailController.text.isEmpty) {
-    _showOverlaySnackBar(
-      context,
-      'Please fill the email you forget its password in the email section',
-    );
-    return;
+    // Check if email field is empty
+    if (_emailController.text.isEmpty) {
+      _showOverlaySnackBar(
+        context,
+        'Please fill the email you forget its password in the email section',
+      );
+      return;
+    }
+
+    // Validate the email field
+    if (emailField == null || !emailField.validate()) {
+      return;
+    }
+
+    // Navigate to OTP Verification Page if email is valid
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (context) => OTPVerificationPage(email: _emailController.text),
+    ));
   }
 
-  // Validate the email field
-  if (emailField == null || !emailField.validate()) {
-    return;
-  }
-
-  // Navigate to OTP Verification Page if email is valid
-  Navigator.of(context).push(MaterialPageRoute(
-    builder: (context) => OTPVerificationPage(email: _emailController.text),
-  ));
-}
-
-void _showOverlaySnackBar(BuildContext context, String message) {
-  final overlay = Overlay.of(context);
-  final overlayEntry = OverlayEntry(
-    builder: (context) => Positioned(
-      bottom: 40,
-      left: MediaQuery.of(context).size.width * 0.1,
-      right: MediaQuery.of(context).size.width * 0.1,
-      child: Material(
-        color: Colors.transparent,
-        child: Center(
-          child: Container(
-            width: 280,
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-            decoration: BoxDecoration(
-              color: Colors.black,
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Text(
-              message,
-              // textAlign: TextAlign.center,
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 15),
+  void _showOverlaySnackBar(BuildContext context, String message) {
+    final overlay = Overlay.of(context);
+    final overlayEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        bottom: 40,
+        left: MediaQuery.of(context).size.width * 0.1,
+        right: MediaQuery.of(context).size.width * 0.1,
+        child: Material(
+          color: Colors.transparent,
+          child: Center(
+            child: Container(
+              width: 280,
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+              decoration: BoxDecoration(
+                color: Colors.black,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Text(
+                message,
+                // textAlign: TextAlign.center,
+                style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15),
+              ),
             ),
           ),
         ),
       ),
-    ),
-  );
+    );
 
-  overlay?.insert(overlayEntry);
+    overlay?.insert(overlayEntry);
 
-  Future.delayed(const Duration(seconds: 2), () {
-    overlayEntry.remove();
-  });
-}
-
+    Future.delayed(const Duration(seconds: 2), () {
+      overlayEntry.remove();
+    });
+  }
 
   @override
   void dispose() {
@@ -218,7 +251,6 @@ void _showOverlaySnackBar(BuildContext context, String message) {
                     TextFormField(
                       controller: _emailController,
                       key: _emailFieldKey,
-
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Email Required*';
@@ -260,6 +292,7 @@ void _showOverlaySnackBar(BuildContext context, String message) {
                     ),
                     const SizedBox(height: 15),
                     TextFormField(
+                      controller: _passwordController,
                       obscureText: _isObscure,
                       decoration: InputDecoration(
                         contentPadding: const EdgeInsets.symmetric(
@@ -311,7 +344,7 @@ void _showOverlaySnackBar(BuildContext context, String message) {
                       },
                     ),
                     const SizedBox(height: 30),
-                 Padding(
+                    Padding(
                       padding: EdgeInsets.only(right: 16),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.end,
@@ -333,7 +366,9 @@ void _showOverlaySnackBar(BuildContext context, String message) {
                     const SizedBox(height: 25),
                     ElevatedButton(
                       onPressed: () {
-                        if (_formKey.currentState!.validate()) {}
+                        if (_formKey.currentState!.validate()) {
+                          _signIn();
+                        }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.yellow.shade600,

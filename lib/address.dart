@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 import 'package:hive/hive.dart';
 
 class AddressTab extends StatefulWidget {
@@ -16,7 +16,7 @@ class AddressTab extends StatefulWidget {
   });
 
   @override
-  _AddressTabState createState() => _AddressTabState();
+  State<AddressTab> createState() => _AddressTabState();
 }
 
 class _AddressTabState extends State<AddressTab> {
@@ -28,66 +28,42 @@ class _AddressTabState extends State<AddressTab> {
     addresses = List.from(widget.items);
   }
 
-  void _addAddress(Map<String, dynamic> newAddress) async {
-    setState(() {
-      addresses.insert(0, newAddress);
-      addresses.sort((a, b) => a['title'].compareTo(b['title']));
-    });
-    var box = await Hive.openBox('userBox');
-    for (int index = 0; index < addresses.length; index++) {
-      await box.put('addressTitle$index', addresses[index]['title']);
-      await box.put('addressCity$index', addresses[index]['city']);
-      await box.put('addressStreet$index', addresses[index]['street']);
-      await box.put('addressBuilding$index', addresses[index]['building']);
-      await box.put('addressAppartment$index', addresses[index]['appartment']);
-    }
-    widget.onAdd(newAddress);
-  }
-
-  void _removeAddress(int index) async {
+  Future<void> _removeAddress(int index) async {
     if (index >= 0 && index < addresses.length) {
-      var box = await Hive.openBox('userBox');
+      var box = await Hive.openBox('myBox');
+      String? token = box.get('token');
 
-      // Remove the specified address
-      await box.delete('addressTitle$index');
-      await box.delete('addressCity$index');
-      await box.delete('addressStreet$index');
-      await box.delete('addressBuilding$index');
-      await box.delete('addressAppartment$index');
-
-      setState(() {
-        addresses.removeAt(index);
-      });
-
-      // Shift the subsequent addresses up by one position
-      for (int i = index; i < addresses.length; i++) {
-        await box.put('addressTitle$i', box.get('addressTitle${i + 1}'));
-        await box.put('addressCity$i', box.get('addressCity${i + 1}'));
-        await box.put('addressStreet$i', box.get('addressStreet${i + 1}'));
-        await box.put('addressBuilding$i', box.get('addressBuilding${i + 1}'));
-        await box.put('addressAppartment$i', box.get('addressAppartment${i + 1}'));
+      if (token == null) {
+        throw Exception('Token is null');
       }
 
-      // Remove the last shifted address
-      int lastIndex = addresses.length;
-      await box.delete('addressTitle$lastIndex');
-      await box.delete('addressCity$lastIndex');
-      await box.delete('addressStreet$lastIndex');
-      await box.delete('addressBuilding$lastIndex');
-      await box.delete('addressAppartment$lastIndex');
+      String url = 'https://api.hookatimes.com/api/Accounts/DeleteAddress';
+      var request = http.MultipartRequest('DELETE', Uri.parse(url));
+      request.headers['Authorization'] = 'Bearer $token';
+      request.fields['AddressId'] = addresses[index]['id'].toString();
 
-      widget.onRemove(index);
+      var response = await request.send();
+
+      if (response.statusCode == 200) {
+        setState(() {
+          addresses.removeAt(index);
+        });
+        widget.onRemove(index);
+      } else {
+        final responseBody = await response.stream.bytesToString();
+        final responseData = jsonDecode(responseBody);
+        throw Exception('Failed to delete address: ${responseData['errorMessage']}');
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     var screenWidth = MediaQuery.of(context).size.width;
-    final Size size = MediaQuery.of(context).size;
     return Stack(
       children: [
         Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
             children: [
               Expanded(
@@ -96,55 +72,57 @@ class _AddressTabState extends State<AddressTab> {
                   itemBuilder: (context, index) {
                     final item = addresses[index];
                     return Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 15, vertical: 10),
+                      padding: const EdgeInsets.only(top: 30),
                       child: Card(
-                        surfaceTintColor: Colors.white,
                         child: Container(
                           decoration: BoxDecoration(
                             border: Border.all(
                               color: Colors.black,
-                              width: 1.0,
+                              width: 1,
                             ),
                           ),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
-                                width: double.infinity,
                                 height: screenWidth * 0.2,
+                                width: double.infinity,
                                 color: Colors.yellow.shade600,
                                 child: const Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Icon(Icons.home,
                                         color: Colors.black, size: 80),
-                                    SizedBox(width: 10),
                                   ],
                                 ),
                               ),
-                              SizedBox(height: 16),
+                              const SizedBox(height: 16),
                               Container(
                                 width: double.infinity,
-                                height: 25,
+                                height: screenWidth * 0.07,
                                 color: Colors.grey.shade300,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 30),
+                                child: Center(
                                   child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Expanded(
-                                        flex: 1,
-                                        child: Text('Title :' , style: TextStyle(fontSize: 17),),
-                                      ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Text('${item['title']}' , style: TextStyle(fontSize: 17)),
-                                      ),
                                       SizedBox(
-                                        width: size.width * 0.1,
-                                      )
+                                        width: screenWidth * 0.2,
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Text(
+                                          'Title:',
+                                          style: TextStyle(
+                                              fontSize: screenWidth * 0.05),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Text(
+                                          '${item['title']}',
+                                          style: TextStyle(
+                                              fontSize: screenWidth * 0.05),
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -152,23 +130,30 @@ class _AddressTabState extends State<AddressTab> {
                               SizedBox(height: 16),
                               Container(
                                 width: double.infinity,
-                                height: 25,
+                                height: screenWidth * 0.07,
                                 color: Colors.grey.shade300,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 30),
+                                child: Center(
                                   child: Row(
                                     children: [
-                                      Expanded(
-                                        flex: 1,
-                                        child: Text('City :' , style: TextStyle(fontSize: 17)),
-                                      ),
-                                      Expanded(
-                                        flex: 1,
-                                        child: Text('${item['city']}' , style: TextStyle(fontSize: 17)),
-                                      ),
                                       SizedBox(
-                                        width: size.width * 0.1,
-                                      )
+                                        width: screenWidth * 0.2,
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Text(
+                                          'City:',
+                                          style: TextStyle(
+                                              fontSize: screenWidth * 0.05),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Text(
+                                          '${item['city']}',
+                                          style: TextStyle(
+                                              fontSize: screenWidth * 0.05),
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -176,23 +161,28 @@ class _AddressTabState extends State<AddressTab> {
                               SizedBox(height: 16),
                               Container(
                                 width: double.infinity,
-                                height: 25,
+                                height: screenWidth * 0.07,
                                 color: Colors.grey.shade300,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 30),
+                                child: Center(
                                   child: Row(
                                     children: [
-                                     Expanded(
+                                      SizedBox(
+                                        width: screenWidth * 0.2,
+                                      ),
+                                      const Expanded(
                                         flex: 1,
-                                        child: Text('Street :' , style: TextStyle(fontSize: 17)),
+                                        child: Text(
+                                          'Street:',
+                                          style: const TextStyle(fontSize: 20),
+                                        ),
                                       ),
                                       Expanded(
                                         flex: 1,
-                                        child: Text('${item['street']}' , style: TextStyle(fontSize: 17)),
+                                        child: Text(
+                                          '${item['street']}',
+                                          style: const TextStyle(fontSize: 20),
+                                        ),
                                       ),
-                                      SizedBox(
-                                        width: size.width * 0.1,
-                                      )
                                     ],
                                   ),
                                 ),
@@ -200,34 +190,39 @@ class _AddressTabState extends State<AddressTab> {
                               SizedBox(height: 16),
                               Container(
                                 width: double.infinity,
-                                height: 25,
+                                height: screenWidth * 0.07,
                                 color: Colors.grey.shade300,
-                                child: Padding(
-                                  padding: const EdgeInsets.only(left: 30),
+                                child: Center(
                                   child: Row(
                                     children: [
-                                     Expanded(
+                                      SizedBox(
+                                        width: screenWidth * 0.2,
+                                      ),
+                                      const Expanded(
                                         flex: 1,
-                                        child: Text('Building :' , style: TextStyle(fontSize: 17)),
+                                        child: Text(
+                                          'Building:',
+                                          style: const TextStyle(fontSize: 20),
+                                        ),
                                       ),
                                       Expanded(
                                         flex: 1,
-                                        child: Text('${item['building']}' , style: TextStyle(fontSize: 17)),
+                                        child: Text(
+                                          '${item['building']}',
+                                          style: const TextStyle(fontSize: 20),
+                                        ),
                                       ),
-                                      SizedBox(
-                                        width: size.width * 0.1,
-                                      )
                                     ],
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 30),
+                              SizedBox(height: 16),
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
                                   Container(
-                                    height: 40,
-                                    width: 140,
+                                    height: screenWidth * 0.09,
+                                    width: screenWidth * 0.36,
                                     decoration: BoxDecoration(
                                       color: Colors.black,
                                       border: Border.all(),
@@ -239,12 +234,16 @@ class _AddressTabState extends State<AddressTab> {
                                       },
                                       child: const Center(
                                         child: Padding(
-                                          padding: EdgeInsets.all(8.0),
+                                          padding: EdgeInsets.all(6.0),
                                           child: Row(
                                             children: [
-                                              Icon(Icons.delete,
-                                                  color: Colors.white),
-                                              SizedBox(width: 5),
+                                              Icon(
+                                                Icons.delete,
+                                                color: Colors.white,
+                                              ),
+                                              SizedBox(
+                                                width: 5,
+                                              ),
                                               Text('Remove item',
                                                   style: TextStyle(
                                                       color: Colors.white,
@@ -258,7 +257,9 @@ class _AddressTabState extends State<AddressTab> {
                                   )
                                 ],
                               ),
-                              SizedBox(height: 20),
+                              const SizedBox(
+                                height: 30,
+                              ),
                             ],
                           ),
                         ),
@@ -278,7 +279,7 @@ class _AddressTabState extends State<AddressTab> {
               final result = await Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => AddAddressPage(),
+                  builder: (context) => AddAddressPage(onAdd: _addAddress),
                 ),
               );
               if (result != null) {
@@ -286,8 +287,8 @@ class _AddressTabState extends State<AddressTab> {
               }
             },
             child: Container(
-              height: 55,
-              width: 55,
+              height: screenWidth * 0.14,
+              width: screenWidth * 0.14,
               decoration: BoxDecoration(
                 color: Colors.black,
                 border: Border.all(),
@@ -296,6 +297,7 @@ class _AddressTabState extends State<AddressTab> {
               child: Icon(
                 Icons.add,
                 color: Colors.yellow,
+                size: screenWidth * 0.07,
               ),
             ),
           ),
@@ -303,64 +305,54 @@ class _AddressTabState extends State<AddressTab> {
       ],
     );
   }
+
+  Future<void> _addAddress(Map<String, dynamic> newAddress) async {
+    var box = await Hive.openBox('myBox');
+    String? token = box.get('token');
+
+    if (token == null) {
+      throw Exception('Token is null');
+    }
+
+    String url = 'https://api.hookatimes.com/api/Accounts/AddAddress';
+    var request = http.MultipartRequest('POST', Uri.parse(url));
+    request.headers['Authorization'] = 'Bearer $token';
+    request.fields['City'] = newAddress['city'];
+    request.fields['Street'] = newAddress['street'];
+    request.fields['Building'] = newAddress['building'];
+    request.fields['Appartment'] = newAddress['appartment'];
+    request.fields['Title'] = newAddress['title'];
+
+    var response = await request.send();
+
+    if (response.statusCode == 200) {
+      setState(() {
+        addresses.insert(0, newAddress);
+      });
+      widget.onAdd(newAddress);
+    } else {
+      final responseBody = await response.stream.bytesToString();
+      throw Exception('Failed to add address: $responseBody');
+    }
+  }
 }
 
 class AddAddressPage extends StatefulWidget {
+  final Function(Map<String, dynamic>) onAdd;
+
+  const AddAddressPage({required this.onAdd});
+
   @override
   _AddAddressPageState createState() => _AddAddressPageState();
 }
 
 class _AddAddressPageState extends State<AddAddressPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _titleController = TextEditingController();
   final TextEditingController _cityController = TextEditingController();
   final TextEditingController _streetController = TextEditingController();
   final TextEditingController _buildingController = TextEditingController();
   final TextEditingController _appartmentController = TextEditingController();
-
-  List<String> cities = ['Zahle', 'Beirut', 'Byblos'];
-
-  Future<void> _selectFromList(
-      BuildContext context, TextEditingController controller, List<String> items, String initialValue) async {
-    String selectedItem = initialValue;
-    await showModalBottomSheet<String>(
-      context: context,
-      isDismissible: true,
-      builder: (BuildContext context) {
-        return GestureDetector(
-          onTap: () {
-            Navigator.pop(context, selectedItem);
-          },
-          child: Container(
-            height: 250,
-            color: Colors.transparent,
-            child: Column(
-              children: [
-                Expanded(
-                  child: CupertinoPicker(
-                    itemExtent: 32.0,
-                    onSelectedItemChanged: (int index) {
-                      setState(() {
-                        selectedItem = items[index];
-                        controller.text = selectedItem;
-                      });
-                    },
-                    children: items.map((item) {
-                      return Center(child: Text(item));
-                    }).toList(),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-
-    if (selectedItem.isNotEmpty) {
-      controller.text = selectedItem;
-    }
-  }
+  final TextEditingController _titleController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -377,12 +369,11 @@ class _AddAddressPageState extends State<AddAddressPage> {
               TextFormField(
                 controller: _titleController,
                 decoration: InputDecoration(
-                   focusedBorder: OutlineInputBorder(
+                  focusedBorder: OutlineInputBorder(
                     borderSide: const BorderSide(color: Colors.black),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  labelStyle: TextStyle(color: Colors.black),
-                  labelText: 'Address title *',
+                  labelText: 'Title',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
@@ -393,48 +384,38 @@ class _AddAddressPageState extends State<AddAddressPage> {
                   }
                   return null;
                 },
-                inputFormatters: [
-                  FilteringTextInputFormatter.deny(RegExp(r'^\s+')),
-                ],
               ),
-              SizedBox(height: 16),
-              GestureDetector(
-                onTap: () => _selectFromList(context, _cityController, cities, _cityController.text.isNotEmpty ? _cityController.text : cities[0]),
-                child: AbsorbPointer(
-                  child: TextFormField(
-                    
-                    controller: _cityController,
-                    decoration: InputDecoration(
-                       focusedBorder: OutlineInputBorder(
+               SizedBox(height: 16),
+
+
+              TextFormField(
+                controller: _cityController,
+                decoration: InputDecoration(
+                  focusedBorder: OutlineInputBorder(
                     borderSide: const BorderSide(color: Colors.black),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  labelStyle: TextStyle(color: Colors.black),
-                      labelText: 'City',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                      ),
-                      suffixIcon: Icon(Icons.arrow_drop_down),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please select city';
-                      }
-                      return null;
-                    },
+                  labelText: 'City',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
                   ),
                 ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter city';
+                  }
+                  return null;
+                },
               ),
               SizedBox(height: 16),
               TextFormField(
                 controller: _streetController,
                 decoration: InputDecoration(
-                   focusedBorder: OutlineInputBorder(
+                  focusedBorder: OutlineInputBorder(
                     borderSide: const BorderSide(color: Colors.black),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  labelStyle: TextStyle(color: Colors.black),
-                  labelText: 'Street *',
+                  labelText: 'Street',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
@@ -445,20 +426,16 @@ class _AddAddressPageState extends State<AddAddressPage> {
                   }
                   return null;
                 },
-                inputFormatters: [
-                  FilteringTextInputFormatter.deny(RegExp(r'^\s+')),
-                ],
               ),
               SizedBox(height: 16),
               TextFormField(
                 controller: _buildingController,
                 decoration: InputDecoration(
-                   focusedBorder: OutlineInputBorder(
+                  focusedBorder: OutlineInputBorder(
                     borderSide: const BorderSide(color: Colors.black),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  labelStyle: TextStyle(color: Colors.black),
-                  labelText: 'Building *',
+                  labelText: 'Building',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
@@ -469,20 +446,16 @@ class _AddAddressPageState extends State<AddAddressPage> {
                   }
                   return null;
                 },
-                inputFormatters: [
-                  FilteringTextInputFormatter.deny(RegExp(r'^\s+')),
-                ],
               ),
               SizedBox(height: 16),
               TextFormField(
                 controller: _appartmentController,
                 decoration: InputDecoration(
-                   focusedBorder: OutlineInputBorder(
+                  focusedBorder: OutlineInputBorder(
                     borderSide: const BorderSide(color: Colors.black),
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  labelStyle: TextStyle(color: Colors.black),
-                  labelText: 'Appartment *',
+                  labelText: 'Appartment',
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),
@@ -493,23 +466,21 @@ class _AddAddressPageState extends State<AddAddressPage> {
                   }
                   return null;
                 },
-                inputFormatters: [
-                  FilteringTextInputFormatter.deny(RegExp(r'^\s+')),
-                ],
               ),
-              SizedBox(height: 16),
-              SizedBox(height: 20),
+             
+              const SizedBox(height: 25),
               GestureDetector(
                 onTap: () {
                   if (_formKey.currentState!.validate()) {
                     final newAddress = {
-                      'title': _titleController.text,
                       'city': _cityController.text,
                       'street': _streetController.text,
                       'building': _buildingController.text,
                       'appartment': _appartmentController.text,
+                      'title': _titleController.text,
                     };
-                    Navigator.pop(context, newAddress);
+                    widget.onAdd(newAddress);
+                    Navigator.pop(context);
                   }
                 },
                 child: Container(
@@ -519,16 +490,15 @@ class _AddAddressPageState extends State<AddAddressPage> {
                     borderRadius: BorderRadius.circular(10.0),
                     color: Colors.yellow.shade600,
                   ),
-                  child: const Center(
-                    child: Center(
-                        child: Text(
+                  child: Center(
+                    child: Text(
                       'Add',
                       style: TextStyle(
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
                       ),
-                    )),
+                    ),
                   ),
                 ),
               )

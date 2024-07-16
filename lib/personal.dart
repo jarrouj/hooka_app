@@ -1,18 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:hive/hive.dart';
 
 class PersonalTab extends StatefulWidget {
-  final List<Map<String, dynamic>> data;
-  final Function(List<Map<String, dynamic>>) onSave;
-  final Function saveProfile;
+  final Map<String, dynamic> data;
+  final Function(Map<String, dynamic>) onSave;
+  final Function(BuildContext) saveProfile;
 
-  const PersonalTab(
-      {required this.data,
-      required this.onSave,
-      required this.saveProfile,
-      super.key});
+  const PersonalTab({
+    required this.data,
+    required this.onSave,
+    required this.saveProfile,
+    Key? key,
+  }) : super(key: key);
 
   @override
   _PersonalTabState createState() => _PersonalTabState();
@@ -63,100 +63,78 @@ class _PersonalTabState extends State<PersonalTab> {
     super.initState();
     _loadData();
   }
-
-  void _loadData() async {
-    var userBox = await Hive.openBox('userBox');
-    var userInfoBox = await Hive.openBox('userInfoBox');
-    var aboutBox = await Hive.openBox('aboutBox');
-    var interestBox = await Hive.openBox('interestBox');
-    final Map<String, String> dataMap = {
-      for (var item in widget.data) item['label']: item['value']
-    };
+  void _loadData() {
+    final data = widget.data;
     setState(() {
-      _firstNameController.text =
-          userBox.get('firstName', defaultValue: dataMap['First Name'] ?? '');
-      _lastNameController.text =
-          userBox.get('lastName', defaultValue: dataMap['Last Name'] ?? '');
-      _emailController.text =
-          userBox.get('email', defaultValue: dataMap['Email'] ?? '');
-      _mobileController.text =
-          userBox.get('mobile', defaultValue: dataMap['Mobile'] ?? '');
-      _dateController.text = dataMap['Date Of Birth'] ?? '';
-      _hairType = userInfoBox.get('hairType', defaultValue: dataMap['Hair']);
-      _eyeColor = userInfoBox.get('eyeColor', defaultValue: dataMap['Eyes']);
-      _gender = userInfoBox.get('gender', defaultValue: dataMap['Gender']);
-      _maritalStatus =
-          userInfoBox.get('maritalStatus', defaultValue: dataMap['Status']);
-      _bioController.text =
-          aboutBox.get('bio', defaultValue: dataMap['Bio'] ?? '');
-      _weightController.text = dataMap['Weight'] ?? '';
-      _heightController.text = dataMap['Height'] ?? '';
-      _interestController.text =
-          interestBox.get('interest', defaultValue: dataMap['Interest'] ?? '');
-      _professionController.text =
-          aboutBox.get('profession', defaultValue: dataMap['Profession'] ?? '');
-      _hobbiesController.text =
-          aboutBox.get('hobbies', defaultValue: dataMap['Hobbies'] ?? '');
-      _facebookController.text =
-          userBox.get('facebook', defaultValue: dataMap['Facebook Url'] ?? '');
-      _instagramController.text = userBox.get('instagram',
-          defaultValue: dataMap['Instagram Url'] ?? '');
-      _tiktokController.text =
-          userBox.get('tiktok', defaultValue: dataMap['Tiktok Url'] ?? '');
+      _firstNameController.text = data['firstName'] ?? '';
+      _lastNameController.text = data['lastName'] ?? '';
+      _emailController.text = data['email'] ?? '';
+      _mobileController.text = data['phoneNumber'] ?? '';
+      _dateController.text = data['birthDate'] ?? '';
+      _hairType = data['hair'];
+      _eyeColor = data['eyes'];
+      _gender = data['gender'];
+      _maritalStatus = data['maritalStatus'];
+      _bioController.text = data['aboutMe'] ?? '';
+      _weightController.text = data['weight']?.toString() ?? '';
+      _heightController.text = data['height']?.toString() ?? '';
+      _interestController.text = data['interests'] ?? '';
+      _professionController.text = data['profession'] ?? '';
+      _hobbiesController.text = data['hobbies'] ?? '';
+      _facebookController.text = data['socialMediaLink1'] ?? '';
+      _instagramController.text = data['socialMediaLink2'] ?? '';
+      _tiktokController.text = data['socialMediaLink3'] ?? '';
     });
   }
 
   Future<void> _selectDate(BuildContext context) async {
-  DateTime firstDate = DateTime(1970);
-  DateTime lastDate = DateTime(2015, 12, 31);
-  DateTime initialDate = DateTime(2015, 1, 1); // Set this to any date within the valid range
+    DateTime firstDate = DateTime(1970);
+    DateTime lastDate = DateTime(2015, 12, 31);
+    DateTime initialDate = DateTime(2015, 1, 1);
 
-  DateTime? pickedDate;
+    DateTime? pickedDate;
 
-  await showCupertinoModalPopup<void>(
-    context: context,
-    builder: (BuildContext context) {
-      return Container(
-        height: 250,
-        color: Colors.white,
-        child: Column(
-          children: [
-            Expanded(
-              child: CupertinoTheme(
-                data: CupertinoThemeData(
-                  textTheme: CupertinoTextThemeData(
-                    dateTimePickerTextStyle: TextStyle(
-                      color: Colors.black,
-                      fontSize: 20,
+    await showCupertinoModalPopup<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return Container(
+          height: 250,
+          child: Column(
+            children: [
+              Expanded(
+                child: CupertinoTheme(
+                  data: CupertinoThemeData(
+                    textTheme: CupertinoTextThemeData(
+                      dateTimePickerTextStyle: TextStyle(
+                        color: Colors.black,
+                        fontSize: 20,
+                      ),
                     ),
                   ),
-                ),
-                child: CupertinoDatePicker(
-                  mode: CupertinoDatePickerMode.date,
-                  initialDateTime: initialDate,
-                  minimumDate: firstDate,
-                  maximumDate: lastDate,
-                  onDateTimeChanged: (DateTime date) {
-                    pickedDate = date;
-                  },
+                  child: CupertinoDatePicker(
+                    mode: CupertinoDatePickerMode.date,
+                    initialDateTime: initialDate,
+                    minimumDate: firstDate,
+                    maximumDate: lastDate,
+                    onDateTimeChanged: (DateTime date) {
+                      pickedDate = date;
+                    },
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-      );
-    },
-  );
+            ],
+          ),
+        );
+      },
+    );
 
-  if (pickedDate != null && pickedDate != initialDate) {
-    setState(() {
-      _dateController.text =
-          "${pickedDate!.year}-${pickedDate!.month.toString().padLeft(2, '0')}-${pickedDate!.day.toString().padLeft(2, '0')}";
-    });
-    // _saveData();
+    if (pickedDate != null && pickedDate != initialDate) {
+      setState(() {
+        _dateController.text =
+            "${pickedDate?.year}-${pickedDate?.month.toString().padLeft(2, '0')}-${pickedDate?.day.toString().padLeft(2, '0')}";
+      });
+    }
   }
-}
-
 
   void _showPicker(BuildContext context, List<String> options, String title,
       String? initialValue, ValueChanged<String> onSelected) {
@@ -192,75 +170,31 @@ class _PersonalTabState extends State<PersonalTab> {
     );
   }
 
-  void _saveData() async {
+  void _saveData() {
     if (_formKey.currentState!.validate()) {
-      var userBox = await Hive.openBox('userBox');
-      var userInfoBox = await Hive.openBox('userInfoBox');
-      var aboutBox = await Hive.openBox('aboutBox');
-      var interestBox = await Hive.openBox('interestBox');
-      userBox.put('firstName', _firstNameController.text);
-      userBox.put('lastName', _lastNameController.text);
-      userBox.put('email', _emailController.text);
-      userBox.put('mobile', _mobileController.text);
-      userInfoBox.put('dateOfBirth', _dateController.text);
-      userInfoBox.put('hairType', _hairType);
-      userInfoBox.put('eyeColor', _eyeColor);
-      userInfoBox.put('gender', _gender);
-      userInfoBox.put('maritalStatus', _maritalStatus);
-      aboutBox.put('bio', _bioController.text);
-      userInfoBox.put('weight', _weightController.text);
-      userInfoBox.put('height', _heightController.text);
-      interestBox.put('interest', _interestController.text);
-      aboutBox.put('profession', _professionController.text);
-      aboutBox.put('hobbies', _hobbiesController.text);
-      userBox.put('facebook', _facebookController.text);
-      userBox.put('instagram', _instagramController.text);
-      userBox.put('tiktok', _tiktokController.text);
-
-      List<Map<String, dynamic>> updatedData = widget.data.map((item) {
-        if (item['label'] == 'First Name') {
-          item['value'] = _firstNameController.text;
-        } else if (item['label'] == 'Last Name') {
-          item['value'] = _lastNameController.text;
-        } else if (item['label'] == 'Email') {
-          item['value'] = _emailController.text;
-        } else if (item['label'] == 'Mobile') {
-          item['value'] = _mobileController.text;
-        } else if (item['label'] == 'Date Of Birth') {
-          item['value'] = _dateController.text;
-        } else if (item['label'] == 'Hair') {
-          item['value'] = _hairType;
-        } else if (item['label'] == 'Eyes') {
-          item['value'] = _eyeColor;
-        } else if (item['label'] == 'Gender') {
-          item['value'] = _gender;
-        } else if (item['label'] == 'Status') {
-          item['value'] = _maritalStatus;
-        } else if (item['label'] == 'Bio') {
-          item['value'] = _bioController.text;
-        } else if (item['label'] == 'Weight') {
-          item['value'] = _weightController.text;
-        } else if (item['label'] == 'Height') {
-          item['value'] = _heightController.text;
-        } else if (item['label'] == 'Interest') {
-          item['value'] = _interestController.text;
-        } else if (item['label'] == 'Profession') {
-          item['value'] = _professionController.text;
-        } else if (item['label'] == 'Hobbies') {
-          item['value'] = _hobbiesController.text;
-        } else if (item['label'] == 'Facebook Url') {
-          item['value'] = _facebookController.text;
-        } else if (item['label'] == 'Instagram Url') {
-          item['value'] = _instagramController.text;
-        } else if (item['label'] == 'Tiktok Url') {
-          item['value'] = _tiktokController.text;
-        }
-        return item;
-      }).toList();
+      Map<String, dynamic> updatedData = {
+        'firstName': _firstNameController.text,
+        'lastName': _lastNameController.text,
+        'email': _emailController.text,
+        'phoneNumber': _mobileController.text,
+        'birthDate': _dateController.text,
+        'hair': _hairType ?? '',
+        'eyes': _eyeColor ?? '',
+        'gender': _gender ?? '',
+        'maritalStatus': _maritalStatus ?? '',
+        'aboutMe': _bioController.text,
+        'weight': _weightController.text,
+        'height': _heightController.text,
+        'interests': _interestController.text,
+        'profession': _professionController.text,
+        'hobbies': _hobbiesController.text,
+        'socialMediaLink1': _facebookController.text,
+        'socialMediaLink2': _instagramController.text,
+        'socialMediaLink3': _tiktokController.text,
+      };
 
       widget.onSave(updatedData);
-
-      widget.saveProfile();
+      widget.saveProfile(context);
     }
   }
 
@@ -274,10 +208,9 @@ class _PersonalTabState extends State<PersonalTab> {
           child: Column(
             children: [
               TextFormField(
-                
                 controller: _firstNameController,
                 decoration: InputDecoration(
-                     border: OutlineInputBorder(
+                  border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
@@ -286,7 +219,6 @@ class _PersonalTabState extends State<PersonalTab> {
                   ),
                   labelText: 'First Name',
                   labelStyle: TextStyle(color: Colors.black),
-                
                 ),
               ),
               const SizedBox(height: 16),
@@ -295,7 +227,7 @@ class _PersonalTabState extends State<PersonalTab> {
                 decoration: InputDecoration(
                   labelText: 'Last Name',
                   labelStyle: TextStyle(color: Colors.black),
-                    border: OutlineInputBorder(
+                  border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
@@ -304,13 +236,13 @@ class _PersonalTabState extends State<PersonalTab> {
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(
                   labelText: 'Email',
                   labelStyle: TextStyle(color: Colors.black),
-                    border: OutlineInputBorder(
+                  border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
@@ -319,14 +251,14 @@ class _PersonalTabState extends State<PersonalTab> {
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: _mobileController,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: InputDecoration(
                   labelText: 'Mobile',
                   labelStyle: TextStyle(color: Colors.black),
-                    border: OutlineInputBorder(
+                  border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
@@ -335,7 +267,7 @@ class _PersonalTabState extends State<PersonalTab> {
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: _dateController,
                 readOnly: true,
@@ -353,7 +285,7 @@ class _PersonalTabState extends State<PersonalTab> {
                   suffixIcon: Icon(Icons.calendar_today),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               GestureDetector(
                 onTap: () {
                   _showPicker(
@@ -369,19 +301,19 @@ class _PersonalTabState extends State<PersonalTab> {
                     decoration: InputDecoration(
                       labelText: _hairType ?? 'Hair Type',
                       labelStyle: TextStyle(color: Colors.black),
-                         border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.black),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.black),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                       suffixIcon: Icon(Icons.arrow_drop_down),
                     ),
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               GestureDetector(
                 onTap: () {
                   _showPicker(context, ['Brown', 'Blue', 'Green'], 'Eye Color',
@@ -393,17 +325,16 @@ class _PersonalTabState extends State<PersonalTab> {
                 },
                 child: AbsorbPointer(
                   child: TextFormField(
-                    
                     decoration: InputDecoration(
-                      labelStyle: TextStyle(color: Colors.black),
                       labelText: _eyeColor ?? 'Eye Color',
-                       border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.black),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+                      labelStyle: TextStyle(color: Colors.black),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.black),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                       suffixIcon: const Icon(Icons.arrow_drop_down),
                     ),
                   ),
@@ -421,23 +352,22 @@ class _PersonalTabState extends State<PersonalTab> {
                 },
                 child: AbsorbPointer(
                   child: TextFormField(
-                    
                     decoration: InputDecoration(
-                      labelStyle: TextStyle(color: Colors.black),
                       labelText: _gender ?? 'Gender',
-                        border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.black),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+                      labelStyle: TextStyle(color: Colors.black),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.black),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                       suffixIcon: Icon(Icons.arrow_drop_down),
                     ),
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               GestureDetector(
                 onTap: () {
                   _showPicker(context, ['Single', 'Married', 'Divorced'],
@@ -450,27 +380,27 @@ class _PersonalTabState extends State<PersonalTab> {
                 child: AbsorbPointer(
                   child: TextFormField(
                     decoration: InputDecoration(
-                      labelStyle: TextStyle(color: Colors.black),
                       labelText: _maritalStatus ?? 'Marital Status',
-                        border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: const BorderSide(color: Colors.black),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+                      labelStyle: TextStyle(color: Colors.black),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: const BorderSide(color: Colors.black),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                       suffixIcon: Icon(Icons.arrow_drop_down),
                     ),
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               TextFormField(
                 controller: _bioController,
                 decoration: InputDecoration(
-                  labelStyle: TextStyle(color: Colors.black),
                   labelText: 'Bio',
-                    border: OutlineInputBorder(
+                  labelStyle: TextStyle(color: Colors.black),
+                  border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
@@ -484,9 +414,9 @@ class _PersonalTabState extends State<PersonalTab> {
                 controller: _weightController,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: InputDecoration(
-                  labelStyle: TextStyle(color: Colors.black),
                   labelText: 'Weight (kg)',
-                     border: OutlineInputBorder(
+                  labelStyle: TextStyle(color: Colors.black),
+                  border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
@@ -500,9 +430,9 @@ class _PersonalTabState extends State<PersonalTab> {
                 controller: _heightController,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 decoration: InputDecoration(
-                  labelStyle: TextStyle(color: Colors.black),
                   labelText: 'Height (cm)',
-                   border: OutlineInputBorder(
+                  labelStyle: TextStyle(color: Colors.black),
+                  border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
@@ -515,9 +445,9 @@ class _PersonalTabState extends State<PersonalTab> {
               TextFormField(
                 controller: _interestController,
                 decoration: InputDecoration(
-                  labelStyle: TextStyle(color: Colors.black),
                   labelText: 'Interest',
-                     border: OutlineInputBorder(
+                  labelStyle: TextStyle(color: Colors.black),
+                  border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
@@ -530,9 +460,9 @@ class _PersonalTabState extends State<PersonalTab> {
               TextFormField(
                 controller: _professionController,
                 decoration: InputDecoration(
-                  labelStyle: TextStyle(color: Colors.black),
                   labelText: 'Profession',
-                     border: OutlineInputBorder(
+                  labelStyle: TextStyle(color: Colors.black),
+                  border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
@@ -545,9 +475,9 @@ class _PersonalTabState extends State<PersonalTab> {
               TextFormField(
                 controller: _hobbiesController,
                 decoration: InputDecoration(
-                  labelStyle: TextStyle(color: Colors.black),
                   labelText: 'Hobbies',
-                    border: OutlineInputBorder(
+                  labelStyle: TextStyle(color: Colors.black),
+                  border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
@@ -573,9 +503,9 @@ class _PersonalTabState extends State<PersonalTab> {
               TextFormField(
                 controller: _facebookController,
                 decoration: InputDecoration(
-                  labelStyle: TextStyle(color: Colors.black),
                   labelText: 'Facebook Url',
-                    border: OutlineInputBorder(
+                  labelStyle: TextStyle(color: Colors.black),
+                  border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
@@ -588,9 +518,9 @@ class _PersonalTabState extends State<PersonalTab> {
               TextFormField(
                 controller: _instagramController,
                 decoration: InputDecoration(
-                  labelStyle: TextStyle(color: Colors.black),
                   labelText: 'Instagram Url',
-                    border: OutlineInputBorder(
+                  labelStyle: TextStyle(color: Colors.black),
+                  border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
@@ -603,9 +533,9 @@ class _PersonalTabState extends State<PersonalTab> {
               TextFormField(
                 controller: _tiktokController,
                 decoration: InputDecoration(
-                  labelStyle: TextStyle(color: Colors.black),
                   labelText: 'Tiktok Url',
-                    border: OutlineInputBorder(
+                  labelStyle: TextStyle(color: Colors.black),
+                  border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                   ),
                   focusedBorder: OutlineInputBorder(
@@ -627,15 +557,14 @@ class _PersonalTabState extends State<PersonalTab> {
                     color: Colors.yellow.shade600,
                   ),
                   child: const Center(
-                      child: Text(
-                    'Save',
-                    style: TextStyle(fontSize: 20),
-                  )),
+                    child: Text(
+                      'Save',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ),
                 ),
               ),
-              SizedBox(
-                height: 20,
-              ),
+              SizedBox(height: 20),
             ],
           ),
         ),

@@ -95,17 +95,21 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
     final response = await http.get(Uri.parse('https://api.hookatimes.com/api/Cuisines/GetCuisines'));
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      setState(() {
-        cuisines = (data['data']['data'] as List)
-            .map((json) => Cuisine.fromJson(json))
-            .toList();
-        if (cuisines.isNotEmpty) {
-          cuisines.insert(0, Cuisine(id: 0, title: 'Cuisines'));
-          selectedCuisine = cuisines.first.title;
-        } else {
-          selectedCuisine = null;
-        }
-      });
+      if (data != null && data['data'] != null && data['data']['data'] != null) {
+        setState(() {
+          cuisines = (data['data']['data'] as List)
+              .map((json) => Cuisine.fromJson(json))
+              .toList();
+          if (cuisines.isNotEmpty) {
+            cuisines.insert(0, Cuisine(id: 0, title: 'Cuisines'));
+            selectedCuisine = cuisines.first.title;
+          } else {
+            selectedCuisine = null;
+          }
+        });
+      } else {
+        throw Exception('Failed to load cuisines');
+      }
     } else {
       throw Exception('Failed to load cuisines');
     }
@@ -118,19 +122,24 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
     final response = await http.get(Uri.parse('https://api.hookatimes.com/api/Places/GetAllPlaces'));
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      print('Data fetched: $data'); // Debug print to check fetched data
-      setState(() {
-        places = (data['data']['data'] as List)
-            .map((json) => Place.fromJson(json))
-            .toList();
-        filteredPlaces = List.from(places);
-        isLoading = false;
-      });
+      if (data != null && data['data'] != null && data['data']['data'] != null) {
+        setState(() {
+          places = (data['data']['data'] as List)
+              .map((json) => Place.fromJson(json))
+              .toList();
+          filteredPlaces = List.from(places);
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+        throw Exception('Failed to load places');
+      }
     } else {
       setState(() {
         isLoading = false;
       });
-      print('Failed to load places: ${response.reasonPhrase}');
       throw Exception('Failed to load places');
     }
   }
@@ -143,9 +152,9 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
   }
 
   void _loadFavorites() {
-    final savedFavorites = mybox?.get('favoriteIds', defaultValue: []) as List;
+    final savedFavorites = mybox?.get('favoriteIds', defaultValue: []) as List?;
     setState(() {
-      favoriteIds = savedFavorites.cast<int>();
+      favoriteIds = savedFavorites?.cast<int>() ?? [];
     });
   }
 
@@ -522,9 +531,6 @@ class _MainPlacesPageState extends State<MainPlacesPage> {
   }
 }
 
-
-
-
 class PlacesStartPage extends StatefulWidget {
   const PlacesStartPage({super.key});
 
@@ -556,24 +562,33 @@ class _PlacesStartPageState extends State<PlacesStartPage> {
       appBar: AppBar(
         surfaceTintColor: Colors.white,
         backgroundColor: Colors.white,
-        title:  Center(child: Text('Places' , style: GoogleFonts.comfortaa(),)),
+        title: Center(
+          child: Text(
+            'Places',
+            style: GoogleFonts.comfortaa(),
+          ),
+        ),
         actions: [
           GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const MapPage(),
-                  ),
-                );
-              },
-              child: Text('Map' , style: GoogleFonts.comfortaa(fontSize: 15))),
-          SizedBox(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const MapPage(),
+                ),
+              );
+            },
+            child: Text(
+              'Map',
+              style: GoogleFonts.comfortaa(fontSize: 15),
+            ),
+          ),
+          const SizedBox(
             width: 20,
           ),
         ],
         leading: IconButton(
-          icon: const Icon( 
+          icon: const Icon(
             Icons.arrow_back_ios,
             color: Colors.black,
           ),

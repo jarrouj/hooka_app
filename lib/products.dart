@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'package:flutter/cupertino.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hive/hive.dart';
@@ -25,18 +28,18 @@ class _ProductsPageState extends State<ProductsPage> {
     final box = await Hive.openBox<Product>('productsBox');
     if (box.isEmpty) {
       products = [
-        Product(
-          name: "Margerita Pizza",
-          image: "assets/images/pizza.jpg",
-          price: 5,
-          quantity: 0,
-        ),
-        Product(
-          name: "Margerita Pizza 2",
-          image: "assets/images/pizza.jpg",
-          price: 20,
-          quantity: 0,
-        ),
+        // Product(
+        //   name: "Margerita Pizza",
+        //   image: "assets/images/pizza.jpg",
+        //   price: 5,
+        //   quantity: 0,
+        // ),
+        // Product(
+        //   name: "Margerita Pizza 2",
+        //   image: "assets/images/pizza.jpg",
+        //   price: 20,
+        //   quantity: 0,
+        // ),
       ];
       for (var product in products) {
         await box.put(product.name, product);
@@ -61,13 +64,12 @@ class _ProductsPageState extends State<ProductsPage> {
   }
 
   void _goToCart(BuildContext context) async {
-    final box = await Hive.openBox<Product>('cartBox2');
-    List<Product> cartItems = box.values.toList();
+   
 
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => CartPage(cartItems: cartItems),
+        builder: (context) => CartPage(productIds: [],),
       ),
     );
   }
@@ -107,7 +109,6 @@ class _ProductsPageState extends State<ProductsPage> {
       body: Stack(
         children: [
           ProductsContent(
-            products: products,
             updateProducts: _updateProducts,
           ),
           if (isLoading) LoadingAllpages(),
@@ -117,91 +118,179 @@ class _ProductsPageState extends State<ProductsPage> {
   }
 }
 
-class ProductsContent extends StatelessWidget {
-  final List<Product> products;
+class ProductsContent extends StatefulWidget {
   final Function(List<Product>) updateProducts;
 
   const ProductsContent({
     Key? key,
-    required this.products,
     required this.updateProducts,
   }) : super(key: key);
 
   @override
+  _ProductsContentState createState() => _ProductsContentState();
+}
+
+class _ProductsContentState extends State<ProductsContent> {
+  List<Category> categories = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchCategories();
+  }
+
+  Future<void> fetchCategories() async {
+    final response = await http.get(Uri.parse('https://api.hookatimes.com/api/Products/GetAllCategories'));
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body)['data']['data'] as List;
+      setState(() {
+        categories = data.map((item) => Category.fromJson(item)).toList();
+        isLoading = false;
+      });
+    } else {
+      throw Exception('Failed to load categories');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Column(
-          children: [
-            SizedBox(height: 20),
-            Row(
-              children: [
-                GestureDetector(
-                  onTap: () async {
-                    final result = await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => ProductsDetails(products: products),
-                      ),
-                    );
-                    if (result != null) {
-                      updateProducts(result);
-                    }
-                  },
-                  child: Container(
-                    width: MediaQuery.of(context).size.width - 32, // Adjust width for padding
-                    height: MediaQuery.of(context).size.height * 0.17,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      border: Border.all(
-                        color: Colors.black,
-                        width: 1.0,
-                      ),
+        child: isLoading
+            ? const Center(child: LoadingAllpages())
+            : ListView.builder(
+                itemCount: categories.length,
+                itemBuilder: (context, index) {
+                  final category = categories[index];
+                  return GestureDetector(
+                    onTap: () async {
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ProductsDetails(categoryId: category.id),
+                        ),
+                      );
+                      if (result != null) {
+                        widget.updateProducts(result);
+                      }
+                    },
+                    child: Column(
+                      children: [
+                        Container(
+                          width: MediaQuery.of(context).size.width - 32, 
+                          height: MediaQuery.of(context).size.height * 0.17,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            border: Border.all(
+                              color: Colors.black,
+                              width: 1.0,
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 50),
+                            child: Image.network(
+                              category.image,
+                              width: 200,
+                            ),
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              category.title,
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontFamily: 'Comfortaa',
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20), 
+                      ],
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 50, right: 50),
-                      child: Image.asset(
-                        'assets/images/pizza.jpg',
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Pizza',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontFamily: 'Comfortaa',
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+                  );
+                },
+              ),
       ),
     );
   }
 }
 
-class Product {
-  final String name;
+
+class Category {
+  final int id;
   final String image;
-  final double price;
-  int quantity;
+  final String title;
+  final String description;
+
+  Category({
+    required this.id,
+    required this.image,
+    required this.title,
+    required this.description,
+  });
+
+  factory Category.fromJson(Map<String, dynamic> json) {
+    return Category(
+      id: json['id'],
+      image: json['image'],
+      title: json['title'],
+      description: json['decription'] ?? '',
+    );
+  }
+}
+
+class Product {
+  final int id;
+  final String? name;
+  final String category;
+  final int categoryId;
+  final String title;
+  final String description;
+  final String image;
+  final double customerInitialPrice;
+  bool? isInWishlist;
+  bool? isInCart;
+  int quantityInCart;
+  int? orderId;
 
   Product({
+    required this.id,
     required this.name,
+    required this.category,
+    required this.categoryId,
+    required this.title,
+    required this.description,
     required this.image,
-    required this.price,
-    this.quantity = 0,
+    required this.customerInitialPrice,
+    this.isInWishlist,
+    this.isInCart,
+    this.quantityInCart = 0,
+    this.orderId,
   });
+
+  factory Product.fromJson(Map<String, dynamic> json) {
+    return Product(
+      id: json['id'],
+      name: json['name'],
+      category: json['category'],
+      categoryId: json['categoryId'],
+      title: json['title'],
+      description: json['description'],
+      image: json['image'],
+      customerInitialPrice: json['customerInitialPrice'],
+      isInWishlist: json['isInWishlist'],
+      isInCart: json['isInCart'],
+      quantityInCart: json['quantityInCart'] ?? 0,
+      orderId: json['orderId'],
+    );
+  }
 }
 
 class ProductAdapter extends TypeAdapter<Product> {
@@ -210,56 +299,194 @@ class ProductAdapter extends TypeAdapter<Product> {
 
   @override
   Product read(BinaryReader reader) {
-    return Product(
-      name: reader.readString(),
-      image: reader.readString(),
-      price: reader.readDouble(),
-      quantity: reader.readInt(),
-    );
+    try {
+      return Product(
+        id: reader.readInt(),
+        name: reader.readString(),
+        category: reader.readString(),
+        categoryId: reader.readInt(),
+        title: reader.readString(),
+        description: reader.readString(),
+        image: reader.readString(),
+        customerInitialPrice: reader.readDouble(),
+        isInWishlist: reader.readBool(),
+        isInCart: reader.readBool(),
+        quantityInCart: reader.readInt(),
+        orderId: reader.readInt(),
+      );
+    } catch (e) {
+      // Handle the case where the data does not match the expected format
+      return Product(
+        id: 0,
+        name: '',
+        category: '',
+        categoryId: 0,
+        title: '',
+        description: '',
+        image: '',
+        customerInitialPrice: 0.0,
+        isInWishlist: false,
+        isInCart: false,
+        quantityInCart: 0,
+        orderId: 0,
+      );
+    }
   }
 
   @override
   void write(BinaryWriter writer, Product obj) {
-    writer.writeString(obj.name);
+    writer.writeInt(obj.id);
+    writer.writeString(obj.name ?? '');
+    writer.writeString(obj.category);
+    writer.writeInt(obj.categoryId);
+    writer.writeString(obj.title);
+    writer.writeString(obj.description);
     writer.writeString(obj.image);
-    writer.writeDouble(obj.price);
-    writer.writeInt(obj.quantity);
+    writer.writeDouble(obj.customerInitialPrice);
+    writer.writeBool(obj.isInWishlist ?? false);
+    writer.writeBool(obj.isInCart ?? false);
+    writer.writeInt(obj.quantityInCart);
+    writer.writeInt(obj.orderId ?? 0);
   }
 }
 
 class ProductsDetails extends StatelessWidget {
-  final List<Product> products;
+  final int categoryId;
 
-  const ProductsDetails({Key? key, required this.products}) : super(key: key);
+  const ProductsDetails({Key? key, required this.categoryId}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        title: Center(
-          child: Text(
-            'Details',
-            style: GoogleFonts.comfortaa(fontSize: 20),
-          ),
-        ),
-        actions: const [
-          SizedBox(
-            width: 55,
-          ),
-        ],
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios,
-            color: Colors.black,
-          ),
-          onPressed: () {
-            Navigator.of(context).pop(products);
-          },
-        ),
-      ),
-      body: Details(products: products),
+    return FutureBuilder<List<Product>>(
+      future: fetchProducts(categoryId),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              title: Center(
+                child: Text(
+                  'Details',
+                  style: GoogleFonts.comfortaa(fontSize: 20),
+                ),
+              ),
+              actions: const [
+                SizedBox(
+                  width: 55,
+                ),
+              ],
+              leading: IconButton(
+                icon: const Icon(
+                  Icons.arrow_back_ios,
+                  color: Colors.black,
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ),
+            body: const Center(child: LoadingAllpages()),
+          );
+        } else if (snapshot.hasError) {
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              title: Center(
+                child: Text(
+                  'Details',
+                  style: GoogleFonts.comfortaa(fontSize: 20),
+                ),
+              ),
+              actions: const [
+                SizedBox(
+                  width: 55,
+                ),
+              ],
+              leading: IconButton(
+                icon: const Icon(
+                  Icons.arrow_back_ios,
+                  color: Colors.black,
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ),
+            body: Center(
+              child: Text('Error: ${snapshot.error}'),
+            ),
+          );
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              title: Center(
+                child: Text(
+                  'Details',
+                  style: GoogleFonts.comfortaa(fontSize: 20),
+                ),
+              ),
+              actions: const [
+                SizedBox(
+                  width: 55,
+                ),
+              ],
+              leading: IconButton(
+                icon: const Icon(
+                  Icons.arrow_back_ios,
+                  color: Colors.black,
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ),
+            body: const Center(
+              child: Text('No products found.'),
+            ),
+          );
+        } else {
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: Colors.white,
+              title: Center(
+                child: Text(
+                  'Details',
+                  style: GoogleFonts.comfortaa(fontSize: 20),
+                ),
+              ),
+              actions: const [
+                SizedBox(
+                  width: 55,
+                ),
+              ],
+              leading: IconButton(
+                icon: const Icon(
+                  Icons.arrow_back_ios,
+                  color: Colors.black,
+                ),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ),
+            body: Details(products: snapshot.data!),
+          );
+        }
+      },
     );
+  }
+
+  Future<List<Product>> fetchProducts(int categoryId) async {
+    final response = await http.get(Uri.parse('https://api.hookatimes.com/api/Products/GetCategoryProducts/$categoryId'));
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body)['data'];
+      List<Product> products = (data['data'] as List).map((item) => Product.fromJson(item)).toList();
+      return products;
+    } else {
+      throw Exception('Failed to load products');
+    }
   }
 }
 
@@ -280,7 +507,7 @@ class _DetailsState extends State<Details> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _counters = List.generate(widget.products.length, (index) => widget.products[index].quantity);
+    _counters = List.generate(widget.products.length, (index) => widget.products[index].quantityInCart ?? 0);
     _controllers = List.generate(widget.products.length, (index) =>
         AnimationController(
           duration: const Duration(milliseconds: 100),
@@ -321,8 +548,7 @@ class _DetailsState extends State<Details> with TickerProviderStateMixin {
     setState(() {
       if (_counters[index] == 0) {
         _counters[index] = 1;
-        widget.products[index].quantity = _counters[index];
-        _saveProduct(widget.products[index]);
+        widget.products[index].quantityInCart = _counters[index];
       }
     });
   }
@@ -330,39 +556,52 @@ class _DetailsState extends State<Details> with TickerProviderStateMixin {
   void _updateQuantity(int index, int quantity) {
     setState(() {
       _counters[index] = quantity;
-      widget.products[index].quantity = quantity;
-      _saveProduct(widget.products[index]);
+      widget.products[index].quantityInCart = quantity;
     });
   }
 
-  Future<void> _saveProduct(Product product) async {
-    final box = await Hive.openBox<Product>('productsBox');
-    await box.put(product.name, product);
+  Future<void> _addToCart(int productId, int quantity) async {
+    final box = await Hive.openBox('myBox');
+    final token = box.get('token');
+
+    final response = await http.post(
+      Uri.parse('https://api.hookatimes.com/api/Cart/AddToCart/$productId/$quantity'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 201) {
+      print('Product added to cart');
+    } else {
+      print('Failed to add product to cart');
+    }
   }
 
   void _goToCart() async {
-    List<Product> cartItems = [];
     for (int i = 0; i < widget.products.length; i++) {
       if (_counters[i] > 0) {
-        widget.products[i].quantity = _counters[i];
-        cartItems.add(widget.products[i]);
+        await _addToCart(widget.products[i].id, _counters[i]);
       }
     }
-    // Save to Hive
-    var box = Hive.box<Product>('cartBox2');
-    await box.clear();
-    for (var item in cartItems) {
-      await box.put(item.name, item);
+
+    List<int> productIds = [];
+    for (int i = 0; i < widget.products.length; i++) {
+      if (_counters[i] > 0) {
+        productIds.add(widget.products[i].id);
+      }
     }
 
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => CartPage(cartItems: cartItems)),
+      MaterialPageRoute(builder: (context) => CartPage(productIds: productIds)),
     );
+
     if (result != null) {
       setState(() {
         for (int i = 0; i < widget.products.length; i++) {
-          _counters[i] = widget.products[i].quantity;
+          _counters[i] = widget.products[i].quantityInCart ?? 0;
           if (_counters[i] == 0 && _controllers[i].isCompleted) {
             _controllers[i].reverse();
           }
@@ -405,12 +644,14 @@ class _DetailsState extends State<Details> with TickerProviderStateMixin {
                 ],
               ),
             ),
-            SizedBox(
-              height: screenHeight - 223,
+            Expanded(
               child: GridView.builder(
+                padding: const EdgeInsets.all(10),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
-                  childAspectRatio: 0.8,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  childAspectRatio: 0.7,
                 ),
                 itemCount: widget.products.length,
                 itemBuilder: (context, index) {
@@ -421,21 +662,24 @@ class _DetailsState extends State<Details> with TickerProviderStateMixin {
                     child: Stack(
                       clipBehavior: Clip.none,
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.all(15.0),
-                          child: Column(
-                            children: [
-                              ClipRRect(
-                                borderRadius: const BorderRadius.only(
-                                  bottomRight: Radius.circular(20),
-                                ),
-                                child: Image.asset(product.image),
+                        Column(
+                          children: [
+                            ClipRRect(
+                              borderRadius: const BorderRadius.only(
+                                bottomRight: Radius.circular(20),
                               ),
-                              const SizedBox(height: 10),
-                              Text('USD ${product.price.toStringAsFixed(0)}', textAlign: TextAlign.center, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15)),
-                              Text(product.name, textAlign: TextAlign.center, style: GoogleFonts.comfortaa(color: Colors.black, fontSize: 15, fontWeight: FontWeight.w500)),
-                            ],
-                          ),
+                              child: AspectRatio(
+                                aspectRatio: 1.0,
+                                child: Image.network(
+                                  product.image,
+                                  width: 100,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Text('USD ${product.customerInitialPrice?.toStringAsFixed(2) ?? '0.00'}', textAlign: TextAlign.center, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 15)),
+                            Text(product.title ?? 'Unknown', textAlign: TextAlign.center, style: GoogleFonts.comfortaa(color: Colors.black, fontSize: 15, fontWeight: FontWeight.w500)),
+                          ],
                         ),
                         if (!_controllers[index].isCompleted && !_controllers[index].isAnimating)
                           Positioned(

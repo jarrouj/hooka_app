@@ -20,6 +20,11 @@ class _SignUpState extends State<SignUp> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isLoading = false;
 
+    bool isValidEmail(String email) {
+    // Use a regular expression to validate the email format
+    return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
+  }
+
 Future<void> _signUp() async {
   if (_formKey.currentState!.validate()) {
     setState(() {
@@ -59,7 +64,7 @@ Future<void> _signUp() async {
 
     final responseData = jsonDecode(response.body);
 
-    if (response.statusCode == 200) {
+    if (responseData['statusCode'] == 200) {
       await http.post(
       Uri.parse('https://api.hookatimes.com/api/Accounts/GenerateOtp'),
       headers: <String, String>{
@@ -253,6 +258,9 @@ Future<void> _signUp() async {
                           if (value == null || value.isEmpty) {
                             return 'Email Required *';
                           }
+                           if (!isValidEmail(value)) {
+                          return 'Please enter a valid email address';
+                        }
                           return null;
                         },
                         decoration: InputDecoration(
